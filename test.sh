@@ -19,5 +19,7 @@ try() {
 
 try 32 32
 try 7 7
+try 21 "5+20-4"
+try 35 "40-12+7"
 
 echo OK
