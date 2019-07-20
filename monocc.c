@@ -25,6 +25,23 @@ struct Token
 
 Token *token;
 
+typedef struct Node Node;
+
+typedef enum
+{
+    ND_NUM,
+    ND_ADD,
+    ND_SUB,
+} NodeKind;
+
+struct Node
+{
+    NodeKind kind;
+    Node *lhs;
+    Node *rhs;
+    int int_val;
+};
+
 /// Create a new token.
 Token *new_token(TokenKind kind, Token *cur, char *str)
 {
@@ -43,6 +60,8 @@ void error(char *fmt, ...)
     fprintf(stderr, "\n");
     exit(1);
 }
+
+// Methods for Token
 
 /// Print tokens.
 void print_tokens(Token *token)
@@ -138,6 +157,11 @@ bool take_if(TokenKind kind)
     return false;
 }
 
+TokenKind peek()
+{
+    return token->kind;
+}
+
 /// If current token is a number, take it and return int_val.
 /// Otherwise, raise error.
 int expect_number()
@@ -151,6 +175,112 @@ int expect_number()
     return num;
 }
 
+// Method for Node
+
+Node *new_node(NodeKind kind, Node *lhs, Node *rhs)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = kind;
+    node->lhs = lhs;
+    node->rhs = rhs;
+    return node;
+}
+
+Node *new_node_num(int val)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_NUM;
+    node->int_val = val;
+    return node;
+}
+
+Node *parse_additive_expr()
+{
+    Node *node;
+    while (!is_eof())
+    {
+        if (peek() == TK_NUM)
+        {
+            node = new_node_num(expect_number());
+            continue;
+        }
+        if (take_if(TK_ADD))
+        {
+            Node *rhs = new_node_num(expect_number());
+            node = new_node(ND_ADD, node, rhs);
+            continue;
+        }
+        else if (take_if(TK_SUB))
+        {
+            Node *rhs = new_node_num(expect_number());
+            node = new_node(ND_SUB, node, rhs);
+            continue;
+        }
+        error("Unexpected token.");
+    }
+    return node;
+}
+
+void print_nodes(Node *node)
+{
+    if (node->kind == ND_NUM)
+    {
+        printf("(%d)", node->int_val);
+        return;
+    }
+    if (node->kind == ND_ADD)
+    {
+        printf("( + ");
+        print_nodes(node->lhs);
+        printf(" ");
+        print_nodes(node->rhs);
+        printf(" )");
+        return;
+    }
+    if (node->kind == ND_SUB)
+    {
+        printf("( - ");
+        print_nodes(node->lhs);
+        printf(" ");
+        print_nodes(node->rhs);
+        printf(" )");
+        return;
+    }
+    error("Unknown node.");
+}
+
+// Codegen
+
+void gen(Node *node)
+{
+    if (node->kind == ND_NUM)
+    {
+        printf("\tpush %d\n", node->int_val);
+        return;
+    }
+    if (node->kind == ND_ADD)
+    {
+        gen(node->lhs);
+        gen(node->rhs);
+        printf("\tpop  rdi\n");
+        printf("\tpop  rax\n");
+        printf("\tadd  rax, rdi\n");
+        printf("\tpush rax\n");
+        return;
+    }
+    if (node->kind == ND_SUB)
+    {
+        gen(node->lhs);
+        gen(node->rhs);
+        printf("\tpop  rdi\n");
+        printf("\tpop  rax\n");
+        printf("\tsub  rax, rdi\n");
+        printf("\tpush rax\n");
+        return;
+    }
+    error("Unimplemented node.");
+}
+
 int main(int argc, char **argv)
 {
     if (argc != 2)
@@ -162,27 +292,18 @@ int main(int argc, char **argv)
     char *p = argv[1];
     token = tokenize(p).next;
 
+    Node *node = parse_additive_expr();
+    printf("// ");
+    print_nodes(node);
+    printf("\n");
+
     printf(".intel_syntax noprefix\n");
     printf(".global main\n");
     printf("main:\n");
 
-    printf("\tmov  rax, %d\n", expect_number());
+    gen(node);
 
-    while (!is_eof())
-    {
-        if (take_if(TK_ADD))
-        {
-            printf("\tadd  rax, %d\n", expect_number());
-            continue;
-        }
-        if (take_if(TK_SUB))
-        {
-            printf("\tsub  rax, %d\n", expect_number());
-            continue;
-        }
-
-        error("Unexpected token.");
-    }
+    printf("\tpop  rax\n");
 
     printf("\tret\n");
     return 0;
