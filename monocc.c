@@ -363,22 +363,39 @@ Node *parse_prim_expr()
     error("Unexpected token.");
 }
 
+Node *parse_unary_expr()
+{
+    if (take_if(TK_ADD))
+    {
+        return parse_prim_expr();
+    }
+    else if (take_if(TK_SUB))
+    {
+        Node *node = new_node(ND_SUB, new_node_num(0), parse_prim_expr());
+        return node;
+    }
+    else
+    {
+        return parse_prim_expr();
+    }
+}
+
 Node *parse_mul_expr()
 {
-    Node *node = parse_prim_expr();
+    Node *node = parse_unary_expr();
     Node *rhs;
 
     while (true)
     {
         if (take_if(TK_MUL))
         {
-            rhs = parse_prim_expr();
+            rhs = parse_unary_expr();
             node = new_node(ND_MUL, node, rhs);
             continue;
         }
         else if (take_if(TK_DIV))
         {
-            rhs = parse_prim_expr();
+            rhs = parse_unary_expr();
             node = new_node(ND_DIV, node, rhs);
             continue;
         }
