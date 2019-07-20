@@ -20,19 +20,28 @@ int main(int argc, char **argv)
     char *p = argv[1];
     token = tokenize(p).next;
 
-    Node *node = parse_expr();
+    parse_program();
 
-    printf("// ");
-    print_nodes(node);
-    printf("\n");
+    print_nodes();
 
     printf(".intel_syntax noprefix\n");
     printf(".global main\n");
     printf("main:\n");
 
-    gen(node);
+    printf("\tpush rbp\n");
+    printf("\tmov  rbp, rsp\n");
+    printf("\tsub  rsp, 8\n");
 
-    printf("\tpop  rax\n");
+    Node *node;
+    int i = 0;
+    while (node = code[i++])
+    {
+        gen(node);
+        printf("\tpop  rax\n");
+    }
+
+    printf("\tmov  rsp, rbp\n");
+    printf("\tpop  rbp\n");
     printf("\tret\n");
     return 0;
 }

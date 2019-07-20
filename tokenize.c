@@ -20,6 +20,9 @@ void print_tokens(Token *token)
     {
         switch (token->kind)
         {
+        case TK_IDENT:
+            printf("%c ", *token->str);
+            break;
         case TK_NUM:
             printf("%d ", token->int_val);
             break;
@@ -52,6 +55,12 @@ void print_tokens(Token *token)
             break;
         case TK_LE:
             printf("<= ");
+            break;
+        case TK_ASSIGN:
+            printf("= ");
+            break;
+        case TK_SEMI:
+            printf("; ");
             break;
         case TK_OP_PAREN:
             printf("( ");
@@ -100,6 +109,11 @@ Token tokenize(char *p)
             cur->int_val = num;
             continue;
         }
+        if (isalpha(*p))
+        {
+            cur = new_token(TK_IDENT, cur, p++);
+            continue;
+        }
         if (*p == '+')
         {
             cur = new_token(TK_ADD, cur, p++);
@@ -130,7 +144,8 @@ Token tokenize(char *p)
             }
             else
             {
-                error("Unimplemented op '='");
+                cur = new_token(TK_ASSIGN, cur, p);
+                continue;
             }
         }
         if (*p == '>')
@@ -173,6 +188,11 @@ Token tokenize(char *p)
             {
                 error("Unimplemented op '!'");
             }
+        }
+        if (*p == ';')
+        {
+            cur = new_token(TK_SEMI, cur, p++);
+            continue;
         }
         if (*p == '(')
         {

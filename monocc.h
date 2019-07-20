@@ -7,6 +7,7 @@
 typedef enum
 {
     TK_RESERVED,
+    TK_IDENT,
     TK_NUM,
     TK_ADD,
     TK_SUB,
@@ -18,6 +19,8 @@ typedef enum
     TK_GT,
     TK_LE,
     TK_LT,
+    TK_ASSIGN,
+    TK_SEMI,
     TK_OP_PAREN,
     TK_CL_PAREN,
     TK_EOF,
@@ -33,8 +36,6 @@ struct Token
     char *str;
 };
 
-Token *token;
-
 typedef struct Node Node;
 
 typedef enum
@@ -48,6 +49,8 @@ typedef enum
     ND_NEQ,
     ND_GE,
     ND_GT,
+    ND_ASSIGN,
+    ND_LVAR,
 } NodeKind;
 
 struct Node
@@ -55,7 +58,10 @@ struct Node
     NodeKind kind;
     Node *lhs;
     Node *rhs;
+    /// Value in integer valid for ND_NUM only.
     int int_val;
+    /// Offset valid for ND_LVAR only.
+    int ident_offset;
 };
 
 Token *new_token(TokenKind kind, Token *cur, char *str);
@@ -68,7 +74,7 @@ void print_tokens(Token *token);
 
 Token tokenize(char *p);
 
-bool is_eof();
+bool at_eof();
 bool take_if(TokenKind kind);
 TokenKind peek();
 void expect(TokenKind kind);
@@ -82,16 +88,15 @@ Node *new_node_num(int val);
 
 bool is_binary_op(NodeKind kind);
 
-Node *parse_prim_expr();
-Node *parse_unary_expr();
-Node *parse_mul_expr();
-Node *parse_add_expr();
-Node *parse_rel_expr();
-Node *parse_eq_expr();
-Node *parse_expr();
+void parse_program();
 
-void print_nodes(Node *node);
+void print_nodes();
 
 // Codegen
 
 void gen(Node *node);
+
+// Globals
+
+Token *token;
+Node *code[100];

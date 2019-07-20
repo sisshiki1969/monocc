@@ -19,12 +19,41 @@ bool is_binary_op(NodeKind kind)
     return false;
 }
 
+/// Generate address of a local variable.
+void gen_lval(Node *node)
+{
+    if (node->kind != ND_LVAR)
+        error("Invalid left hand side value for assignment expr.");
+    printf("\tmov  rax, rbp\n");
+    printf("\tsub  rax, %d\n", node->ident_offset);
+    printf("\tpush rax\n");
+    return;
+}
+
 // Codegen
 void gen(Node *node)
 {
     if (node->kind == ND_NUM)
     {
         printf("\tpush %d\n", node->int_val);
+        return;
+    }
+    if (node->kind == ND_LVAR)
+    {
+        gen_lval(node);
+        printf("\tpop  rax\n");
+        printf("\tmov  rax, [rax]\n");
+        printf("\tpush rax\n");
+        return;
+    }
+    if (node->kind == ND_ASSIGN)
+    {
+        gen_lval(node->lhs);
+        gen(node->rhs);
+        printf("\tpop  rdi\n");
+        printf("\tpop  rax\n");
+        printf("\tmov  [rax], rdi\n");
+        printf("\tpush rdi\n");
         return;
     }
     if (is_binary_op(node->kind))

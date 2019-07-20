@@ -19,11 +19,19 @@ Node *new_node_num(int val)
     return node;
 }
 
+Node *new_node_lvar(int offset)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_LVAR;
+    node->ident_offset = offset;
+    return node;
+}
+
 // Methods for handling Token.
 
 /// If current token is EOF, return true.
 /// Otherwise return false.
-bool is_eof()
+bool at_eof()
 {
     return token->kind == TK_EOF;
 }
@@ -51,7 +59,7 @@ void expect(TokenKind kind)
 {
     if (token->kind != kind)
     {
-        error("Unexpected token");
+        error("expext(): Unexpected token");
     }
     token = token->next;
 }
@@ -69,9 +77,24 @@ int expect_number()
     return num;
 }
 
+/// If current token is a local variable, take it and return lvar_offset.
+/// Otherwise, raise error.
+int expect_lvar()
+{
+    if (token->kind != TK_IDENT)
+    {
+        error("Unexpected token: Identifier is expected.");
+    }
+    int offset = 8;
+    token = token->next;
+    return offset;
+}
+
+Node *parse_expr();
+
 Node *parse_prim_expr()
 {
-    if (is_eof())
+    if (at_eof())
     {
         error("Unexpected EOF");
     }
@@ -85,7 +108,13 @@ Node *parse_prim_expr()
         expect(TK_CL_PAREN);
         return node;
     }
-    error("Unexpected token.");
+    if (peek() == TK_IDENT)
+    {
+        return new_node_lvar(expect_lvar());
+    }
+    print_tokens(token);
+    print_nodes();
+    error("parse_prom_expr(): Unexpected token.");
 }
 
 Node *parse_unary_expr()
@@ -209,13 +238,41 @@ Node *parse_eq_expr()
     }
 }
 
-Node *parse_expr()
+Node *parse_assign_expr()
 {
     Node *node = parse_eq_expr();
+
+    if (take_if(TK_ASSIGN))
+        node = new_node(ND_ASSIGN, node, parse_assign_expr());
     return node;
 }
 
-void print_nodes(Node *node)
+Node *parse_expr()
+{
+    Node *node = parse_assign_expr();
+    return node;
+}
+
+Node *parse_stmt()
+{
+    Node *node = parse_expr();
+    if (at_eof())
+        return node;
+    expect(TK_SEMI);
+    return node;
+}
+
+void parse_program()
+{
+    int i = 0;
+    while (!at_eof())
+    {
+        code[i++] = parse_stmt();
+    }
+    code[i] = NULL;
+}
+
+void print_node(Node *node)
 {
     if (node->kind == ND_NUM)
     {
@@ -253,12 +310,37 @@ void print_nodes(Node *node)
         default:
             error("Unknown node.");
         }
-        print_nodes(node->lhs);
+        print_node(node->lhs);
         printf(" ");
-        print_nodes(node->rhs);
+        print_node(node->rhs);
         printf(" )");
         return;
     }
-
+    if (node->kind == ND_ASSIGN)
+    {
+        printf("( = ");
+        print_node(node->lhs);
+        printf(" ");
+        print_node(node->rhs);
+        printf(" )");
+        return;
+    }
+    if (node->kind == ND_LVAR)
+    {
+        printf("( LVAR %d )", node->ident_offset);
+        return;
+    }
     error("Unknown node.");
+}
+
+void print_nodes()
+{
+    Node *node;
+    int i = 0;
+    while (node = code[i++])
+    {
+        printf("// ");
+        print_node(node);
+        printf("\n");
+    }
 }
