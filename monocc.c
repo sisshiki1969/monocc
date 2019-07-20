@@ -12,6 +12,12 @@ typedef enum
     TK_SUB,
     TK_MUL,
     TK_DIV,
+    TK_EQ,
+    TK_NEQ,
+    TK_GE,
+    TK_GT,
+    TK_LE,
+    TK_LT,
     TK_OP_PAREN,
     TK_CL_PAREN,
     TK_EOF,
@@ -38,6 +44,10 @@ typedef enum
     ND_SUB,
     ND_MUL,
     ND_DIV,
+    ND_EQ,
+    ND_NEQ,
+    ND_GE,
+    ND_GT,
 } NodeKind;
 
 struct Node
@@ -91,6 +101,24 @@ void print_tokens(Token *token)
             break;
         case TK_DIV:
             printf("/ ");
+            break;
+        case TK_EQ:
+            printf("== ");
+            break;
+        case TK_NEQ:
+            printf("!= ");
+            break;
+        case TK_GT:
+            printf("> ");
+            break;
+        case TK_GE:
+            printf(">= ");
+            break;
+        case TK_LT:
+            printf("< ");
+            break;
+        case TK_LE:
+            printf("<= ");
             break;
         case TK_OP_PAREN:
             printf("( ");
@@ -158,6 +186,60 @@ Token tokenize(char *p)
         {
             cur = new_token(TK_DIV, cur, p++);
             continue;
+        }
+        if (*p == '=')
+        {
+            p++;
+            if (*p == '=')
+            {
+                cur = new_token(TK_EQ, cur, p++);
+                continue;
+            }
+            else
+            {
+                error("Unimplemented op '='");
+            }
+        }
+        if (*p == '>')
+        {
+            p++;
+            if (*p == '=')
+            {
+                cur = new_token(TK_GE, cur, p++);
+                continue;
+            }
+            else
+            {
+                cur = new_token(TK_GT, cur, p);
+                continue;
+            }
+        }
+        if (*p == '<')
+        {
+            p++;
+            if (*p == '=')
+            {
+                cur = new_token(TK_LE, cur, p++);
+                continue;
+            }
+            else
+            {
+                cur = new_token(TK_LT, cur, p);
+                continue;
+            }
+        }
+        if (*p == '!')
+        {
+            p++;
+            if (*p == '=')
+            {
+                cur = new_token(TK_NEQ, cur, p++);
+                continue;
+            }
+            else
+            {
+                error("Unimplemented op '!'");
+            }
         }
         if (*p == '(')
         {
@@ -251,6 +333,10 @@ bool is_binary_op(NodeKind kind)
     case ND_SUB:
     case ND_MUL:
     case ND_DIV:
+    case ND_EQ:
+    case ND_NEQ:
+    case ND_GE:
+    case ND_GT:
         return true;
     }
     return false;
@@ -323,9 +409,67 @@ Node *parse_add_expr()
     }
 }
 
-Node *parse_expr()
+Node *parse_rel_expr()
 {
     Node *node = parse_add_expr();
+    Node *rhs;
+
+    for (;;)
+    {
+        if (take_if(TK_GE))
+        {
+            rhs = parse_add_expr();
+            node = new_node(ND_GE, node, rhs);
+            continue;
+        }
+        else if (take_if(TK_GT))
+        {
+            rhs = parse_add_expr();
+            node = new_node(ND_GT, node, rhs);
+            continue;
+        }
+        else if (take_if(TK_LE))
+        {
+            rhs = parse_add_expr();
+            node = new_node(ND_GE, rhs, node);
+            continue;
+        }
+        else if (take_if(TK_LT))
+        {
+            rhs = parse_add_expr();
+            node = new_node(ND_GT, rhs, node);
+            continue;
+        }
+        return node;
+    }
+}
+
+Node *parse_eq_expr()
+{
+    Node *node = parse_rel_expr();
+    Node *rhs;
+
+    for (;;)
+    {
+        if (take_if(TK_EQ))
+        {
+            rhs = parse_rel_expr();
+            node = new_node(ND_EQ, node, rhs);
+            continue;
+        }
+        else if (take_if(TK_NEQ))
+        {
+            rhs = parse_rel_expr();
+            node = new_node(ND_NEQ, node, rhs);
+            continue;
+        }
+        return node;
+    }
+}
+
+Node *parse_expr()
+{
+    Node *node = parse_eq_expr();
     return node;
 }
 
@@ -338,21 +482,34 @@ void print_nodes(Node *node)
     }
     if (is_binary_op(node->kind))
     {
-        if (node->kind == ND_ADD)
+        switch (node->kind)
         {
+        case ND_ADD:
             printf("( + ");
-        }
-        if (node->kind == ND_SUB)
-        {
+            break;
+        case ND_SUB:
             printf("( - ");
-        }
-        if (node->kind == ND_MUL)
-        {
+            break;
+        case ND_MUL:
             printf("( * ");
-        }
-        if (node->kind == ND_DIV)
-        {
+            break;
+        case ND_DIV:
             printf("( / ");
+            break;
+        case ND_EQ:
+            printf("( == ");
+            break;
+        case ND_NEQ:
+            printf("( != ");
+            break;
+        case ND_GE:
+            printf("( >= ");
+            break;
+        case ND_GT:
+            printf("( > ");
+            break;
+        default:
+            error("Unknown node.");
         }
         print_nodes(node->lhs);
         printf(" ");
@@ -373,50 +530,55 @@ void gen(Node *node)
         printf("\tpush %d\n", node->int_val);
         return;
     }
-    if (node->kind == ND_ADD)
+    if (is_binary_op(node->kind))
     {
         gen(node->lhs);
         gen(node->rhs);
         printf("\tpop  rdi\n");
         printf("\tpop  rax\n");
-        printf("\tadd  rax, rdi\n");
+        switch (node->kind)
+        {
+        case ND_ADD:
+            printf("\tadd  rax, rdi\n");
+            break;
+        case ND_SUB:
+            printf("\tsub  rax, rdi\n");
+            break;
+        case ND_MUL:
+            printf("\timul rax, rdi\n");
+            break;
+        case ND_DIV:
+            printf("\tcqo\n");
+            printf("\tidiv rax, rdi\n");
+            break;
+        case ND_EQ:
+            printf("\tcmp  rax, rdi\n");
+            printf("\tsete al\n");
+            printf("\tmovzb rax, al\n");
+            break;
+        case ND_NEQ:
+            printf("\tcmp  rax, rdi\n");
+            printf("\tsetne al\n");
+            printf("\tmovzb rax, al\n");
+            break;
+        case ND_GE:
+            printf("\tcmp  rax, rdi\n");
+            printf("\tsetge al\n");
+            printf("\tmovzb rax, al\n");
+            break;
+        case ND_GT:
+            printf("\tcmp  rax, rdi\n");
+            printf("\tsetgt al\n");
+            printf("\tmovzb rax, al\n");
+            break;
+        default:
+            error("Unimplemented binary op.");
+        }
         printf("\tpush rax\n");
         return;
     }
-    if (node->kind == ND_SUB)
-    {
-        gen(node->lhs);
-        gen(node->rhs);
-        printf("\tpop  rdi\n");
-        printf("\tpop  rax\n");
-        printf("\tsub  rax, rdi\n");
-        printf("\tpush rax\n");
-        return;
-    }
-    if (node->kind == ND_MUL)
-    {
-        gen(node->lhs);
-        gen(node->rhs);
-        printf("\tpop  rdi\n");
-        printf("\tpop  rax\n");
-        printf("\timul  rax, rdi\n");
-        printf("\tpush rax\n");
-        return;
-    }
-    if (node->kind == ND_DIV)
-    {
-        gen(node->lhs);
-        gen(node->rhs);
-        printf("\tpop  rdi\n");
-        printf("\tpop  rax\n");
-        printf("\tcqo\n");
-        printf("\tidiv  rax, rdi\n");
-        printf("\tpush rax\n");
-        return;
-    }
-    error("Unimplemented node.");
+    error("Unimplemented NodeKind.");
 }
-
 int main(int argc, char **argv)
 {
     if (argc != 2)
