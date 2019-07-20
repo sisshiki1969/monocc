@@ -1,6 +1,11 @@
 CFLAGS=-std=c11 -g -static
+SRCS=$(wildcard *.c)
+OBJS=$(SRCS:.c=.o)
 
-monocc: monocc.c
+monocc: $(OBJS)
+	$(CC) -o monocc $(OBJS) $(LDFLAGS)
+
+$(OBJS): monocc.h
 
 test: monocc
 	./test.sh
