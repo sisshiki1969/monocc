@@ -44,6 +44,11 @@ void print_tokens(Token *token)
         case TK_CL_PAREN:
             printf("[%.*s]", token->len, token->str);
             break;
+        // Reserved words
+        case TK_IF:
+        case TK_ELSE:
+        case TK_WHILE:
+        case TK_FOR:
         case TK_RETURN:
             printf("<%.*s>", token->len, token->str);
             break;
@@ -103,6 +108,14 @@ Token tokenize(char *p)
             if (strncmp(org_p, "return", 6) == 0 && !is_nondigit(org_p[6]))
             {
                 cur = new_token(TK_RETURN, cur, org_p, 6);
+            }
+            else if (strncmp(org_p, "if", 2) == 0 && !is_nondigit(org_p[2]))
+            {
+                cur = new_token(TK_IF, cur, org_p, 2);
+            }
+            else if (strncmp(org_p, "else", 4) == 0 && !is_nondigit(org_p[4]))
+            {
+                cur = new_token(TK_ELSE, cur, org_p, 4);
             }
             else
             {

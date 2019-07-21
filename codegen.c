@@ -19,6 +19,16 @@ bool is_binary_op(NodeKind kind)
     return false;
 }
 
+/// Generate a new label as a string.
+char *new_label()
+{
+    char *label = (char *)malloc(100);
+    if (!label)
+        error("Could not allocate memmory.");
+    sprintf(label, ".L%06d", labels++);
+    return label;
+}
+
 /// Generate address of a local variable.
 void gen_lval(Node *node)
 {
@@ -31,6 +41,27 @@ void gen_lval(Node *node)
 }
 
 // Codegen
+
+void gen_if(Node *node)
+{
+    char *else_str = new_label();
+    char *end_str = new_label();
+    gen(node->lhs);
+    printf("\tpop  rax\n");
+    printf("\tcmp  rax, 0\n");
+    printf("\tje   %s\n", else_str);
+    gen(node->rhs);
+    printf("\tpop  rax\n");
+    printf("\tjmp  %s\n", end_str);
+    printf("%s:\n", else_str);
+    if (node->xhs)
+    {
+        gen(node->xhs);
+        printf("\tpop  rax\n");
+    }
+    printf("%s:\n", end_str);
+}
+
 void gen(Node *node)
 {
     switch (node->kind)
@@ -51,6 +82,9 @@ void gen(Node *node)
         printf("\tpop  rax\n");
         printf("\tmov  [rax], rdi\n");
         printf("\tpush rdi\n");
+        return;
+    case ND_IF:
+        gen_if(node);
         return;
     case ND_RETURN:
         // TODO: return without expression returns undefined value.

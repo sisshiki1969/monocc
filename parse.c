@@ -28,6 +28,16 @@ Node *new_node_lvar(LVar *lvar)
     return node;
 }
 
+Node *new_node_if_then(Node *cond_, Node *then_, Node *else_)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_IF;
+    node->lhs = cond_;
+    node->rhs = then_;
+    node->xhs = else_;
+    return node;
+}
+
 // Methods for handling Token.
 
 /// If current token is EOF, return true.
@@ -292,18 +302,27 @@ Node *parse_expr()
 Node *parse_stmt()
 {
     Node *node;
+    Node *then_;
     switch (token->kind)
     {
     case TK_RETURN:
-        consume_if(TK_RETURN);
+        expect(TK_RETURN);
         if (consume_if(TK_SEMI))
-        {
             return new_node(ND_RETURN, NULL, NULL);
-        }
         else
-        {
             return new_node(ND_RETURN, parse_expr(), NULL);
-        }
+        break;
+    case TK_IF:
+        expect(TK_IF);
+        expect(TK_OP_PAREN);
+        node = parse_expr();
+        expect(TK_CL_PAREN);
+        then_ = parse_stmt();
+        if (consume_if(TK_ELSE))
+            return new_node_if_then(node, then_, parse_stmt());
+        else
+            return new_node_if_then(node, then_, NULL);
+        break;
     }
     node = parse_expr();
     if (at_eof())
@@ -326,8 +345,11 @@ void parse_program()
 
 void print_node(Node *node)
 {
-    if (!node)
+    if (node == NULL)
+    {
+        printf("NULL ");
         return;
+    }
     if (is_binary_op(node->kind))
     {
         switch (node->kind)
@@ -357,7 +379,7 @@ void print_node(Node *node)
             printf("( > ");
             break;
         default:
-            error("Unknown node.");
+            error("Unknown binary node.");
         }
         print_node(node->lhs);
         printf(" ");
@@ -379,6 +401,17 @@ void print_node(Node *node)
         printf(" )");
         return;
     }
+    if (node->kind == ND_IF)
+    {
+        printf("( IF ");
+        print_node(node->lhs);
+        printf(" ");
+        print_node(node->rhs);
+        printf(" ");
+        print_node(node->xhs);
+        printf(" )");
+        return;
+    }
     if (node->kind == ND_LVAR)
     {
         printf("( LVAR %d )", node->ident_offset);
@@ -391,7 +424,7 @@ void print_node(Node *node)
         printf(" )");
         return;
     }
-    error("Unknown node.");
+    error("print_node(): Unknown node.");
 }
 
 void print_nodes()

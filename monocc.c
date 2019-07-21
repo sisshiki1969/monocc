@@ -23,11 +23,13 @@ int main(int argc, char **argv)
     parse_program();
 
     print_nodes();
+
     int max_offset = 8;
     if (locals)
     {
         max_offset = locals->offset + 8;
     }
+    labels = 0;
 
     printf(".intel_syntax noprefix\n");
     printf(".global main\n");

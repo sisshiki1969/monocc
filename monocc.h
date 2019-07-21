@@ -24,6 +24,10 @@ typedef enum
     TK_SEMI,
     TK_OP_PAREN,
     TK_CL_PAREN,
+    TK_IF,
+    TK_ELSE,
+    TK_WHILE,
+    TK_FOR,
     TK_RETURN,
     TK_EOF,
 } TokenKind;
@@ -64,6 +68,7 @@ typedef enum
     ND_GT,
     ND_ASSIGN,
     ND_LVAR,
+    ND_IF,
     ND_RETURN,
 } NodeKind;
 
@@ -72,6 +77,7 @@ struct Node
     NodeKind kind;
     Node *lhs;
     Node *rhs;
+    Node *xhs;
     /// Value in integer valid for ND_NUM only.
     int int_val;
     /// Offset valid for ND_LVAR only.
@@ -117,3 +123,4 @@ void gen(Node *node);
 Token *token;
 Node *code[100];
 LVar *locals;
+int labels;
