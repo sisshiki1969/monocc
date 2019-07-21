@@ -148,9 +148,7 @@ Node *parse_prim_expr()
         LVar *var = consume_lvar();
         return new_node_lvar(var);
     }
-    print_tokens(token);
-    print_nodes();
-    error("parse_prom_expr(): Unexpected token.");
+    error("parse_prom_expr(): Unexpected token '%.*s'.", token->len, token->str);
 }
 
 Node *parse_unary_expr()
@@ -293,7 +291,21 @@ Node *parse_expr()
 
 Node *parse_stmt()
 {
-    Node *node = parse_expr();
+    Node *node;
+    switch (token->kind)
+    {
+    case TK_RETURN:
+        consume_if(TK_RETURN);
+        if (consume_if(TK_SEMI))
+        {
+            return new_node(ND_RETURN, NULL, NULL);
+        }
+        else
+        {
+            return new_node(ND_RETURN, parse_expr(), NULL);
+        }
+    }
+    node = parse_expr();
     if (at_eof())
         return node;
     expect(TK_SEMI);
@@ -305,6 +317,8 @@ void parse_program()
     int i = 0;
     while (!at_eof())
     {
+        if (consume_if(TK_SEMI))
+            continue;
         code[i++] = parse_stmt();
     }
     code[i] = NULL;
@@ -312,11 +326,8 @@ void parse_program()
 
 void print_node(Node *node)
 {
-    if (node->kind == ND_NUM)
-    {
-        printf("(%d)", node->int_val);
+    if (!node)
         return;
-    }
     if (is_binary_op(node->kind))
     {
         switch (node->kind)
@@ -354,6 +365,11 @@ void print_node(Node *node)
         printf(" )");
         return;
     }
+    if (node->kind == ND_NUM)
+    {
+        printf("(%d)", node->int_val);
+        return;
+    }
     if (node->kind == ND_ASSIGN)
     {
         printf("( = ");
@@ -366,6 +382,13 @@ void print_node(Node *node)
     if (node->kind == ND_LVAR)
     {
         printf("( LVAR %d )", node->ident_offset);
+        return;
+    }
+    if (node->kind == ND_RETURN)
+    {
+        printf("( return ");
+        print_node(node->lhs);
+        printf(" )");
         return;
     }
     error("Unknown node.");

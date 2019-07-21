@@ -38,5 +38,6 @@ try 1 "-5*2+10 == 0"
 try 1 "+6/2 == 9/3"
 try 9 "alpha5 = 5; alpha5 * 6 - 21;"
 try 45 "alpha5 = 5; beta_9 = alpha5 * 6 - 21; beta_9*alpha5"
+try 37 "a = 5 *5 +12;return a"
 
 echo OK

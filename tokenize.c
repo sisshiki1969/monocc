@@ -13,6 +13,11 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len)
     return new_token;
 }
 
+bool is_nondigit(char c)
+{
+    return isalnum(c) || c == '_';
+}
+
 /// Print tokens.
 void print_tokens(Token *token)
 {
@@ -39,8 +44,11 @@ void print_tokens(Token *token)
         case TK_CL_PAREN:
             printf("[%.*s]", token->len, token->str);
             break;
+        case TK_RETURN:
+            printf("<%.*s>", token->len, token->str);
+            break;
         case TK_EOF:
-            printf("[EOF]");
+            printf("<EOF>");
             break;
         default:
             error("Unknown TokenKind.");
@@ -87,12 +95,19 @@ Token tokenize(char *p)
             char *org_p = p;
             int len = 1;
             p++;
-            while (isalnum(*p) || *p == '_')
+            while (is_nondigit(*p))
             {
                 len++;
                 p++;
             }
-            cur = new_token(TK_IDENT, cur, org_p, len);
+            if (strncmp(org_p, "return", 6) == 0 && !is_nondigit(org_p[6]))
+            {
+                cur = new_token(TK_RETURN, cur, org_p, 6);
+            }
+            else
+            {
+                cur = new_token(TK_IDENT, cur, org_p, len);
+            }
             continue;
         }
         if (*p == '+')

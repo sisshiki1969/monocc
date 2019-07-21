@@ -24,6 +24,7 @@ typedef enum
     TK_SEMI,
     TK_OP_PAREN,
     TK_CL_PAREN,
+    TK_RETURN,
     TK_EOF,
 } TokenKind;
 
@@ -46,7 +47,6 @@ struct LVar
     char *name;
     int len;
     int offset;
-    bool is_initialized;
 };
 
 typedef struct Node Node;
@@ -64,6 +64,7 @@ typedef enum
     ND_GT,
     ND_ASSIGN,
     ND_LVAR,
+    ND_RETURN,
 } NodeKind;
 
 struct Node

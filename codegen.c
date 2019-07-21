@@ -33,27 +33,36 @@ void gen_lval(Node *node)
 // Codegen
 void gen(Node *node)
 {
-    if (node->kind == ND_NUM)
+    switch (node->kind)
     {
+    case ND_NUM:
         printf("\tpush %d\n", node->int_val);
         return;
-    }
-    if (node->kind == ND_LVAR)
-    {
+    case ND_LVAR:
         gen_lval(node);
         printf("\tpop  rax\n");
         printf("\tmov  rax, [rax]\n");
         printf("\tpush rax\n");
         return;
-    }
-    if (node->kind == ND_ASSIGN)
-    {
+    case ND_ASSIGN:
         gen_lval(node->lhs);
         gen(node->rhs);
         printf("\tpop  rdi\n");
         printf("\tpop  rax\n");
         printf("\tmov  [rax], rdi\n");
         printf("\tpush rdi\n");
+        return;
+    case ND_RETURN:
+        // TODO: return without expression returns undefined value.
+        if (node->lhs)
+        {
+            gen(node->lhs);
+            printf("\tpop  rax\n");
+        }
+
+        printf("\tmov  rsp, rbp\n");
+        printf("\tpop  rbp\n");
+        printf("\tret\n");
         return;
     }
     if (is_binary_op(node->kind))
