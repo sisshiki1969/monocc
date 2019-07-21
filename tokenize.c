@@ -3,11 +3,12 @@
 // Methods for Token
 
 /// Create a new token.
-Token *new_token(TokenKind kind, Token *cur, char *str)
+Token *new_token(TokenKind kind, Token *cur, char *str, int len)
 {
     Token *new_token = calloc(1, sizeof(Token));
     new_token->kind = kind;
     new_token->str = str;
+    new_token->len = len;
     cur->next = new_token;
     return new_token;
 }
@@ -20,56 +21,26 @@ void print_tokens(Token *token)
     {
         switch (token->kind)
         {
-        case TK_IDENT:
-            printf("%c ", *token->str);
-            break;
         case TK_NUM:
-            printf("%d ", token->int_val);
-            break;
+        case TK_IDENT:
         case TK_ADD:
-            printf("+ ");
-            break;
         case TK_SUB:
-            printf("- ");
-            break;
         case TK_MUL:
-            printf("* ");
-            break;
         case TK_DIV:
-            printf("/ ");
-            break;
         case TK_EQ:
-            printf("== ");
-            break;
         case TK_NEQ:
-            printf("!= ");
-            break;
         case TK_GT:
-            printf("> ");
-            break;
         case TK_GE:
-            printf(">= ");
-            break;
         case TK_LT:
-            printf("< ");
-            break;
         case TK_LE:
-            printf("<= ");
-            break;
         case TK_ASSIGN:
-            printf("= ");
-            break;
         case TK_SEMI:
-            printf("; ");
-            break;
         case TK_OP_PAREN:
-            printf("( ");
-            break;
         case TK_CL_PAREN:
-            printf(") ");
+            printf("[%.*s]", token->len, token->str);
             break;
         case TK_EOF:
-            printf(" <EOF>");
+            printf("[EOF]");
             break;
         default:
             error("Unknown TokenKind.");
@@ -98,40 +69,50 @@ Token tokenize(char *p)
         {
             char *org_p = p;
             int num = *p - '0';
+            int len = 1;
             p++;
             while (isdigit(*p))
             {
                 num *= 10;
                 num += *p - '0';
+                len++;
                 p++;
             }
-            cur = new_token(TK_NUM, cur, org_p);
+            cur = new_token(TK_NUM, cur, org_p, len);
             cur->int_val = num;
             continue;
         }
         if (isalpha(*p))
         {
-            cur = new_token(TK_IDENT, cur, p++);
+            char *org_p = p;
+            int len = 1;
+            p++;
+            while (isalnum(*p) || *p == '_')
+            {
+                len++;
+                p++;
+            }
+            cur = new_token(TK_IDENT, cur, org_p, len);
             continue;
         }
         if (*p == '+')
         {
-            cur = new_token(TK_ADD, cur, p++);
+            cur = new_token(TK_ADD, cur, p++, 1);
             continue;
         }
         if (*p == '-')
         {
-            cur = new_token(TK_SUB, cur, p++);
+            cur = new_token(TK_SUB, cur, p++, 1);
             continue;
         }
         if (*p == '*')
         {
-            cur = new_token(TK_MUL, cur, p++);
+            cur = new_token(TK_MUL, cur, p++, 1);
             continue;
         }
         if (*p == '/')
         {
-            cur = new_token(TK_DIV, cur, p++);
+            cur = new_token(TK_DIV, cur, p++, 1);
             continue;
         }
         if (*p == '=')
@@ -139,12 +120,13 @@ Token tokenize(char *p)
             p++;
             if (*p == '=')
             {
-                cur = new_token(TK_EQ, cur, p++);
+                cur = new_token(TK_EQ, cur, p - 1, 2);
+                p++;
                 continue;
             }
             else
             {
-                cur = new_token(TK_ASSIGN, cur, p);
+                cur = new_token(TK_ASSIGN, cur, p - 1, 1);
                 continue;
             }
         }
@@ -153,12 +135,13 @@ Token tokenize(char *p)
             p++;
             if (*p == '=')
             {
-                cur = new_token(TK_GE, cur, p++);
+                cur = new_token(TK_GE, cur, p - 1, 2);
+                p++;
                 continue;
             }
             else
             {
-                cur = new_token(TK_GT, cur, p);
+                cur = new_token(TK_GT, cur, p - 1, 1);
                 continue;
             }
         }
@@ -167,12 +150,13 @@ Token tokenize(char *p)
             p++;
             if (*p == '=')
             {
-                cur = new_token(TK_LE, cur, p++);
+                cur = new_token(TK_LE, cur, p - 1, 2);
+                p++;
                 continue;
             }
             else
             {
-                cur = new_token(TK_LT, cur, p);
+                cur = new_token(TK_LT, cur, p - 1, 1);
                 continue;
             }
         }
@@ -181,7 +165,8 @@ Token tokenize(char *p)
             p++;
             if (*p == '=')
             {
-                cur = new_token(TK_NEQ, cur, p++);
+                cur = new_token(TK_NEQ, cur, p - 1, 2);
+                p++;
                 continue;
             }
             else
@@ -191,22 +176,22 @@ Token tokenize(char *p)
         }
         if (*p == ';')
         {
-            cur = new_token(TK_SEMI, cur, p++);
+            cur = new_token(TK_SEMI, cur, p++, 1);
             continue;
         }
         if (*p == '(')
         {
-            cur = new_token(TK_OP_PAREN, cur, p++);
+            cur = new_token(TK_OP_PAREN, cur, p++, 1);
             continue;
         }
         if (*p == ')')
         {
-            cur = new_token(TK_CL_PAREN, cur, p++);
+            cur = new_token(TK_CL_PAREN, cur, p++, 1);
             continue;
         }
         error("Unexpected character. %c", *p);
     }
-    cur = new_token(TK_EOF, cur, p++);
+    cur = new_token(TK_EOF, cur, p++, 0);
     print_tokens(head.next);
     return head;
 }

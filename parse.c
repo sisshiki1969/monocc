@@ -19,11 +19,12 @@ Node *new_node_num(int val)
     return node;
 }
 
-Node *new_node_lvar(int offset)
+Node *new_node_lvar(LVar *lvar)
 {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_LVAR;
-    node->ident_offset = offset;
+    node->ident_lvar = lvar;
+    node->ident_offset = lvar->offset;
     return node;
 }
 
@@ -38,7 +39,7 @@ bool at_eof()
 
 /// If current token is `kind`, take it ans return true.
 /// Otherwise, return false.
-bool take_if(TokenKind kind)
+bool consume_if(TokenKind kind)
 {
     if (token->kind == kind)
     {
@@ -59,14 +60,14 @@ void expect(TokenKind kind)
 {
     if (token->kind != kind)
     {
-        error("expext(): Unexpected token");
+        error("expext(): Unexpected token %.*s", token->len, token->str);
     }
     token = token->next;
 }
 
 /// If current token is a number, take it and return int_val.
 /// Otherwise, raise error.
-int expect_number()
+int consume_number()
 {
     if (token->kind != TK_NUM)
     {
@@ -77,18 +78,52 @@ int expect_number()
     return num;
 }
 
+// LVar
+
+LVar *new_lvar(Token *token)
+{
+    LVar *lvar = calloc(1, sizeof(LVar));
+    lvar->next = locals;
+    lvar->name = token->str;
+    lvar->len = token->len;
+    int offset = 8;
+    if (locals)
+        offset = locals->offset + 8;
+    lvar->offset = offset;
+    locals = lvar;
+    return lvar;
+}
+
+LVar *find_lvar(Token *token)
+{
+    for (LVar *var = locals; var; var = var->next)
+    {
+        if (var->len == token->len && memcmp(var->name, token->str, var->len) == 0)
+        {
+            return var;
+        }
+    }
+    return NULL;
+}
+
 /// If current token is a local variable, take it and return lvar_offset.
 /// Otherwise, raise error.
-int expect_lvar()
+LVar *consume_lvar()
 {
     if (token->kind != TK_IDENT)
     {
         error("Unexpected token: Identifier is expected.");
     }
-    int offset = 8;
+    LVar *lvar = find_lvar(token);
+    if (!lvar)
+    {
+        lvar = new_lvar(token);
+    }
     token = token->next;
-    return offset;
+    return lvar;
 }
+
+// Parser
 
 Node *parse_expr();
 
@@ -100,9 +135,9 @@ Node *parse_prim_expr()
     }
     if (peek() == TK_NUM)
     {
-        return new_node_num(expect_number());
+        return new_node_num(consume_number());
     }
-    if (take_if(TK_OP_PAREN))
+    if (consume_if(TK_OP_PAREN))
     {
         Node *node = parse_expr();
         expect(TK_CL_PAREN);
@@ -110,7 +145,8 @@ Node *parse_prim_expr()
     }
     if (peek() == TK_IDENT)
     {
-        return new_node_lvar(expect_lvar());
+        LVar *var = consume_lvar();
+        return new_node_lvar(var);
     }
     print_tokens(token);
     print_nodes();
@@ -119,11 +155,11 @@ Node *parse_prim_expr()
 
 Node *parse_unary_expr()
 {
-    if (take_if(TK_ADD))
+    if (consume_if(TK_ADD))
     {
         return parse_prim_expr();
     }
-    else if (take_if(TK_SUB))
+    else if (consume_if(TK_SUB))
     {
         Node *node = new_node(ND_SUB, new_node_num(0), parse_prim_expr());
         return node;
@@ -141,13 +177,13 @@ Node *parse_mul_expr()
 
     while (true)
     {
-        if (take_if(TK_MUL))
+        if (consume_if(TK_MUL))
         {
             rhs = parse_unary_expr();
             node = new_node(ND_MUL, node, rhs);
             continue;
         }
-        else if (take_if(TK_DIV))
+        else if (consume_if(TK_DIV))
         {
             rhs = parse_unary_expr();
             node = new_node(ND_DIV, node, rhs);
@@ -164,13 +200,13 @@ Node *parse_add_expr()
 
     while (true)
     {
-        if (take_if(TK_ADD))
+        if (consume_if(TK_ADD))
         {
             rhs = parse_mul_expr();
             node = new_node(ND_ADD, node, rhs);
             continue;
         }
-        else if (take_if(TK_SUB))
+        else if (consume_if(TK_SUB))
         {
             rhs = parse_mul_expr();
             node = new_node(ND_SUB, node, rhs);
@@ -187,25 +223,25 @@ Node *parse_rel_expr()
 
     for (;;)
     {
-        if (take_if(TK_GE))
+        if (consume_if(TK_GE))
         {
             rhs = parse_add_expr();
             node = new_node(ND_GE, node, rhs);
             continue;
         }
-        else if (take_if(TK_GT))
+        else if (consume_if(TK_GT))
         {
             rhs = parse_add_expr();
             node = new_node(ND_GT, node, rhs);
             continue;
         }
-        else if (take_if(TK_LE))
+        else if (consume_if(TK_LE))
         {
             rhs = parse_add_expr();
             node = new_node(ND_GE, rhs, node);
             continue;
         }
-        else if (take_if(TK_LT))
+        else if (consume_if(TK_LT))
         {
             rhs = parse_add_expr();
             node = new_node(ND_GT, rhs, node);
@@ -222,13 +258,13 @@ Node *parse_eq_expr()
 
     for (;;)
     {
-        if (take_if(TK_EQ))
+        if (consume_if(TK_EQ))
         {
             rhs = parse_rel_expr();
             node = new_node(ND_EQ, node, rhs);
             continue;
         }
-        else if (take_if(TK_NEQ))
+        else if (consume_if(TK_NEQ))
         {
             rhs = parse_rel_expr();
             node = new_node(ND_NEQ, node, rhs);
@@ -242,8 +278,10 @@ Node *parse_assign_expr()
 {
     Node *node = parse_eq_expr();
 
-    if (take_if(TK_ASSIGN))
+    if (consume_if(TK_ASSIGN))
+    {
         node = new_node(ND_ASSIGN, node, parse_assign_expr());
+    }
     return node;
 }
 

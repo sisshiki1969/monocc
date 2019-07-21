@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <ctype.h>
+#include <string.h>
 #include <stdarg.h>
 
 typedef enum
@@ -34,6 +35,18 @@ struct Token
     Token *next;
     int int_val;
     char *str;
+    int len;
+};
+
+typedef struct LVar LVar;
+
+struct LVar
+{
+    LVar *next;
+    char *name;
+    int len;
+    int offset;
+    bool is_initialized;
 };
 
 typedef struct Node Node;
@@ -61,10 +74,12 @@ struct Node
     /// Value in integer valid for ND_NUM only.
     int int_val;
     /// Offset valid for ND_LVAR only.
+    LVar *ident_lvar;
+    /// Offset valid for ND_LVAR only.
     int ident_offset;
 };
 
-Token *new_token(TokenKind kind, Token *cur, char *str);
+Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 
 void error(char *fmt, ...);
 
@@ -75,10 +90,10 @@ void print_tokens(Token *token);
 Token tokenize(char *p);
 
 bool at_eof();
-bool take_if(TokenKind kind);
+bool consume_if(TokenKind kind);
 TokenKind peek();
 void expect(TokenKind kind);
-int expect_number();
+int consume_number();
 
 // Methods for Node
 
@@ -100,3 +115,4 @@ void gen(Node *node);
 
 Token *token;
 Node *code[100];
+LVar *locals;

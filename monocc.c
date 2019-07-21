@@ -23,6 +23,11 @@ int main(int argc, char **argv)
     parse_program();
 
     print_nodes();
+    int max_offset = 8;
+    if (locals)
+    {
+        max_offset = locals->offset + 8;
+    }
 
     printf(".intel_syntax noprefix\n");
     printf(".global main\n");
@@ -30,7 +35,7 @@ int main(int argc, char **argv)
 
     printf("\tpush rbp\n");
     printf("\tmov  rbp, rsp\n");
-    printf("\tsub  rsp, 8\n");
+    printf("\tsub  rsp, %d\n", max_offset);
 
     Node *node;
     int i = 0;
