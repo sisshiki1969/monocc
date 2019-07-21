@@ -40,8 +40,9 @@ try 9 "alpha5 = 5; alpha5 * 6 - 21;"
 try 45 "alpha5 = 5; beta_9 = alpha5 * 6 - 21; beta_9*alpha5"
 try 37 "a = 5 *5 +12;return a"
 try 13 "a=8; if(a==4) b=19; else b=13; return b"
+try 13 "a=8; if(a==4) ; else b=13; return b"
+try 8 "a=b=8; if(a==4) b=19; else ; return b"
 try 19 "a=8; if(a==8) a=19; return a"
-try 7 "if(1==1) 13; 7"
 try 3 "i = 1; if(1==i) if(0==i) ifs = 7; else ifs = 3; else ifs = 9; return ifs"
 
 echo OK
