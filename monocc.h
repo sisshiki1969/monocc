@@ -69,6 +69,7 @@ typedef enum
     ND_ASSIGN,
     ND_LVAR,
     ND_IF,
+    ND_WHILE,
     ND_RETURN,
 } NodeKind;
 

@@ -38,6 +38,15 @@ Node *new_node_if_then(Node *cond_, Node *then_, Node *else_)
     return node;
 }
 
+Node *new_node_while(Node *cond_, Node *do_)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_WHILE;
+    node->lhs = cond_;
+    node->rhs = do_;
+    return node;
+}
+
 // Methods for handling Token.
 
 /// If current token is EOF, return true.
@@ -323,6 +332,13 @@ Node *parse_stmt()
         else
             return new_node_if_then(node, then_, NULL);
         break;
+    case TK_WHILE:
+        expect(TK_WHILE);
+        expect(TK_OP_PAREN);
+        node = parse_expr();
+        expect(TK_CL_PAREN);
+        return new_node_while(node, parse_stmt());
+        break;
     }
     node = parse_expr();
     if (at_eof())
@@ -409,6 +425,15 @@ void print_node(Node *node)
         print_node(node->rhs);
         printf(" ");
         print_node(node->xhs);
+        printf(" )");
+        return;
+    }
+    if (node->kind == ND_WHILE)
+    {
+        printf("( WHILE ");
+        print_node(node->lhs);
+        printf(" ");
+        print_node(node->rhs);
         printf(" )");
         return;
     }

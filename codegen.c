@@ -33,7 +33,7 @@ bool is_expression(NodeKind kind)
 /// Generate a new label as a string.
 char *new_label()
 {
-    char *label = (char *)malloc(100);
+    char *label = (char *)malloc(10);
     if (!label)
         error("Could not allocate memmory.");
     sprintf(label, ".L%06d", labels++);
@@ -75,6 +75,22 @@ void gen_if(Node *node)
     printf("%s:\n", end_str);
 }
 
+void gen_while(Node *node)
+{
+    char *cond_str = new_label();
+    char *end_str = new_label();
+    printf("%s:\n", cond_str);
+    gen(node->lhs);
+    printf("\tpop  rax\n");
+    printf("\tcmp  rax, 0\n");
+    printf("\tje   %s\n", end_str);
+    gen(node->rhs);
+    if (is_expression(node->rhs->kind))
+        printf("\tpop  rax\n");
+    printf("\tjmp  %s\n", cond_str);
+    printf("%s:\n", end_str);
+}
+
 void gen(Node *node)
 {
     switch (node->kind)
@@ -82,6 +98,9 @@ void gen(Node *node)
     // statement
     case ND_IF:
         gen_if(node);
+        return;
+    case ND_WHILE:
+        gen_while(node);
         return;
     case ND_RETURN:
         // TODO: return without expression returns undefined value.

@@ -64,6 +64,11 @@ void print_tokens(Token *token)
     printf("\n");
 }
 
+bool is_reserved(char *str, int len, char *reserved)
+{
+    return len == strlen(reserved) && strncmp(str, reserved, len) == 0;
+}
+
 /// Tokenize the input string.
 Token tokenize(char *p)
 {
@@ -105,17 +110,21 @@ Token tokenize(char *p)
                 len++;
                 p++;
             }
-            if (strncmp(org_p, "return", 6) == 0 && !is_nondigit(org_p[6]))
+            if (is_reserved(org_p, len, "return"))
             {
-                cur = new_token(TK_RETURN, cur, org_p, 6);
+                cur = new_token(TK_RETURN, cur, org_p, len);
             }
-            else if (strncmp(org_p, "if", 2) == 0 && !is_nondigit(org_p[2]))
+            else if (is_reserved(org_p, len, "if"))
             {
-                cur = new_token(TK_IF, cur, org_p, 2);
+                cur = new_token(TK_IF, cur, org_p, len);
             }
-            else if (strncmp(org_p, "else", 4) == 0 && !is_nondigit(org_p[4]))
+            else if (is_reserved(org_p, len, "else"))
             {
-                cur = new_token(TK_ELSE, cur, org_p, 4);
+                cur = new_token(TK_ELSE, cur, org_p, len);
+            }
+            else if (is_reserved(org_p, len, "while"))
+            {
+                cur = new_token(TK_WHILE, cur, org_p, len);
             }
             else
             {
