@@ -94,30 +94,21 @@ void error(char *fmt, ...);
 // Methods for Token
 
 void print_tokens(Token *token);
-
-Token tokenize(char *p);
-
-bool at_eof();
-bool consume_if(TokenKind kind);
-TokenKind peek();
-void expect(TokenKind kind);
-int consume_number();
+void tokenize(char *p);
 
 // Methods for Node
 
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
-
 Node *new_node_num(int val);
-
 bool is_binary_op(NodeKind kind);
-
+bool is_expr(NodeKind kind);
 void parse_program();
-
 void print_nodes();
 
 // Codegen
 
 void gen(Node *node);
+void pop_rax_if_expr(NodeKind kind);
 
 // Globals
 

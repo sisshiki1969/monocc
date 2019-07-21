@@ -70,7 +70,7 @@ bool is_reserved(char *str, int len, char *reserved)
 }
 
 /// Tokenize the input string.
-Token tokenize(char *p)
+void tokenize(char *p)
 {
     Token head;
     head.next = NULL;
@@ -229,6 +229,6 @@ Token tokenize(char *p)
         error("Unexpected character. %c", *p);
     }
     cur = new_token(TK_EOF, cur, p++, 0);
-    print_tokens(head.next);
-    return head;
+
+    token = head.next;
 }

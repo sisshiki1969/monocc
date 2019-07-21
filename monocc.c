@@ -18,10 +18,10 @@ int main(int argc, char **argv)
     }
 
     char *p = argv[1];
-    token = tokenize(p).next;
+    tokenize(p);
+    print_tokens(token);
 
     parse_program();
-
     print_nodes();
 
     int max_offset = 8;
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     while (node = code[i++])
     {
         gen(node);
-        printf("\tpop  rax\n");
+        pop_rax_if_expr(node->kind);
     }
 
     printf("\tmov  rsp, rbp\n");

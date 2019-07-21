@@ -310,6 +310,8 @@ Node *parse_expr()
 
 Node *parse_stmt()
 {
+    if (consume_if(TK_SEMI))
+        return NULL;
     Node *node;
     Node *then_;
     switch (token->kind)

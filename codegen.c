@@ -19,7 +19,7 @@ bool is_binary_op(NodeKind kind)
     return false;
 }
 
-bool is_expression(NodeKind kind)
+bool is_expr(NodeKind kind)
 {
     switch (kind)
     {
@@ -28,6 +28,12 @@ bool is_expression(NodeKind kind)
         return false;
     }
     return true;
+}
+
+void pop_rax_if_expr(NodeKind kind)
+{
+    if (is_expr(kind))
+        printf("\tpop  rax\n");
 }
 
 /// Generate a new label as a string.
@@ -61,16 +67,17 @@ void gen_if(Node *node)
     printf("\tpop  rax\n");
     printf("\tcmp  rax, 0\n");
     printf("\tje   %s\n", else_str);
-    gen(node->rhs);
-    if (is_expression(node->rhs->kind))
-        printf("\tpop  rax\n");
+    if (node->rhs)
+    {
+        gen(node->rhs);
+        pop_rax_if_expr(node->rhs->kind);
+    }
     printf("\tjmp  %s\n", end_str);
     printf("%s:\n", else_str);
     if (node->xhs)
     {
         gen(node->xhs);
-        if (is_expression(node->xhs->kind))
-            printf("\tpop  rax\n");
+        pop_rax_if_expr(node->xhs->kind);
     }
     printf("%s:\n", end_str);
 }
@@ -84,9 +91,11 @@ void gen_while(Node *node)
     printf("\tpop  rax\n");
     printf("\tcmp  rax, 0\n");
     printf("\tje   %s\n", end_str);
-    gen(node->rhs);
-    if (is_expression(node->rhs->kind))
-        printf("\tpop  rax\n");
+    if (node->rhs)
+    {
+        gen(node->rhs);
+        pop_rax_if_expr(node->rhs->kind);
+    }
     printf("\tjmp  %s\n", cond_str);
     printf("%s:\n", end_str);
 }
