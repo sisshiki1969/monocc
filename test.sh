@@ -42,5 +42,6 @@ try 37 "a = 5 *5 +12;return a"
 try 13 "a=8; if(a==4) b=19; else b=13; return b"
 try 19 "a=8; if(a==8) a=19; return a"
 try 7 "if(1==1) 13; 7"
+try 3 "if(1==1) if(0==1) a = 7; else a = 3; else a = 9; return a"
 
 echo OK

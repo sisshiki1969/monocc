@@ -19,6 +19,17 @@ bool is_binary_op(NodeKind kind)
     return false;
 }
 
+bool is_expression(NodeKind kind)
+{
+    switch (kind)
+    {
+    case ND_IF:
+    case ND_RETURN:
+        return false;
+    }
+    return true;
+}
+
 /// Generate a new label as a string.
 char *new_label()
 {
@@ -51,13 +62,15 @@ void gen_if(Node *node)
     printf("\tcmp  rax, 0\n");
     printf("\tje   %s\n", else_str);
     gen(node->rhs);
-    printf("\tpop  rax\n");
+    if (is_expression(node->rhs->kind))
+        printf("\tpop  rax\n");
     printf("\tjmp  %s\n", end_str);
     printf("%s:\n", else_str);
     if (node->xhs)
     {
         gen(node->xhs);
-        printf("\tpop  rax\n");
+        if (is_expression(node->xhs->kind))
+            printf("\tpop  rax\n");
     }
     printf("%s:\n", end_str);
 }
@@ -66,6 +79,24 @@ void gen(Node *node)
 {
     switch (node->kind)
     {
+    // statement
+    case ND_IF:
+        gen_if(node);
+        return;
+    case ND_RETURN:
+        // TODO: return without expression returns undefined value.
+        if (node->lhs)
+        {
+            gen(node->lhs);
+            printf("\tpop  rax\n");
+        }
+
+        printf("\tmov  rsp, rbp\n");
+        printf("\tpop  rbp\n");
+        printf("\tret\n");
+        return;
+
+    // expression
     case ND_NUM:
         printf("\tpush %d\n", node->int_val);
         return;
@@ -82,21 +113,6 @@ void gen(Node *node)
         printf("\tpop  rax\n");
         printf("\tmov  [rax], rdi\n");
         printf("\tpush rdi\n");
-        return;
-    case ND_IF:
-        gen_if(node);
-        return;
-    case ND_RETURN:
-        // TODO: return without expression returns undefined value.
-        if (node->lhs)
-        {
-            gen(node->lhs);
-            printf("\tpop  rax\n");
-        }
-
-        printf("\tmov  rsp, rbp\n");
-        printf("\tpop  rbp\n");
-        printf("\tret\n");
         return;
     }
     if (is_binary_op(node->kind))
