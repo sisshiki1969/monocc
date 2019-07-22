@@ -47,6 +47,14 @@ Node *new_node_while(Node *cond_, Node *do_)
     return node;
 }
 
+Node *new_node_block(Vector *vec)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_BLOCK;
+    node->nodes = vec;
+    return node;
+}
+
 // Vector
 
 Vector *vec_new()
@@ -125,7 +133,7 @@ void expect(TokenKind kind)
 {
     if (token->kind != kind)
     {
-        error("expext(): Unexpected token %.*s", token->len, token->str);
+        error("expect(): Unexpected token %.*s", token->len, token->str);
     }
     token = token->next;
 }
@@ -387,6 +395,21 @@ Node *parse_stmt()
         expect(TK_CL_PAREN);
         return new_node_while(node, parse_stmt());
         break;
+    case TK_OP_BRACE:
+        expect(TK_OP_BRACE);
+        Vector *vec = vec_new();
+        while (peek() != TK_CL_BRACE)
+        {
+            vec_push(vec, parse_stmt());
+        }
+        expect(TK_CL_BRACE);
+        if (vec_len(vec) == 0)
+            return NULL;
+        else
+        {
+            return new_node_block(vec);
+        }
+        break;
     }
     node = parse_expr();
     if (at_eof())
@@ -397,14 +420,13 @@ Node *parse_stmt()
 
 void parse_program()
 {
-    int i = 0;
+    statements = vec_new();
     while (!at_eof())
     {
         if (consume_if(TK_SEMI))
             continue;
-        code[i++] = parse_stmt();
+        vec_push(statements, parse_stmt());
     }
-    code[i] = NULL;
 }
 
 void print_node(Node *node)
@@ -485,6 +507,19 @@ void print_node(Node *node)
         printf(" )");
         return;
     }
+    if (node->kind == ND_BLOCK)
+    {
+        Vector *vec = node->nodes;
+        printf("( BLOCK ");
+        int len = vec_len(vec);
+        for (int i = 0; i < len; i++)
+        {
+            print_node(vec->data[i]);
+            printf(": ");
+        }
+        printf(")");
+        return;
+    }
     if (node->kind == ND_LVAR)
     {
         printf("( LVAR %d )", node->ident_offset);
@@ -502,10 +537,10 @@ void print_node(Node *node)
 
 void print_nodes()
 {
-    Node *node;
-    int i = 0;
-    while (node = code[i++])
+    int len = vec_len(statements);
+    for (int i = 0; i < len; i++)
     {
+        Node *node = statements->data[i];
         printf("// ");
         print_node(node);
         printf("\n");

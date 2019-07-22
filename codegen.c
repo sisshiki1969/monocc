@@ -24,6 +24,8 @@ bool is_expr(NodeKind kind)
     switch (kind)
     {
     case ND_IF:
+    case ND_WHILE:
+    case ND_BLOCK:
     case ND_RETURN:
         return false;
     }
@@ -100,6 +102,20 @@ void gen_while(Node *node)
     printf("%s:\n", end_str);
 }
 
+void gen_block(Node *node)
+{
+    if (!node)
+        return;
+    Vector *vec = node->nodes;
+    int len = vec_len(vec);
+    for (int i = 0; i < len; i++)
+    {
+        Node *node = vec->data[i];
+        gen(node);
+        pop_rax_if_expr(node->kind);
+    }
+}
+
 void gen(Node *node)
 {
     switch (node->kind)
@@ -110,6 +126,9 @@ void gen(Node *node)
         return;
     case ND_WHILE:
         gen_while(node);
+        return;
+    case ND_BLOCK:
+        gen_block(node);
         return;
     case ND_RETURN:
         // TODO: return without expression returns undefined value.
@@ -181,7 +200,7 @@ void gen(Node *node)
             break;
         case ND_GT:
             printf("\tcmp  rax, rdi\n");
-            printf("\tsetgt al\n");
+            printf("\tsetg al\n");
             printf("\tmovzb rax, al\n");
             break;
         default:

@@ -45,10 +45,10 @@ int main(int argc, char **argv)
     printf("\tmov  rbp, rsp\n");
     printf("\tsub  rsp, %d\n", max_offset);
 
-    Node *node;
-    int i = 0;
-    while (node = code[i++])
+    int len = vec_len(statements);
+    for (int i = 0; i < len; i++)
     {
+        Node *node = statements->data[i];
         gen(node);
         pop_rax_if_expr(node->kind);
     }

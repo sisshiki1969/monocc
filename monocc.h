@@ -24,6 +24,8 @@ typedef enum
     TK_SEMI,
     TK_OP_PAREN,
     TK_CL_PAREN,
+    TK_OP_BRACE,
+    TK_CL_BRACE,
     TK_IF,
     TK_ELSE,
     TK_WHILE,
@@ -69,9 +71,11 @@ typedef enum
     ND_IF,
     ND_WHILE,
     ND_RETURN,
+    ND_BLOCK,
 } NodeKind;
 
 typedef struct Node Node;
+typedef struct Vector Vector;
 
 struct Node
 {
@@ -85,6 +89,7 @@ struct Node
     LVar *ident_lvar;
     /// Offset valid for ND_LVAR only.
     int ident_offset;
+    Vector *nodes;
 };
 
 typedef struct Vector Vector;
@@ -114,6 +119,11 @@ bool is_expr(NodeKind kind);
 void parse_program();
 void print_nodes();
 
+// <ethods for Vector
+
+Vector *vec_new();
+int vec_len(Vector *vec);
+void vec_push(Vector *vec, void *data);
 void test_vec();
 
 // Codegen
@@ -124,6 +134,6 @@ void pop_rax_if_expr(NodeKind kind);
 // Globals
 
 Token *token;
-Node *code[100];
+Vector *statements;
 LVar *locals;
 int labels;

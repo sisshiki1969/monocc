@@ -42,6 +42,8 @@ void print_tokens(Token *token)
         case TK_SEMI:
         case TK_OP_PAREN:
         case TK_CL_PAREN:
+        case TK_OP_BRACE:
+        case TK_CL_BRACE:
             printf("[%.*s]", token->len, token->str);
             break;
         // Reserved words
@@ -224,6 +226,16 @@ void tokenize(char *p)
         if (*p == ')')
         {
             cur = new_token(TK_CL_PAREN, cur, p++, 1);
+            continue;
+        }
+        if (*p == '{')
+        {
+            cur = new_token(TK_OP_BRACE, cur, p++, 1);
+            continue;
+        }
+        if (*p == '}')
+        {
+            cur = new_token(TK_CL_BRACE, cur, p++, 1);
             continue;
         }
         error("Unexpected character. %c", *p);
