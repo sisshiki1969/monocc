@@ -53,8 +53,6 @@ struct LVar
     int offset;
 };
 
-typedef struct Node Node;
-
 typedef enum
 {
     ND_NUM,
@@ -73,6 +71,8 @@ typedef enum
     ND_RETURN,
 } NodeKind;
 
+typedef struct Node Node;
+
 struct Node
 {
     NodeKind kind;
@@ -85,6 +85,15 @@ struct Node
     LVar *ident_lvar;
     /// Offset valid for ND_LVAR only.
     int ident_offset;
+};
+
+typedef struct Vector Vector;
+
+struct Vector
+{
+    Node **data;
+    int len;
+    int capacity;
 };
 
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
@@ -104,6 +113,8 @@ bool is_binary_op(NodeKind kind);
 bool is_expr(NodeKind kind);
 void parse_program();
 void print_nodes();
+
+void test_vec();
 
 // Codegen
 

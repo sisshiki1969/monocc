@@ -17,6 +17,12 @@ int main(int argc, char **argv)
         return 1;
     }
 
+    if (argc == 2 && !strcmp(argv[1], "-test"))
+    {
+        test_vec();
+        return 0;
+    }
+
     char *p = argv[1];
     tokenize(p);
     print_tokens(token);
