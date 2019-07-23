@@ -55,6 +55,14 @@ Node *new_node_block(Vector *vec)
     return node;
 }
 
+Node *new_node_call(Vector *vec)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_CALL;
+    node->nodes = vec;
+    return node;
+}
+
 // Vector
 
 Vector *vec_new()
@@ -125,6 +133,11 @@ bool consume_if(TokenKind kind)
 TokenKind peek()
 {
     return token->kind;
+}
+
+TokenKind peek_next()
+{
+    return token->next->kind;
 }
 
 /// If current token is `kind`, take it.
@@ -199,6 +212,7 @@ LVar *consume_lvar()
 // Parser
 
 Node *parse_expr();
+Node *parse_assign_expr();
 
 Node *parse_prim_expr()
 {
@@ -218,8 +232,26 @@ Node *parse_prim_expr()
     }
     if (peek() == TK_IDENT)
     {
-        LVar *var = consume_lvar();
-        return new_node_lvar(var);
+        // TODO:func() should be parsed in postfix-expr.
+        if (peek_next() == TK_OP_PAREN)
+        {
+            expect(TK_IDENT);
+            expect(TK_OP_PAREN);
+            Vector *vec = vec_new();
+            while (peek() != TK_CL_PAREN)
+            {
+                vec_push(vec, parse_assign_expr());
+                if (!consume_if(TK_COMMA))
+                    break;
+            }
+            expect(TK_CL_PAREN);
+            return new_node_call(vec);
+        }
+        else
+        {
+            LVar *var = consume_lvar();
+            return new_node_lvar(var);
+        }
     }
     error("parse_prom_expr(): Unexpected token '%.*s'.", token->len, token->str);
 }
@@ -400,15 +432,12 @@ Node *parse_stmt()
         Vector *vec = vec_new();
         while (peek() != TK_CL_BRACE)
         {
-            vec_push(vec, parse_stmt());
+            Node *node = parse_stmt();
+            if (node)
+                vec_push(vec, node);
         }
         expect(TK_CL_BRACE);
-        if (vec_len(vec) == 0)
-            return NULL;
-        else
-        {
-            return new_node_block(vec);
-        }
+        return new_node_block(vec);
         break;
     }
     node = parse_expr();
@@ -473,6 +502,19 @@ void print_node(Node *node)
         printf(" )");
         return;
     }
+    if (node->kind == ND_CALL)
+    {
+        printf("( CALL ( ");
+        Vector *vec = node->nodes;
+        int len = vec_len(vec);
+        for (int i = 0; i < len; i++)
+        {
+            print_node(vec->data[i]);
+            printf(": ");
+        }
+        printf(") )");
+        return;
+    }
     if (node->kind == ND_NUM)
     {
         printf("(%d)", node->int_val);
@@ -509,13 +551,16 @@ void print_node(Node *node)
     }
     if (node->kind == ND_BLOCK)
     {
-        Vector *vec = node->nodes;
         printf("( BLOCK ");
-        int len = vec_len(vec);
-        for (int i = 0; i < len; i++)
+        if (node->nodes)
         {
-            print_node(vec->data[i]);
-            printf(": ");
+            Vector *vec = node->nodes;
+            int len = vec_len(vec);
+            for (int i = 0; i < len; i++)
+            {
+                print_node(vec->data[i]);
+                printf(": ");
+            }
         }
         printf(")");
         return;

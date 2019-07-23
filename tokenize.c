@@ -44,6 +44,7 @@ void print_tokens(Token *token)
         case TK_CL_PAREN:
         case TK_OP_BRACE:
         case TK_CL_BRACE:
+        case TK_COMMA:
             printf("[%.*s]", token->len, token->str);
             break;
         // Reserved words
@@ -58,7 +59,7 @@ void print_tokens(Token *token)
             printf("<EOF>");
             break;
         default:
-            error("Unknown TokenKind.");
+            error("print_tokens(): Unknown TokenKind.");
             break;
         }
         token = token->next;
@@ -152,6 +153,11 @@ void tokenize(char *p)
         if (*p == '/')
         {
             cur = new_token(TK_DIV, cur, p++, 1);
+            continue;
+        }
+        if (*p == ',')
+        {
+            cur = new_token(TK_COMMA, cur, p++, 1);
             continue;
         }
         if (*p == '=')

@@ -116,6 +116,22 @@ void gen_block(Node *node)
     }
 }
 
+void gen_call(Node *node)
+{
+    int len = vec_len(node->nodes);
+    Node **args = node->nodes->data;
+    char regs[4][4] = {"rdi", "rsi", "rdx", "rcx"};
+    for (int i = 0; i < len; i++)
+    {
+        gen(args[i]);
+        printf("\tpop  %s\n", regs[i]);
+    }
+
+    printf("\tmov  rax, 0\n");
+    printf("\tcall foo\n");
+    printf("\tpush rax\n");
+}
+
 void gen(Node *node)
 {
     switch (node->kind)
@@ -160,6 +176,9 @@ void gen(Node *node)
         printf("\tpop  rax\n");
         printf("\tmov  [rax], rdi\n");
         printf("\tpush rdi\n");
+        return;
+    case ND_CALL:
+        gen_call(node);
         return;
     }
     if (is_binary_op(node->kind))

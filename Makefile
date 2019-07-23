@@ -8,6 +8,7 @@ monocc: $(OBJS)
 $(OBJS): monocc.h
 
 test: monocc
+	./monocc -test
 	./test.sh
 
 clean:
