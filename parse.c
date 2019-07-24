@@ -456,8 +456,10 @@ Node *parse_stmt()
     return node;
 }
 
-void parse_program()
+void parse_program(bool from_cl)
 {
+    if (!from_cl)
+        return;
     statements = vec_new();
     Vector *vec = vec_new();
     while (!at_eof())

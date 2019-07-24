@@ -11,7 +11,7 @@ void error(char *fmt, ...)
 
 int main(int argc, char **argv)
 {
-    if (argc != 2)
+    if (argc < 2)
     {
         fprintf(stderr, "No arguments.");
         return 1;
@@ -23,11 +23,18 @@ int main(int argc, char **argv)
         return 0;
     }
 
+    bool from_cl = false;
     char *p = argv[1];
+    if (argc == 3 && !strcmp(argv[1], "-input"))
+    {
+        from_cl = true;
+        p = argv[2];
+    }
+
     tokenize(p);
     print_tokens(token);
 
-    parse_program();
+    parse_program(from_cl);
     print_nodes();
     /*
     int max_offset = 8;
