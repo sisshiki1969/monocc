@@ -74,6 +74,7 @@ typedef enum
     ND_WHILE,
     ND_RETURN,
     ND_BLOCK,
+    ND_FDECL,
 } NodeKind;
 
 typedef struct Node Node;
@@ -87,11 +88,12 @@ struct Node
     Node *xhs;
     /// Value in integer valid for ND_NUM only.
     int int_val;
-    /// Offset valid for ND_LVAR only.
+    /// ptr to LVar (valid for ND_LVAR only).
     LVar *ident_lvar;
-    /// Offset valid for ND_LVAR only.
+    /// Offset (valid for ND_LVAR only).
     int ident_offset;
     Vector *nodes;
+    Token *token;
 };
 
 typedef struct Vector Vector;
@@ -131,7 +133,7 @@ void test_vec();
 // Codegen
 
 void gen(Node *node);
-void pop_rax_if_expr(NodeKind kind);
+void gen_stmt(Node *node);
 
 // Globals
 

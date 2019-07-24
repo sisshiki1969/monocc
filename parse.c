@@ -63,6 +63,15 @@ Node *new_node_call(Vector *vec)
     return node;
 }
 
+Node *new_node_fdecl(Token *token, Vector *vec)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_FDECL;
+    node->nodes = vec;
+    node->token = token;
+    return node;
+}
+
 // Vector
 
 Vector *vec_new()
@@ -450,12 +459,18 @@ Node *parse_stmt()
 void parse_program()
 {
     statements = vec_new();
+    Vector *vec = vec_new();
     while (!at_eof())
     {
         if (consume_if(TK_SEMI))
             continue;
-        vec_push(statements, parse_stmt());
+        vec_push(vec, parse_stmt());
     }
+    Token *token = calloc(1, sizeof(Token));
+    token->kind = TK_IDENT;
+    token->str = "main";
+    token->len = 4;
+    vec_push(statements, new_node_fdecl(token, vec));
 }
 
 void print_node(Node *node)
@@ -572,9 +587,25 @@ void print_node(Node *node)
     }
     if (node->kind == ND_RETURN)
     {
-        printf("( return ");
+        printf("( BLOCK ");
         print_node(node->lhs);
         printf(" )");
+        return;
+    }
+    if (node->kind == ND_FDECL)
+    {
+        printf("( FDECL %.*s ", node->token->len, node->token->str);
+        if (node->nodes)
+        {
+            Vector *vec = node->nodes;
+            int len = vec_len(vec);
+            for (int i = 0; i < len; i++)
+            {
+                print_node(vec->data[i]);
+                printf(": ");
+            }
+        }
+        printf(")");
         return;
     }
     error("print_node(): Unknown node.");

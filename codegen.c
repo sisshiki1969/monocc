@@ -27,15 +27,10 @@ bool is_expr(NodeKind kind)
     case ND_WHILE:
     case ND_BLOCK:
     case ND_RETURN:
+    case ND_FDECL:
         return false;
     }
     return true;
-}
-
-void pop_rax_if_expr(NodeKind kind)
-{
-    if (is_expr(kind))
-        printf("\tpop  rax\n");
 }
 
 /// Generate a new label as a string.
@@ -69,18 +64,10 @@ void gen_if(Node *node)
     printf("\tpop  rax\n");
     printf("\tcmp  rax, 0\n");
     printf("\tje   %s\n", else_str);
-    if (node->rhs)
-    {
-        gen(node->rhs);
-        pop_rax_if_expr(node->rhs->kind);
-    }
+    gen_stmt(node->rhs);
     printf("\tjmp  %s\n", end_str);
     printf("%s:\n", else_str);
-    if (node->xhs)
-    {
-        gen(node->xhs);
-        pop_rax_if_expr(node->xhs->kind);
-    }
+    gen_stmt(node->xhs);
     printf("%s:\n", end_str);
 }
 
@@ -93,11 +80,7 @@ void gen_while(Node *node)
     printf("\tpop  rax\n");
     printf("\tcmp  rax, 0\n");
     printf("\tje   %s\n", end_str);
-    if (node->rhs)
-    {
-        gen(node->rhs);
-        pop_rax_if_expr(node->rhs->kind);
-    }
+    gen_stmt(node->rhs);
     printf("\tjmp  %s\n", cond_str);
     printf("%s:\n", end_str);
 }
@@ -109,11 +92,7 @@ void gen_block(Node *node)
     Vector *vec = node->nodes;
     int len = vec_len(vec);
     for (int i = 0; i < len; i++)
-    {
-        Node *node = vec->data[i];
-        gen(node);
-        pop_rax_if_expr(node->kind);
-    }
+        gen_stmt(vec->data[i]);
 }
 
 void gen_call(Node *node)
@@ -130,6 +109,39 @@ void gen_call(Node *node)
     printf("\tmov  rax, 0\n");
     printf("\tcall foo\n");
     printf("\tpush rax\n");
+}
+
+void gen_fdecl(Node *node)
+{
+    int max_offset = 8;
+    if (locals)
+    {
+        max_offset = locals->offset + 8;
+    }
+
+    printf("%.*s:\n", node->token->len, node->token->str);
+
+    printf("\tpush rbp\n");
+    printf("\tmov  rbp, rsp\n");
+    printf("\tsub  rsp, %d\n", max_offset);
+
+    int len = vec_len(node->nodes);
+    for (int i = 0; i < len; i++)
+        gen_stmt(node->nodes->data[i]);
+
+    printf("\tmov  rsp, rbp\n");
+    printf("\tpop  rbp\n");
+    printf("\tret\n");
+}
+
+void gen_stmt(Node *node)
+{
+    if (node)
+    {
+        gen(node);
+        if (is_expr(node->kind))
+            printf("\tpop  rax\n");
+    }
 }
 
 void gen(Node *node)
@@ -179,6 +191,9 @@ void gen(Node *node)
         return;
     case ND_CALL:
         gen_call(node);
+        return;
+    case ND_FDECL:
+        gen_fdecl(node);
         return;
     }
     if (is_binary_op(node->kind))

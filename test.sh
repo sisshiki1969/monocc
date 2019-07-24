@@ -49,7 +49,11 @@ try 8 "a=b=8; if(a==4) b=19; else ; return b"
 try 19 "a=8; if(a==8) a=19; return a"
 try 3 "i = 1; if(1==i) if(0==i) ifs = 7; else ifs = 3; else ifs = 9; return ifs"
 try 5 "if(1==1) {a = 1; b = 5;} else {a = 3; b = 3;} a*b"
-try 15 "i = 1; sum = 0; while (i < 6) { sum = sum + i; i = i + 1; } return sum"
-try 5 "a = foo(b = 37, 7, 6); return a"
+try 15 "i = 1;
+sum = 0;
+while (i < 6) { sum = sum + i; i = i + 1; }
+return sum"
+try 5 "a = foo(b = 37, 7, 6); 
+return a"
 
 echo OK
