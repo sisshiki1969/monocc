@@ -35,14 +35,8 @@ int main(int argc, char **argv)
     print_tokens(token);
 
     parse_program(from_cl);
-    print_nodes();
-    /*
-    int max_offset = 8;
-    if (locals)
-    {
-        max_offset = locals->offset + 8;
-    }
-    */
+    //print_nodes();
+
     labels = 0;
 
     printf(".intel_syntax noprefix\n");

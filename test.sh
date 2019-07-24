@@ -44,18 +44,40 @@ try 0 "4 < 4 - 1"
 try 0 "1 - 4 > 4"
 try 9 "alpha5 = 5; alpha5 * 6 - 21;"
 try 45 "alpha5 = 5; beta_9 = alpha5 * 6 - 21; beta_9*alpha5"
-try 37 "a = 5 *5 +12;return a"
-try 13 "a=8; if(a==4) b=19; else b=13; return b"
-try 13 "a=8; if(a==4) ; else b=13; return b"
-try 8 "a=b=8; if(a==4) b=19; else ; return b"
-try 19 "a=8; if(a==8) a=19; return a"
-try 3 "i = 1; if(1==i) if(0==i) ifs = 7; else ifs = 3; else ifs = 9; return ifs"
+try 37 "a = 5 *5 +12;return a;"
+try 13 "a=8; if(a==4) b=19; else b=13; return b;"
+try 13 "a=8; if(a==4) ; else b=13; return b;"
+try 8 "a=b=8; if(a==4) b=19; else ; return b;"
+try 19 "a=8; if(a==8) a=19; return a;"
+try 3 "i = 1; if(1==i) if(0==i) ifs = 7; else ifs = 3; else ifs = 9; return ifs;"
 try 5 "if(1==1) {a = 1; b = 5;} else {a = 3; b = 3;} a*b"
 try 15 "i = 1;
 sum = 0;
 while (i < 6) { sum = sum + i; i = i + 1; }
-return sum"
-try 5 "a = foo(b = 37, 7, 6); 
-return a"
+return sum;"
+try 5 "a = foo(b = 37, 7, 6);
+print(a);
+return a;"
+
+try2() {
+    expected="$1"
+    input="$2"
+
+    ./monocc "$input" > tmp.s
+    gcc -o tmp tmp.s test.o
+    ./tmp
+    actual="$?"
+
+    if [ "$actual" = "$expected" ]; then
+        echo "$input => $actual"
+    else
+        echo "$input => $expected expected, but got $actual"
+        exit 1
+    fi
+}
+
+try2 5 "main(){ return 5 ;}"
+try2 1 "main(a,b){ e = 32740; print(bar()); return bar() == e + 5;}
+bar(a,b){ e = 22745; return 10000 + e;}"
 
 echo OK

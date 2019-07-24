@@ -105,9 +105,9 @@ void gen_call(Node *node)
         gen(args[i]);
         printf("\tpop  %s\n", regs[i]);
     }
-
+    Token *name = node->lhs->token;
     printf("\tmov  rax, 0\n");
-    printf("\tcall foo\n");
+    printf("\tcall %.*s\n", name->len, name->str);
     printf("\tpush rax\n");
 }
 

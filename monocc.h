@@ -75,6 +75,7 @@ typedef enum
     ND_RETURN,
     ND_BLOCK,
     ND_FDECL,
+    ND_IDENT,
 } NodeKind;
 
 typedef struct Node Node;
@@ -122,8 +123,10 @@ bool is_binary_op(NodeKind kind);
 bool is_expr(NodeKind kind);
 void parse_program(bool from_cl);
 void print_nodes();
+void print_node(Node *node);
+void print_locals();
 
-// <ethods for Vector
+// Methods for Vector
 
 Vector *vec_new();
 int vec_len(Vector *vec);

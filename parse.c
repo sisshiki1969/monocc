@@ -55,10 +55,11 @@ Node *new_node_block(Vector *vec)
     return node;
 }
 
-Node *new_node_call(Vector *vec)
+Node *new_node_call(Node *name, Vector *vec)
 {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_CALL;
+    node->lhs = name;
     node->nodes = vec;
     return node;
 }
@@ -68,6 +69,14 @@ Node *new_node_fdecl(Token *token, Vector *vec)
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_FDECL;
     node->nodes = vec;
+    node->token = token;
+    return node;
+}
+
+Node *new_node_ident(Token *token)
+{
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = TK_IDENT;
     node->token = token;
     return node;
 }
@@ -151,13 +160,15 @@ TokenKind peek_next()
 
 /// If current token is `kind`, take it.
 /// Otherwise, raise error.
-void expect(TokenKind kind)
+Token *expect(TokenKind kind)
 {
     if (token->kind != kind)
     {
         error("expect(): Unexpected token %.*s", token->len, token->str);
     }
+    Token *ret = token;
     token = token->next;
+    return ret;
 }
 
 /// If current token is a number, take it and return int_val.
@@ -173,8 +184,16 @@ int consume_number()
     return num;
 }
 
+Token *consume()
+{
+    Token *ret = token;
+    token = token->next;
+    return ret;
+}
+
 // LVar
 
+/// Generate LVar from token and put it to the locals list.
 LVar *new_lvar(Token *token)
 {
     LVar *lvar = calloc(1, sizeof(LVar));
@@ -201,13 +220,23 @@ LVar *find_lvar(Token *token)
     return NULL;
 }
 
+void print_locals()
+{
+    LVar *var = locals;
+    while (var)
+    {
+        printf("// %.*s offset:%d\n", var->len, var->name, var->offset);
+        var = var->next;
+    }
+}
+
 /// If current token is a local variable, take it and return LVar struct.
 /// Otherwise, raise error.
 LVar *consume_lvar()
 {
     if (token->kind != TK_IDENT)
     {
-        error("Unexpected token: Identifier is expected.");
+        error("consume_lvar(): Identifier is expected.");
     }
     LVar *lvar = find_lvar(token);
     if (!lvar)
@@ -222,6 +251,7 @@ LVar *consume_lvar()
 
 Node *parse_expr();
 Node *parse_assign_expr();
+Node *parse_stmt();
 
 Node *parse_prim_expr()
 {
@@ -244,7 +274,7 @@ Node *parse_prim_expr()
         // TODO:func() should be parsed in postfix-expr.
         if (peek_next() == TK_OP_PAREN)
         {
-            expect(TK_IDENT);
+            Node *name = new_node_ident(expect(TK_IDENT));
             expect(TK_OP_PAREN);
             Vector *vec = vec_new();
             while (peek() != TK_CL_PAREN)
@@ -254,7 +284,7 @@ Node *parse_prim_expr()
                     break;
             }
             expect(TK_CL_PAREN);
-            return new_node_call(vec);
+            return new_node_call(name, vec);
         }
         else
         {
@@ -403,6 +433,20 @@ Node *parse_expr()
     return node;
 }
 
+Node *parse_block()
+{
+    expect(TK_OP_BRACE);
+    Vector *vec = vec_new();
+    while (peek() != TK_CL_BRACE)
+    {
+        Node *node = parse_stmt();
+        if (node)
+            vec_push(vec, node);
+    }
+    expect(TK_CL_BRACE);
+    return new_node_block(vec);
+}
+
 Node *parse_stmt()
 {
     if (consume_if(TK_SEMI))
@@ -416,8 +460,11 @@ Node *parse_stmt()
         if (consume_if(TK_SEMI))
             return new_node(ND_RETURN, NULL, NULL);
         else
-            return new_node(ND_RETURN, parse_expr(), NULL);
-        break;
+        {
+            node = parse_expr();
+            expect(TK_SEMI);
+            return new_node(ND_RETURN, node, NULL);
+        }
     case TK_IF:
         expect(TK_IF);
         expect(TK_OP_PAREN);
@@ -428,26 +475,14 @@ Node *parse_stmt()
             return new_node_if_then(node, then_, parse_stmt());
         else
             return new_node_if_then(node, then_, NULL);
-        break;
     case TK_WHILE:
         expect(TK_WHILE);
         expect(TK_OP_PAREN);
         node = parse_expr();
         expect(TK_CL_PAREN);
         return new_node_while(node, parse_stmt());
-        break;
     case TK_OP_BRACE:
-        expect(TK_OP_BRACE);
-        Vector *vec = vec_new();
-        while (peek() != TK_CL_BRACE)
-        {
-            Node *node = parse_stmt();
-            if (node)
-                vec_push(vec, node);
-        }
-        expect(TK_CL_BRACE);
-        return new_node_block(vec);
-        break;
+        return parse_block();
     }
     node = parse_expr();
     if (at_eof())
@@ -456,23 +491,55 @@ Node *parse_stmt()
     return node;
 }
 
+Node *parse_func_definition()
+{
+    Token *name = expect(TK_IDENT);
+    expect(TK_OP_PAREN);
+    Vector *vec = vec_new();
+    while (peek() != TK_CL_PAREN)
+    {
+        Token *param = expect(TK_IDENT);
+        new_lvar(param);
+        vec_push(vec, new_node_ident(param));
+        if (!consume_if(TK_COMMA))
+            break;
+    }
+    expect(TK_CL_PAREN);
+    Vector *body = parse_block()->nodes;
+    return new_node_fdecl(name, body);
+}
+
 void parse_program(bool from_cl)
 {
-    if (!from_cl)
-        return;
     ext_declarations = vec_new();
-    Vector *vec = vec_new();
-    while (!at_eof())
+    if (from_cl)
     {
-        if (consume_if(TK_SEMI))
-            continue;
-        vec_push(vec, parse_stmt());
+        Vector *vec = vec_new();
+        while (!at_eof())
+        {
+            if (consume_if(TK_SEMI))
+                continue;
+            vec_push(vec, parse_stmt());
+        }
+        Token *token = calloc(1, sizeof(Token));
+        token->kind = TK_IDENT;
+        token->str = "main";
+        token->len = 4;
+        vec_push(ext_declarations, new_node_fdecl(token, vec));
     }
-    Token *token = calloc(1, sizeof(Token));
-    token->kind = TK_IDENT;
-    token->str = "main";
-    token->len = 4;
-    vec_push(ext_declarations, new_node_fdecl(token, vec));
+    else
+    {
+        while (!at_eof())
+        {
+            locals = NULL;
+            Node *decl = parse_func_definition();
+            printf("// ");
+            print_node(decl);
+            printf("\n");
+            print_locals();
+            vec_push(ext_declarations, decl);
+        }
+    }
 }
 
 void print_node(Node *node)
@@ -521,7 +588,8 @@ void print_node(Node *node)
     }
     if (node->kind == ND_CALL)
     {
-        printf("( CALL ( ");
+        Token *name = node->lhs->token;
+        printf("( CALL %.*s ( ", name->len, name->str);
         Vector *vec = node->nodes;
         int len = vec_len(vec);
         for (int i = 0; i < len; i++)
@@ -589,7 +657,7 @@ void print_node(Node *node)
     }
     if (node->kind == ND_RETURN)
     {
-        printf("( BLOCK ");
+        printf("( RETURN ");
         print_node(node->lhs);
         printf(" )");
         return;
