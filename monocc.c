@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     printf(".intel_syntax noprefix\n");
     printf(".global main\n");
 
-    int len = vec_len(statements);
+    int len = vec_len(ext_declarations);
     for (int i = 0; i < len; i++)
-        gen_stmt(statements->data[i]);
+        gen_stmt(ext_declarations->data[i]);
 }

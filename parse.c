@@ -460,7 +460,7 @@ void parse_program(bool from_cl)
 {
     if (!from_cl)
         return;
-    statements = vec_new();
+    ext_declarations = vec_new();
     Vector *vec = vec_new();
     while (!at_eof())
     {
@@ -472,7 +472,7 @@ void parse_program(bool from_cl)
     token->kind = TK_IDENT;
     token->str = "main";
     token->len = 4;
-    vec_push(statements, new_node_fdecl(token, vec));
+    vec_push(ext_declarations, new_node_fdecl(token, vec));
 }
 
 void print_node(Node *node)
@@ -615,10 +615,10 @@ void print_node(Node *node)
 
 void print_nodes()
 {
-    int len = vec_len(statements);
+    int len = vec_len(ext_declarations);
     for (int i = 0; i < len; i++)
     {
-        Node *node = statements->data[i];
+        Node *node = ext_declarations->data[i];
         printf("// ");
         print_node(node);
         printf("\n");

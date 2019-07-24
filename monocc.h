@@ -138,6 +138,6 @@ void gen_stmt(Node *node);
 // Globals
 
 Token *token;
-Vector *statements;
+Vector *ext_declarations;
 LVar *locals;
 int labels;
