@@ -121,7 +121,7 @@ Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
 Node *new_node_num(int val);
 bool is_binary_op(NodeKind kind);
 bool is_expr(NodeKind kind);
-void parse_program(bool from_cl);
+void parse_program();
 void print_nodes();
 void print_node(Node *node);
 void print_locals();

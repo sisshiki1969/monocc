@@ -125,9 +125,7 @@ void gen_fdecl(Node *node)
     printf("\tmov  rbp, rsp\n");
     printf("\tsub  rsp, %d\n", max_offset);
 
-    int len = vec_len(node->nodes);
-    for (int i = 0; i < len; i++)
-        gen_stmt(node->nodes->data[i]);
+    gen_block(node->lhs);
 
     printf("\tmov  rsp, rbp\n");
     printf("\tpop  rbp\n");

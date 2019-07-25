@@ -23,18 +23,12 @@ int main(int argc, char **argv)
         return 0;
     }
 
-    bool from_cl = false;
     char *p = argv[1];
-    if (argc == 3 && !strcmp(argv[1], "-input"))
-    {
-        from_cl = true;
-        p = argv[2];
-    }
 
     tokenize(p);
     print_tokens(token);
 
-    parse_program(from_cl);
+    parse_program();
     //print_nodes();
 
     labels = 0;

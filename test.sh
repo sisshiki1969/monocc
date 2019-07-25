@@ -3,7 +3,7 @@ try() {
     expected="$1"
     input="$2"
 
-    ./monocc -input "$input" > tmp.s
+    ./monocc "main(){${input};}" > tmp.s
     gcc -o tmp tmp.s test.o
     ./tmp
     actual="$?"
@@ -78,6 +78,6 @@ try2() {
 
 try2 5 "main(){ return 5 ;}"
 try2 1 "main(a,b){ e = 32740; print(bar()); return bar() == e + 5;}
-bar(a,b){ e = 22745; return 10000 + e;}"
+bar(f,g){ e = 22745; return 10000 + e;}"
 
 echo OK

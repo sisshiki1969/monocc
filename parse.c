@@ -64,12 +64,13 @@ Node *new_node_call(Node *name, Vector *vec)
     return node;
 }
 
-Node *new_node_fdecl(Token *token, Vector *vec)
+Node *new_node_fdecl(Token *name, Vector *params, Node *body)
 {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_FDECL;
-    node->nodes = vec;
-    node->token = token;
+    node->lhs = body;
+    node->nodes = params;
+    node->token = name;
     return node;
 }
 
@@ -493,52 +494,33 @@ Node *parse_stmt()
 
 Node *parse_func_definition()
 {
+    locals = NULL;
     Token *name = expect(TK_IDENT);
     expect(TK_OP_PAREN);
-    Vector *vec = vec_new();
+    Vector *params = vec_new();
     while (peek() != TK_CL_PAREN)
     {
         Token *param = expect(TK_IDENT);
-        new_lvar(param);
-        vec_push(vec, new_node_ident(param));
+        vec_push(params, new_node_lvar(new_lvar(param)));
         if (!consume_if(TK_COMMA))
             break;
     }
     expect(TK_CL_PAREN);
-    Vector *body = parse_block()->nodes;
-    return new_node_fdecl(name, body);
+    Node *body = parse_block();
+    return new_node_fdecl(name, params, body);
 }
 
-void parse_program(bool from_cl)
+void parse_program()
 {
     ext_declarations = vec_new();
-    if (from_cl)
+    while (!at_eof())
     {
-        Vector *vec = vec_new();
-        while (!at_eof())
-        {
-            if (consume_if(TK_SEMI))
-                continue;
-            vec_push(vec, parse_stmt());
-        }
-        Token *token = calloc(1, sizeof(Token));
-        token->kind = TK_IDENT;
-        token->str = "main";
-        token->len = 4;
-        vec_push(ext_declarations, new_node_fdecl(token, vec));
-    }
-    else
-    {
-        while (!at_eof())
-        {
-            locals = NULL;
-            Node *decl = parse_func_definition();
-            printf("// ");
-            print_node(decl);
-            printf("\n");
-            print_locals();
-            vec_push(ext_declarations, decl);
-        }
+        Node *decl = parse_func_definition();
+        printf("// ");
+        print_node(decl);
+        printf("\n");
+        print_locals();
+        vec_push(ext_declarations, decl);
     }
 }
 
@@ -554,28 +536,28 @@ void print_node(Node *node)
         switch (node->kind)
         {
         case ND_ADD:
-            printf("( + ");
+            printf("(+ ");
             break;
         case ND_SUB:
-            printf("( - ");
+            printf("(- ");
             break;
         case ND_MUL:
-            printf("( * ");
+            printf("(* ");
             break;
         case ND_DIV:
-            printf("( / ");
+            printf("(/ ");
             break;
         case ND_EQ:
-            printf("( == ");
+            printf("(== ");
             break;
         case ND_NEQ:
-            printf("( != ");
+            printf("(!= ");
             break;
         case ND_GE:
-            printf("( >= ");
+            printf("(>= ");
             break;
         case ND_GT:
-            printf("( > ");
+            printf("(> ");
             break;
         default:
             error("Unknown binary node.");
@@ -583,19 +565,19 @@ void print_node(Node *node)
         print_node(node->lhs);
         printf(" ");
         print_node(node->rhs);
-        printf(" )");
+        printf(")");
         return;
     }
     if (node->kind == ND_CALL)
     {
         Token *name = node->lhs->token;
-        printf("( CALL %.*s ( ", name->len, name->str);
+        printf("(CALL %.*s (", name->len, name->str);
         Vector *vec = node->nodes;
         int len = vec_len(vec);
         for (int i = 0; i < len; i++)
         {
             print_node(vec->data[i]);
-            printf(": ");
+            printf(":");
         }
         printf(") )");
         return;
@@ -607,36 +589,36 @@ void print_node(Node *node)
     }
     if (node->kind == ND_ASSIGN)
     {
-        printf("( = ");
+        printf("(= ");
         print_node(node->lhs);
         printf(" ");
         print_node(node->rhs);
-        printf(" )");
+        printf(")");
         return;
     }
     if (node->kind == ND_IF)
     {
-        printf("( IF ");
+        printf("(IF ");
         print_node(node->lhs);
         printf(" ");
         print_node(node->rhs);
         printf(" ");
         print_node(node->xhs);
-        printf(" )");
+        printf(")");
         return;
     }
     if (node->kind == ND_WHILE)
     {
-        printf("( WHILE ");
+        printf("( WHILE");
         print_node(node->lhs);
         printf(" ");
         print_node(node->rhs);
-        printf(" )");
+        printf(")");
         return;
     }
     if (node->kind == ND_BLOCK)
     {
-        printf("( BLOCK ");
+        printf("( BLOCK");
         if (node->nodes)
         {
             Vector *vec = node->nodes;
@@ -644,7 +626,7 @@ void print_node(Node *node)
             for (int i = 0; i < len; i++)
             {
                 print_node(vec->data[i]);
-                printf(": ");
+                printf(":");
             }
         }
         printf(")");
@@ -652,29 +634,31 @@ void print_node(Node *node)
     }
     if (node->kind == ND_LVAR)
     {
-        printf("( LVAR %d )", node->ident_offset);
+        printf("(LVAR %d)", node->ident_offset);
         return;
     }
     if (node->kind == ND_RETURN)
     {
-        printf("( RETURN ");
+        printf("(RETURN ");
         print_node(node->lhs);
-        printf(" )");
+        printf(")");
         return;
     }
     if (node->kind == ND_FDECL)
     {
-        printf("( FDECL %.*s ", node->token->len, node->token->str);
+        printf("(FDECL %.*s (", node->token->len, node->token->str);
         if (node->nodes)
         {
-            Vector *vec = node->nodes;
-            int len = vec_len(vec);
+            Vector *params = node->nodes;
+            int len = vec_len(params);
             for (int i = 0; i < len; i++)
             {
-                print_node(vec->data[i]);
-                printf(": ");
+                print_node(params->data[i]);
+                printf(":");
             }
         }
+        printf(") ");
+        print_node(node->lhs);
         printf(")");
         return;
     }
