@@ -3,7 +3,7 @@ try() {
     expected="$1"
     input="$2"
 
-    ./monocc "main(){${input};}" > tmp.s
+    ./monocc "int main(){${input};}" > tmp.s
     gcc -o tmp tmp.s lib.o
     ./tmp
     actual="$?"
@@ -42,20 +42,20 @@ try 1 "4 < 4 + 1"
 try 1 "1 + 4 > 4"
 try 0 "4 < 4 - 1"
 try 0 "1 - 4 > 4"
-try 9 "alpha5 = 5; alpha5 * 6 - 21;"
-try 45 "alpha5 = 5; beta_9 = alpha5 * 6 - 21; beta_9*alpha5"
-try 37 "a = 5 *5 +12;return a;"
-try 13 "a=8; if(a==4) b=19; else b=13; return b;"
-try 13 "a=8; if(a==4) ; else b=13; return b;"
-try 8 "a=b=8; if(a==4) b=19; else ; return b;"
-try 19 "a=8; if(a==8) a=19; return a;"
-try 3 "i = 1; if(1==i) if(0==i) ifs = 7; else ifs = 3; else ifs = 9; return ifs;"
-try 5 "if(1==1) {a = 1; b = 5;} else {a = 3; b = 3;} a*b"
-try 15 "i = 1;
+try 9 "int alpha5; alpha5 = 5; alpha5 * 6 - 21;"
+try 45 "int alpha5; int beta_9; alpha5 = 5; beta_9 = alpha5 * 6 - 21; beta_9*alpha5"
+try 37 "int a; a = 5 *5 +12;return a;"
+try 13 "int a; int b; a=8; if(a==4) b=19; else b=13; return b;"
+try 13 "int a; int b; a=8; if(a==4) ; else b=13; return b;"
+try 8 "int a; int b; a=b=8; if(a==4) b=19; else ; return b;"
+try 19 "int a; a=8; if(a==8) a=19; return a;"
+try 3 "int i; int ifs; i = 1; if(1==i) if(0==i) ifs = 7; else ifs = 3; else ifs = 9; return ifs;"
+try 5 "int a; int b; if(1==1) {a = 1; b = 5;} else {a = 3; b = 3;} a*b"
+try 15 "int i; int sum; i = 1;
 sum = 0;
 while (i < 6) { sum = sum + i; i = i + 1; }
 return sum;"
-try 5 "a = foo(b = 37, 7, 6);
+try 5 "int a; int b; a = foo(b = 37, 7, 6);
 print(a);
 return a;"
 
@@ -76,11 +76,12 @@ try2() {
     fi
 }
 
-try2 5 "main(){ return 5 ;}"
-try2 1 "main(){ e = 32740; print(bar(5, 10)); return bar(8, 11) == e + 5;}
-bar(a,b){ e = 22745; print(a); print(b); return 10000 + e;}"
-try2 1 "main(){ print(fibo(30)); return fibo(30) == 1346269;}
-fibo(x){ if (x < 2) return 1; return fibo(x-1) + fibo(x-2); }"
-try2 3 "main(){ x = 3; y = &x; return *y;}"
+try2 5 "int main(){ return 5 ;}"
+try2 1 "int main(){ int a; a = 3; return -+-+-a == -3; }"
+try2 1 "int main(){ int e; e = 32740; print(bar(5, 10)); return bar(8, 11) == e + 5;}
+int bar(int a,int b){ int e; e = 22745; print(a); print(b); return 10000 + e;}"
+try2 1 "int main(){ print(fibo(30)); return fibo(30) == 1346269;}
+int fibo(int x){ if (x < 2) return 1; return fibo(x-1) + fibo(x-2); }"
+try2 3 "int main(){ int x; int y; x = 3; y = &x; return *y;}"
 
 echo OK

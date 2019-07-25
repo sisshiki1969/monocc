@@ -3,8 +3,7 @@
 // Methods for Token
 
 /// Create a new token.
-Token *new_token(TokenKind kind, Token *cur, char *str, int len)
-{
+Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
     Token *new_token = calloc(1, sizeof(Token));
     new_token->kind = kind;
     new_token->str = str;
@@ -13,19 +12,13 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len)
     return new_token;
 }
 
-bool is_nondigit(char c)
-{
-    return isalnum(c) || c == '_';
-}
+bool is_nondigit(char c) { return isalnum(c) || c == '_'; }
 
 /// Print tokens.
-void print_tokens(Token *token)
-{
+void print_tokens(Token *token) {
     printf("// ");
-    while (token)
-    {
-        switch (token->kind)
-        {
+    while(token) {
+        switch(token->kind) {
         case TK_NUM:
         case TK_IDENT:
         case TK_ADD:
@@ -54,13 +47,14 @@ void print_tokens(Token *token)
         case TK_WHILE:
         case TK_FOR:
         case TK_RETURN:
+        case TK_INT:
             printf("<%.*s>", token->len, token->str);
             break;
         case TK_EOF:
             printf("<EOF>");
             break;
         default:
-            error("print_tokens(): Unknown TokenKind.");
+            error_at_token(token, "print_tokens(): Unknown TokenKind.");
             break;
         }
         token = token->next;
@@ -68,33 +62,27 @@ void print_tokens(Token *token)
     printf("\n");
 }
 
-bool is_reserved(char *str, int len, char *reserved)
-{
+bool is_reserved(char *str, int len, char *reserved) {
     return len == strlen(reserved) && strncmp(str, reserved, len) == 0;
 }
 
 /// Tokenize the input string.
-void tokenize(char *p)
-{
+void tokenize(char *p) {
     Token head;
     head.next = NULL;
     Token *cur = &head;
 
-    while (*p)
-    {
-        if (isspace(*p))
-        {
+    while(*p) {
+        if(isspace(*p)) {
             p++;
             continue;
         }
-        if (isdigit(*p))
-        {
+        if(isdigit(*p)) {
             char *org_p = p;
             int num = *p - '0';
             int len = 1;
             p++;
-            while (isdigit(*p))
-            {
+            while(isdigit(*p)) {
                 num *= 10;
                 num += *p - '0';
                 len++;
@@ -104,155 +92,119 @@ void tokenize(char *p)
             cur->int_val = num;
             continue;
         }
-        if (isalpha(*p))
-        {
+        if(isalpha(*p)) {
             char *org_p = p;
             int len = 1;
             p++;
-            while (is_nondigit(*p))
-            {
+            while(is_nondigit(*p)) {
                 len++;
                 p++;
             }
-            if (is_reserved(org_p, len, "return"))
-            {
+            if(is_reserved(org_p, len, "return")) {
                 cur = new_token(TK_RETURN, cur, org_p, len);
-            }
-            else if (is_reserved(org_p, len, "if"))
-            {
+            } else if(is_reserved(org_p, len, "if")) {
                 cur = new_token(TK_IF, cur, org_p, len);
-            }
-            else if (is_reserved(org_p, len, "else"))
-            {
+            } else if(is_reserved(org_p, len, "else")) {
                 cur = new_token(TK_ELSE, cur, org_p, len);
-            }
-            else if (is_reserved(org_p, len, "while"))
-            {
+            } else if(is_reserved(org_p, len, "while")) {
                 cur = new_token(TK_WHILE, cur, org_p, len);
-            }
-            else
-            {
+            } else if(is_reserved(org_p, len, "int")) {
+                cur = new_token(TK_INT, cur, org_p, len);
+            } else {
                 cur = new_token(TK_IDENT, cur, org_p, len);
             }
             continue;
         }
-        if (*p == '+')
-        {
+        if(*p == '+') {
             cur = new_token(TK_ADD, cur, p++, 1);
             continue;
         }
-        if (*p == '-')
-        {
+        if(*p == '-') {
             cur = new_token(TK_SUB, cur, p++, 1);
             continue;
         }
-        if (*p == '*')
-        {
+        if(*p == '*') {
             cur = new_token(TK_MUL, cur, p++, 1);
             continue;
         }
-        if (*p == '/')
-        {
+        if(*p == '/') {
             cur = new_token(TK_DIV, cur, p++, 1);
             continue;
         }
-        if (*p == ',')
-        {
+        if(*p == ',') {
             cur = new_token(TK_COMMA, cur, p++, 1);
             continue;
         }
-        if (*p == '=')
-        {
+        if(*p == '=') {
             p++;
-            if (*p == '=')
-            {
+            if(*p == '=') {
                 cur = new_token(TK_EQ, cur, p - 1, 2);
                 p++;
                 continue;
-            }
-            else
-            {
+            } else {
                 cur = new_token(TK_ASSIGN, cur, p - 1, 1);
                 continue;
             }
         }
-        if (*p == '>')
-        {
+        if(*p == '>') {
             p++;
-            if (*p == '=')
-            {
+            if(*p == '=') {
                 cur = new_token(TK_GE, cur, p - 1, 2);
                 p++;
                 continue;
-            }
-            else
-            {
+            } else {
                 cur = new_token(TK_GT, cur, p - 1, 1);
                 continue;
             }
         }
-        if (*p == '<')
-        {
+        if(*p == '<') {
             p++;
-            if (*p == '=')
-            {
+            if(*p == '=') {
                 cur = new_token(TK_LE, cur, p - 1, 2);
                 p++;
                 continue;
-            }
-            else
-            {
+            } else {
                 cur = new_token(TK_LT, cur, p - 1, 1);
                 continue;
             }
         }
-        if (*p == '!')
-        {
+        if(*p == '!') {
             p++;
-            if (*p == '=')
-            {
+            if(*p == '=') {
                 cur = new_token(TK_NEQ, cur, p - 1, 2);
                 p++;
                 continue;
-            }
-            else
-            {
-                error("Unimplemented op '!'");
+            } else {
+                error_at_char(p, "Unexpected character.");
             }
         }
-        if (*p == ';')
-        {
+        if(*p == ';') {
             cur = new_token(TK_SEMI, cur, p++, 1);
             continue;
         }
-        if (*p == '(')
-        {
+        if(*p == '(') {
             cur = new_token(TK_OP_PAREN, cur, p++, 1);
             continue;
         }
-        if (*p == ')')
-        {
+        if(*p == ')') {
             cur = new_token(TK_CL_PAREN, cur, p++, 1);
             continue;
         }
-        if (*p == '{')
-        {
+        if(*p == '{') {
             cur = new_token(TK_OP_BRACE, cur, p++, 1);
             continue;
         }
-        if (*p == '}')
-        {
+        if(*p == '}') {
             cur = new_token(TK_CL_BRACE, cur, p++, 1);
             continue;
         }
-        if (*p == '&')
-        {
+        if(*p == '&') {
             cur = new_token(TK_ADDR, cur, p++, 1);
             continue;
         }
-        error("Unexpected character. %c", *p);
+        error_at_char(p, "Unexpected character.");
     }
-    cur = new_token(TK_EOF, cur, p++, 0);
+    cur = new_token(TK_EOF, cur, p++, 1);
 
     token = head.next;
 }

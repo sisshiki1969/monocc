@@ -1,12 +1,11 @@
+#include <ctype.h>
+#include <stdarg.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <ctype.h>
 #include <string.h>
-#include <stdarg.h>
 
-typedef enum
-{
+typedef enum {
     TK_RESERVED,
     TK_IDENT,
     TK_NUM,
@@ -28,18 +27,21 @@ typedef enum
     TK_OP_BRACE,
     TK_CL_BRACE,
     TK_COMMA,
+
     TK_IF,
     TK_ELSE,
     TK_WHILE,
     TK_FOR,
     TK_RETURN,
+
+    TK_INT,
+
     TK_EOF,
 } TokenKind;
 
 typedef struct Token Token;
 
-struct Token
-{
+struct Token {
     TokenKind kind;
     Token *next;
     int int_val;
@@ -49,16 +51,14 @@ struct Token
 
 typedef struct LVar LVar;
 
-struct LVar
-{
+struct LVar {
     LVar *next;
     char *name;
     int len;
     int offset;
 };
 
-typedef enum
-{
+typedef enum {
     ND_NUM,
     ND_ADD,
     ND_SUB,
@@ -84,8 +84,7 @@ typedef enum
 typedef struct Node Node;
 typedef struct Vector Vector;
 
-struct Node
-{
+struct Node {
     NodeKind kind;
     Node *lhs;
     Node *rhs;
@@ -102,8 +101,7 @@ struct Node
 
 typedef struct Vector Vector;
 
-struct Vector
-{
+struct Vector {
     Node **data;
     int len;
     int capacity;
@@ -112,6 +110,8 @@ struct Vector
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 
 void error(char *fmt, ...);
+void error_at_char(char *source, char *fmt, ...);
+void error_at_token(Token *token, char *fmt, ...);
 
 // Methods for Token
 
@@ -143,6 +143,7 @@ void gen_stmt(Node *node);
 
 // Globals
 
+char *source_text;
 char registers[4][4];
 Token *token;
 Vector *ext_declarations;

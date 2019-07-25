@@ -2,10 +2,8 @@
 
 // Methods for handling Node.
 
-bool is_binary_op(NodeKind kind)
-{
-    switch (kind)
-    {
+bool is_binary_op(NodeKind kind) {
+    switch(kind) {
     case ND_ADD:
     case ND_SUB:
     case ND_MUL:
@@ -19,10 +17,8 @@ bool is_binary_op(NodeKind kind)
     return false;
 }
 
-bool is_expr(NodeKind kind)
-{
-    switch (kind)
-    {
+bool is_expr(NodeKind kind) {
+    switch(kind) {
     case ND_IF:
     case ND_WHILE:
     case ND_BLOCK:
@@ -34,21 +30,18 @@ bool is_expr(NodeKind kind)
 }
 
 /// Generate a new label as a string.
-char *new_label()
-{
+char *new_label() {
     char *label = (char *)malloc(10);
-    if (!label)
+    if(!label)
         error("Could not allocate memmory.");
     sprintf(label, ".L%06d", labels++);
     return label;
 }
 
 /// Generate address of a local variable.
-void gen_lval(Node *node)
-{
-    if (node->kind != ND_LVAR)
-    {
-        error("Invalid left hand side value for assignment expr.");
+void gen_lval(Node *node) {
+    if(node->kind != ND_LVAR) {
+        error("Invalid left hand side value.");
     }
     printf("\tmov  rax, rbp\n");
     printf("\tsub  rax, %d\n", node->ident_offset);
@@ -58,8 +51,7 @@ void gen_lval(Node *node)
 
 // Codegen
 
-void gen_if(Node *node)
-{
+void gen_if(Node *node) {
     char *else_str = new_label();
     char *end_str = new_label();
     gen(node->lhs);
@@ -73,8 +65,7 @@ void gen_if(Node *node)
     printf("%s:\n", end_str);
 }
 
-void gen_while(Node *node)
-{
+void gen_while(Node *node) {
     char *cond_str = new_label();
     char *end_str = new_label();
     printf("%s:\n", cond_str);
@@ -87,23 +78,20 @@ void gen_while(Node *node)
     printf("%s:\n", end_str);
 }
 
-void gen_block(Node *node)
-{
-    if (!node)
+void gen_block(Node *node) {
+    if(!node)
         return;
     Vector *vec = node->nodes;
     int len = vec_len(vec);
-    for (int i = 0; i < len; i++)
+    for(int i = 0; i < len; i++)
         gen_stmt(vec->data[i]);
 }
 
-void gen_call(Node *node)
-{
+void gen_call(Node *node) {
     // TODO: Currently, only TK_IDENT is allowed as a callee.
     int len = vec_len(node->nodes);
     Node **args = node->nodes->data;
-    for (int i = 0; i < len; i++)
-    {
+    for(int i = 0; i < len; i++) {
         gen(args[i]);
         printf("\tpop  %s\n", registers[i]);
     }
@@ -113,11 +101,9 @@ void gen_call(Node *node)
     printf("\tpush rax\n");
 }
 
-void gen_fdecl(Node *node)
-{
+void gen_fdecl(Node *node) {
     int max_offset = 8;
-    if (locals)
-    {
+    if(locals) {
         max_offset = locals->offset + 8;
     }
 
@@ -129,9 +115,9 @@ void gen_fdecl(Node *node)
 
     int len = vec_len(node->nodes);
     Node **params = node->nodes->data;
-    for (int i = 0; i < len; i++)
-    {
-        printf("\tmov  [rbp - %d], %s\n", params[i]->ident_lvar->offset, registers[i]);
+    for(int i = 0; i < len; i++) {
+        printf("\tmov  [rbp - %d], %s\n", params[i]->ident_lvar->offset,
+               registers[i]);
     }
 
     gen_block(node->lhs);
@@ -141,20 +127,16 @@ void gen_fdecl(Node *node)
     printf("\tret\n");
 }
 
-void gen_stmt(Node *node)
-{
-    if (node)
-    {
+void gen_stmt(Node *node) {
+    if(node) {
         gen(node);
-        if (is_expr(node->kind))
+        if(is_expr(node->kind))
             printf("\tpop  rax\n");
     }
 }
 
-void gen(Node *node)
-{
-    switch (node->kind)
-    {
+void gen(Node *node) {
+    switch(node->kind) {
     // statement
     case ND_IF:
         gen_if(node);
@@ -167,8 +149,7 @@ void gen(Node *node)
         return;
     case ND_RETURN:
         // TODO: return without expression returns undefined value.
-        if (node->lhs)
-        {
+        if(node->lhs) {
             gen(node->lhs);
             printf("\tpop  rax\n");
         }
@@ -212,14 +193,12 @@ void gen(Node *node)
         printf("\tpush rax\n");
         return;
     }
-    if (is_binary_op(node->kind))
-    {
+    if(is_binary_op(node->kind)) {
         gen(node->lhs);
         gen(node->rhs);
         printf("\tpop  rdi\n");
         printf("\tpop  rax\n");
-        switch (node->kind)
-        {
+        switch(node->kind) {
         case ND_ADD:
             printf("\tadd  rax, rdi\n");
             break;
