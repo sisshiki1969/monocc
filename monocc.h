@@ -140,6 +140,7 @@ void gen_stmt(Node *node);
 
 // Globals
 
+char registers[4][4];
 Token *token;
 Vector *ext_declarations;
 LVar *locals;

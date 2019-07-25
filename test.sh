@@ -4,7 +4,7 @@ try() {
     input="$2"
 
     ./monocc "main(){${input};}" > tmp.s
-    gcc -o tmp tmp.s test.o
+    gcc -o tmp tmp.s lib.o
     ./tmp
     actual="$?"
 
@@ -64,7 +64,7 @@ try2() {
     input="$2"
 
     ./monocc "$input" > tmp.s
-    gcc -o tmp tmp.s test.o
+    gcc -o tmp tmp.s lib.o
     ./tmp
     actual="$?"
 
@@ -77,7 +77,7 @@ try2() {
 }
 
 try2 5 "main(){ return 5 ;}"
-try2 1 "main(a,b){ e = 32740; print(bar()); return bar() == e + 5;}
-bar(f,g){ e = 22745; return 10000 + e;}"
+try2 1 "main(){ e = 32740; print(bar(5, 10)); return bar(8, 11) == e + 5;}
+bar(a,b){ e = 22745; print(a); print(b); return 10000 + e;}"
 
 echo OK

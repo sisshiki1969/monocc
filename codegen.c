@@ -97,15 +97,15 @@ void gen_block(Node *node)
 
 void gen_call(Node *node)
 {
+    // TODO: Currently, only TK_IDENT is allowed as a callee.
     int len = vec_len(node->nodes);
     Node **args = node->nodes->data;
-    char regs[4][4] = {"rdi", "rsi", "rdx", "rcx"};
     for (int i = 0; i < len; i++)
     {
         gen(args[i]);
-        printf("\tpop  %s\n", regs[i]);
+        printf("\tpop  %s\n", registers[i]);
     }
-    Token *name = node->lhs->token;
+    Token *name = node->lhs->token; // node->lhs: callee
     printf("\tmov  rax, 0\n");
     printf("\tcall %.*s\n", name->len, name->str);
     printf("\tpush rax\n");
@@ -124,6 +124,13 @@ void gen_fdecl(Node *node)
     printf("\tpush rbp\n");
     printf("\tmov  rbp, rsp\n");
     printf("\tsub  rsp, %d\n", max_offset);
+
+    int len = vec_len(node->nodes);
+    Node **params = node->nodes->data;
+    for (int i = 0; i < len; i++)
+    {
+        printf("\tmov  [rbp - %d], %s\n", params[i]->ident_lvar->offset, registers[i]);
+    }
 
     gen_block(node->lhs);
 

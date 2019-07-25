@@ -1,5 +1,7 @@
 #include "monocc.h"
 
+char registers[4][4] = {"rdi", "rsi", "rdx", "rcx"};
+
 void error(char *fmt, ...)
 {
     va_list ap;
@@ -23,6 +25,7 @@ int main(int argc, char **argv)
         return 0;
     }
 
+    char registers[4][4] = {"rdi", "rsi", "rdx", "rcx"};
     char *p = argv[1];
 
     tokenize(p);

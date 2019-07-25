@@ -55,11 +55,12 @@ Node *new_node_block(Vector *vec)
     return node;
 }
 
-Node *new_node_call(Node *name, Vector *vec)
+Node *new_node_call(Node *callee, Vector *vec)
 {
+    // TODO: Currently, only TK_IDENT is allowed as a callee.
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_CALL;
-    node->lhs = name;
+    node->lhs = callee;
     node->nodes = vec;
     return node;
 }
@@ -80,52 +81,6 @@ Node *new_node_ident(Token *token)
     node->kind = TK_IDENT;
     node->token = token;
     return node;
-}
-
-// Vector
-
-Vector *vec_new()
-{
-    Vector *vec = (Vector *)malloc(sizeof(Vector));
-    vec->data = malloc(5 * sizeof(void *));
-    vec->len = 0;
-    vec->capacity = 5;
-    return vec;
-}
-
-int vec_len(Vector *vec)
-{
-    return vec->len;
-}
-
-void vec_push(Vector *vec, void *data)
-{
-    if (vec->len == vec->capacity)
-    {
-        vec->capacity *= 2;
-        vec->data = realloc(vec->data, vec->capacity * sizeof(void *));
-    }
-    vec->data[vec->len++] = data;
-}
-
-void assert_expect(int line, int expected, int actual)
-{
-    if (expected == actual)
-        return;
-    fprintf(stderr, "%d: %d expected, but got %d\n", line, expected, actual);
-    exit(1);
-}
-
-void test_vec()
-{
-    Vector *vec = vec_new();
-    for (int i = 0; i < 100; i++)
-        vec_push(vec, new_node_num(i));
-    assert_expect(__LINE__, 100, vec_len(vec));
-    assert_expect(__LINE__, 0, vec->data[0]->int_val);
-    assert_expect(__LINE__, 50, vec->data[50]->int_val);
-    assert_expect(__LINE__, 99, vec->data[99]->int_val);
-    fprintf(stderr, "test_vec() cleared\n");
 }
 
 // Methods for handling Token.
@@ -275,6 +230,7 @@ Node *parse_prim_expr()
         // TODO:func() should be parsed in postfix-expr.
         if (peek_next() == TK_OP_PAREN)
         {
+            // TODO: Currently, only TK_IDENT is allowed as a callee.
             Node *name = new_node_ident(expect(TK_IDENT));
             expect(TK_OP_PAREN);
             Vector *vec = vec_new();
