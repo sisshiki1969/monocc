@@ -47,7 +47,9 @@ char *new_label()
 void gen_lval(Node *node)
 {
     if (node->kind != ND_LVAR)
+    {
         error("Invalid left hand side value for assignment expr.");
+    }
     printf("\tmov  rax, rbp\n");
     printf("\tsub  rax, %d\n", node->ident_offset);
     printf("\tpush rax\n");
@@ -200,6 +202,15 @@ void gen(Node *node)
     case ND_FDECL:
         gen_fdecl(node);
         return;
+    case ND_ADDR:
+        gen_lval(node->lhs);
+        return;
+    case ND_DEREF:
+        gen(node->lhs);
+        printf("\tpop  rax\n");
+        printf("\tmov  rax, [rax]\n");
+        printf("\tpush rax\n");
+        return;
     }
     if (is_binary_op(node->kind))
     {
@@ -248,5 +259,5 @@ void gen(Node *node)
         printf("\tpush rax\n");
         return;
     }
-    error("Unimplemented NodeKind.");
+    error("gen(): Unimplemented NodeKind.");
 }

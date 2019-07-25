@@ -79,5 +79,8 @@ try2() {
 try2 5 "main(){ return 5 ;}"
 try2 1 "main(){ e = 32740; print(bar(5, 10)); return bar(8, 11) == e + 5;}
 bar(a,b){ e = 22745; print(a); print(b); return 10000 + e;}"
+try2 1 "main(){ print(fibo(30)); return fibo(30) == 1346269;}
+fibo(x){ if (x < 2) return 1; return fibo(x-1) + fibo(x-2); }"
+try2 3 "main(){ x = 3; y = &x; return *y;}"
 
 echo OK

@@ -32,6 +32,7 @@ void print_tokens(Token *token)
         case TK_SUB:
         case TK_MUL:
         case TK_DIV:
+        case TK_ADDR:
         case TK_EQ:
         case TK_NEQ:
         case TK_GT:
@@ -242,6 +243,11 @@ void tokenize(char *p)
         if (*p == '}')
         {
             cur = new_token(TK_CL_BRACE, cur, p++, 1);
+            continue;
+        }
+        if (*p == '&')
+        {
+            cur = new_token(TK_ADDR, cur, p++, 1);
             continue;
         }
         error("Unexpected character. %c", *p);

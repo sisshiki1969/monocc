@@ -260,8 +260,15 @@ Node *parse_unary_expr()
     }
     else if (consume_if(TK_SUB))
     {
-        Node *node = new_node(ND_SUB, new_node_num(0), parse_prim_expr());
-        return node;
+        return new_node(ND_SUB, new_node_num(0), parse_prim_expr());
+    }
+    else if (consume_if(TK_ADDR))
+    {
+        return new_node(ND_ADDR, parse_unary_expr(), NULL);
+    }
+    else if (consume_if(TK_MUL))
+    {
+        return new_node(ND_DEREF, parse_unary_expr(), NULL);
     }
     else
     {
@@ -521,6 +528,19 @@ void print_node(Node *node)
         print_node(node->lhs);
         printf(" ");
         print_node(node->rhs);
+        printf(")");
+        return;
+    }
+    switch (node->kind)
+    {
+    case ND_ADDR:
+        printf("(ADDR ");
+        print_node(node->lhs);
+        printf(")");
+        return;
+    case ND_DEREF:
+        printf("(DEREF ");
+        print_node(node->lhs);
         printf(")");
         return;
     }
