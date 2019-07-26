@@ -31,7 +31,7 @@ void assert_expect(int line, int expected, int actual) {
 void test_vec() {
     Vector *vec = vec_new();
     for(int i = 0; i < 100; i++)
-        vec_push(vec, new_node_num(i));
+        vec_push(vec, new_node_num(i, NULL));
     assert_expect(__LINE__, 100, vec_len(vec));
     assert_expect(__LINE__, 0, vec->data[0]->int_val);
     assert_expect(__LINE__, 50, vec->data[50]->int_val);

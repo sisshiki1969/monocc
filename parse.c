@@ -2,7 +2,7 @@
 
 // Method for Node
 
-Node *new_node_num(int val) {
+Node *new_node_num(int val, Token *token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_NUM;
     node->int_val = val;
@@ -17,7 +17,7 @@ Node *new_node_ident(Token *token) {
     return node;
 }
 
-Node *new_node_lvar(LVar *lvar) {
+Node *new_node_lvar(LVar *lvar, Token *token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_LVAR;
     node->ident_lvar = lvar;
@@ -35,7 +35,7 @@ Node *new_node(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     return node;
 }
 
-Node *new_node_call(Node *callee, Vector *vec) {
+Node *new_node_call(Node *callee, Vector *vec, Token *token) {
     // TODO: Currently, only TK_IDENT is allowed as a callee.
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_CALL;
@@ -135,8 +135,7 @@ Token *consume() {
 LVar *new_lvar(Token *token) {
     LVar *lvar = calloc(1, sizeof(LVar));
     lvar->next = locals;
-    lvar->name = token->str;
-    lvar->len = token->len;
+    lvar->token = token;
     int offset = 8;
     if(locals)
         offset = locals->offset + 8;
@@ -147,8 +146,8 @@ LVar *new_lvar(Token *token) {
 
 LVar *find_lvar(Token *token) {
     for(LVar *var = locals; var; var = var->next) {
-        if(var->len == token->len &&
-           memcmp(var->name, token->str, var->len) == 0) {
+        if(var->token->len == token->len &&
+           memcmp(var->token->str, token->str, token->len) == 0) {
             return var;
         }
     }
@@ -158,7 +157,8 @@ LVar *find_lvar(Token *token) {
 void print_locals() {
     LVar *var = locals;
     while(var) {
-        printf("// %.*s offset:%d\n", var->len, var->name, var->offset);
+        printf("// %.*s offset:%d\n", var->token->len, var->token->str,
+               var->offset);
         var = var->next;
     }
 }
@@ -185,11 +185,12 @@ Node *parse_stmt();
 Node *parse_decl();
 
 Node *parse_prim_expr() {
+    Token *cur_token = token;
     if(at_eof()) {
         error_at_token(token, "Unexpected EOF.");
     }
     if(peek() == TK_NUM) {
-        return new_node_num(consume_number());
+        return new_node_num(consume_number(), cur_token);
     }
     if(consume_if(TK_OP_PAREN)) {
         Node *node = parse_expr();
@@ -209,7 +210,7 @@ Node *parse_prim_expr() {
                     break;
             }
             expect(TK_CL_PAREN);
-            return new_node_call(name, vec);
+            return new_node_call(name, vec, cur_token);
         } else {
             LVar *lvar = find_lvar(token);
             if(!lvar) {
@@ -217,7 +218,7 @@ Node *parse_prim_expr() {
                                token->len, token->str);
             }
             token = token->next;
-            return new_node_lvar(lvar);
+            return new_node_lvar(lvar, cur_token);
         }
     }
     error_at_token(token, "parse_prom_expr(): Unexpected token.");
@@ -228,7 +229,8 @@ Node *parse_unary_expr() {
     if(consume_if(TK_ADD)) {
         return parse_unary_expr();
     } else if(consume_if(TK_SUB)) {
-        return new_node(ND_SUB, new_node_num(0), parse_unary_expr(), op_token);
+        return new_node(ND_SUB, new_node_num(0, token), parse_unary_expr(),
+                        op_token);
     } else if(consume_if(TK_ADDR)) {
         return new_node(ND_ADDR, parse_unary_expr(), NULL, op_token);
     } else if(consume_if(TK_MUL)) {
@@ -362,8 +364,9 @@ Node *parse_decl() {
     if(lvar)
         error_at_token(token, "Redefinition of variable.");
     lvar = new_lvar(token);
+    Token *name_token;
     token = token->next;
-    Node *node = new_node_lvar(lvar);
+    Node *node = new_node_lvar(lvar, name_token);
     expect(TK_SEMI);
     return node;
 }
@@ -419,7 +422,7 @@ Node *parse_func_definition() {
     while(peek() != TK_CL_PAREN) {
         expect(TK_INT);
         Token *param = expect(TK_IDENT);
-        vec_push(params, new_node_lvar(new_lvar(param)));
+        vec_push(params, new_node_lvar(new_lvar(param), param));
         if(!consume_if(TK_COMMA))
             break;
     }

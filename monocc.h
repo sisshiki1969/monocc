@@ -53,8 +53,7 @@ typedef struct LVar LVar;
 
 struct LVar {
     LVar *next;
-    char *name;
-    int len;
+    Token *token;
     int offset;
 };
 
@@ -128,7 +127,7 @@ void tokenize(char *p);
 // Methods for Node
 
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs, Token *token);
-Node *new_node_num(int val);
+Node *new_node_num(int val, Token *token);
 bool is_binary_op(NodeKind kind);
 bool is_expr(NodeKind kind);
 void parse_program();
