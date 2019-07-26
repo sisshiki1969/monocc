@@ -49,11 +49,19 @@ struct Token {
     int len;
 };
 
+typedef struct Type Type;
+
+struct Type {
+    enum { INT, PTR } ty;
+    Type *ptr_to;
+};
+
 typedef struct LVar LVar;
 
 struct LVar {
     LVar *next;
     Token *token;
+    Type *type;
     int offset;
 };
 

@@ -40,13 +40,17 @@ char *new_label() {
 
 /// Generate address of a local variable.
 void gen_lval(Node *node) {
-    if(node->kind != ND_LVAR) {
+    if(node->kind == ND_LVAR) {
+        printf("\tmov  rax, rbp\n");
+        printf("\tsub  rax, %d\n", node->ident_offset);
+        printf("\tpush rax\n");
+        return;
+    } else if(node->kind == ND_DEREF) {
+        gen(node->lhs);
+        printf("\tpush rax\n");
+    } else {
         error_at_node(node, "Invalid left hand side value.");
     }
-    printf("\tmov  rax, rbp\n");
-    printf("\tsub  rax, %d\n", node->ident_offset);
-    printf("\tpush rax\n");
-    return;
 }
 
 // Codegen

@@ -81,6 +81,21 @@ Node *new_node_fdecl(Token *name, Vector *params, Node *body) {
     return node;
 }
 
+// Methods for Type;
+
+Type *new_type_int() {
+    Type *type = calloc(1, sizeof(Type));
+    type->ty = INT;
+    return type;
+}
+
+Type *new_type_ptr_to(Type *ptr_to) {
+    Type *type = calloc(1, sizeof(Type));
+    type->ty = PTR;
+    type->ptr_to = ptr_to;
+    return type;
+}
+
 // Methods for handling Token.
 
 /// If current token is EOF, return true.
@@ -132,7 +147,7 @@ Token *consume() {
 // LVar
 
 /// Generate LVar from token and put it to the locals list.
-LVar *new_lvar(Token *token) {
+LVar *new_lvar(Token *token, Type *type) {
     LVar *lvar = calloc(1, sizeof(LVar));
     lvar->next = locals;
     lvar->token = token;
@@ -140,6 +155,7 @@ LVar *new_lvar(Token *token) {
     if(locals)
         offset = locals->offset + 8;
     lvar->offset = offset;
+    lvar->type = type;
     locals = lvar;
     return lvar;
 }
@@ -154,35 +170,11 @@ LVar *find_lvar(Token *token) {
     return NULL;
 }
 
-void print_locals() {
-    LVar *var = locals;
-    while(var) {
-        printf("// %.*s offset:%d\n", var->token->len, var->token->str,
-               var->offset);
-        var = var->next;
-    }
-}
-
-/// If current token is a local variable, take it and return LVar struct.
-/// Otherwise, raise error.
-LVar *consume_lvar() {
-    if(token->kind != TK_IDENT) {
-        error_at_token(token, "Identifier is expected.");
-    }
-    LVar *lvar = find_lvar(token);
-    if(!lvar) {
-        lvar = new_lvar(token);
-    }
-    token = token->next;
-    return lvar;
-}
-
 // Parser
 
 Node *parse_expr();
 Node *parse_assign_expr();
-Node *parse_stmt();
-Node *parse_decl();
+Node *parse_block();
 
 Node *parse_prim_expr() {
     Token *cur_token = token;
@@ -338,33 +330,24 @@ Node *parse_expr() {
     return node;
 }
 
-Node *parse_block() {
-    expect(TK_OP_BRACE);
-    Vector *vec = vec_new();
-    while(peek() != TK_CL_BRACE) {
-        Node *node;
-        if(peek() == TK_INT) {
-            node = parse_decl();
-        } else {
-            node = parse_stmt();
-        }
-        if(node)
-            vec_push(vec, node);
-    }
-    expect(TK_CL_BRACE);
-    return new_node_block(vec);
-}
-
 Node *parse_decl() {
+    Type *type;
     expect(TK_INT);
+    type = new_type_int();
+
+    while(peek() == TK_MUL) {
+        expect(TK_MUL);
+        type = new_type_ptr_to(type);
+    }
+
     if(token->kind != TK_IDENT) {
         error_at_token(token, "Identifier is expected.");
     }
-    LVar *lvar = find_lvar(token);
-    if(lvar)
+
+    if(find_lvar(token))
         error_at_token(token, "Redefinition of variable.");
-    lvar = new_lvar(token);
-    Token *name_token;
+    LVar *lvar = new_lvar(token, type);
+    Token *name_token = token;
     token = token->next;
     Node *node = new_node_lvar(lvar, name_token);
     expect(TK_SEMI);
@@ -413,16 +396,34 @@ Node *parse_stmt() {
     return node;
 }
 
+Node *parse_block() {
+    expect(TK_OP_BRACE);
+    Vector *vec = vec_new();
+    while(peek() != TK_CL_BRACE) {
+        Node *node;
+        if(peek() == TK_INT) {
+            node = parse_decl();
+        } else {
+            node = parse_stmt();
+        }
+        if(node)
+            vec_push(vec, node);
+    }
+    expect(TK_CL_BRACE);
+    return new_node_block(vec);
+}
+
 Node *parse_func_definition() {
     locals = NULL;
     expect(TK_INT);
+    Type *type = new_type_int();
     Token *name = expect(TK_IDENT);
     expect(TK_OP_PAREN);
     Vector *params = vec_new();
     while(peek() != TK_CL_PAREN) {
         expect(TK_INT);
         Token *param = expect(TK_IDENT);
-        vec_push(params, new_node_lvar(new_lvar(param), param));
+        vec_push(params, new_node_lvar(new_lvar(param, type), param));
         if(!consume_if(TK_COMMA))
             break;
     }
@@ -442,6 +443,8 @@ void parse_program() {
         vec_push(ext_declarations, decl);
     }
 }
+
+// Utility for debug info
 
 void print_node(Node *node) {
     if(node == NULL) {
@@ -585,5 +588,25 @@ void print_nodes() {
         printf("// ");
         print_node(node);
         printf("\n");
+    }
+}
+
+void print_type(Type *type) {
+    if(type->ty == INT) {
+        printf("int ");
+    } else if(type->ty == PTR) {
+        printf("ptr_to ");
+        print_type(type->ptr_to);
+    }
+}
+
+void print_locals() {
+    LVar *var = locals;
+    while(var) {
+        printf("// %.*s offset:%d ", var->token->len, var->token->str,
+               var->offset);
+        print_type(var->type);
+        printf("\n");
+        var = var->next;
     }
 }

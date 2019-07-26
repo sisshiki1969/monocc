@@ -82,6 +82,14 @@ try2 1 "int main(){ int e; e = 32740; print(bar(5, 10)); return bar(8, 11) == e 
 int bar(int a,int b){ int e; e = 22745; print(a); print(b); return 10000 + e;}"
 try2 1 "int main(){ print(fibo(30)); return fibo(30) == 1346269;}
 int fibo(int x){ if (x < 2) return 1; return fibo(x-1) + fibo(x-2); }"
-try2 3 "int main(){ int x; int y; x *2-feel(5) = 3; y = &x; return *y;}"
+try2 9 "int main(){
+    int x;
+    int *y;
+    x = 3;
+    y = &x;
+    1+*y = 9;
+    return x;
+    }"
+try2 33 "int main(){ int x; int *y; x = 33; return *(&y + 8); }"
 
 echo OK
