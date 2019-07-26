@@ -41,7 +41,7 @@ char *new_label() {
 /// Generate address of a local variable.
 void gen_lval(Node *node) {
     if(node->kind != ND_LVAR) {
-        error("Invalid left hand side value.");
+        error_at_node(node, "Invalid left hand side value.");
     }
     printf("\tmov  rax, rbp\n");
     printf("\tsub  rax, %d\n", node->ident_offset);
@@ -233,10 +233,10 @@ void gen(Node *node) {
             printf("\tmovzb rax, al\n");
             break;
         default:
-            error("Unimplemented binary op.");
+            error_at_token(node->token, "gen(): Unimplemented binary op.");
         }
         printf("\tpush rax\n");
         return;
     }
-    error("gen(): Unimplemented NodeKind.");
+    error_at_token(node->token, "gen(): Unimplemented NodeKind.");
 }

@@ -2,18 +2,18 @@
 
 // Method for Node
 
-Node *new_node(NodeKind kind, Node *lhs, Node *rhs) {
-    Node *node = calloc(1, sizeof(Node));
-    node->kind = kind;
-    node->lhs = lhs;
-    node->rhs = rhs;
-    return node;
-}
-
 Node *new_node_num(int val) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_NUM;
     node->int_val = val;
+    node->token = token;
+    return node;
+}
+
+Node *new_node_ident(Token *token) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = TK_IDENT;
+    node->token = token;
     return node;
 }
 
@@ -22,30 +22,16 @@ Node *new_node_lvar(LVar *lvar) {
     node->kind = ND_LVAR;
     node->ident_lvar = lvar;
     node->ident_offset = lvar->offset;
+    node->token = token;
     return node;
 }
 
-Node *new_node_if_then(Node *cond_, Node *then_, Node *else_) {
+Node *new_node(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     Node *node = calloc(1, sizeof(Node));
-    node->kind = ND_IF;
-    node->lhs = cond_;
-    node->rhs = then_;
-    node->xhs = else_;
-    return node;
-}
-
-Node *new_node_while(Node *cond_, Node *do_) {
-    Node *node = calloc(1, sizeof(Node));
-    node->kind = ND_WHILE;
-    node->lhs = cond_;
-    node->rhs = do_;
-    return node;
-}
-
-Node *new_node_block(Vector *vec) {
-    Node *node = calloc(1, sizeof(Node));
-    node->kind = ND_BLOCK;
-    node->nodes = vec;
+    node->kind = kind;
+    node->lhs = lhs;
+    node->rhs = rhs;
+    node->token = op_token;
     return node;
 }
 
@@ -55,6 +41,34 @@ Node *new_node_call(Node *callee, Vector *vec) {
     node->kind = ND_CALL;
     node->lhs = callee;
     node->nodes = vec;
+    node->token = token;
+    return node;
+}
+
+Node *new_node_if_then(Node *cond_, Node *then_, Node *else_) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_IF;
+    node->lhs = cond_;
+    node->rhs = then_;
+    node->xhs = else_;
+    node->token = token;
+    return node;
+}
+
+Node *new_node_while(Node *cond_, Node *do_) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_WHILE;
+    node->lhs = cond_;
+    node->rhs = do_;
+    node->token = token;
+    return node;
+}
+
+Node *new_node_block(Vector *vec) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_BLOCK;
+    node->nodes = vec;
+    node->token = token;
     return node;
 }
 
@@ -64,13 +78,6 @@ Node *new_node_fdecl(Token *name, Vector *params, Node *body) {
     node->lhs = body;
     node->nodes = params;
     node->token = name;
-    return node;
-}
-
-Node *new_node_ident(Token *token) {
-    Node *node = calloc(1, sizeof(Node));
-    node->kind = TK_IDENT;
-    node->token = token;
     return node;
 }
 
@@ -206,7 +213,8 @@ Node *parse_prim_expr() {
         } else {
             LVar *lvar = find_lvar(token);
             if(!lvar) {
-                error_at_token(token, "Variable is not defined.");
+                error_at_token(token, "Identifier %.*s is not defined.",
+                               token->len, token->str);
             }
             token = token->next;
             return new_node_lvar(lvar);
@@ -216,14 +224,15 @@ Node *parse_prim_expr() {
 }
 
 Node *parse_unary_expr() {
+    Token *op_token = token;
     if(consume_if(TK_ADD)) {
         return parse_unary_expr();
     } else if(consume_if(TK_SUB)) {
-        return new_node(ND_SUB, new_node_num(0), parse_unary_expr());
+        return new_node(ND_SUB, new_node_num(0), parse_unary_expr(), op_token);
     } else if(consume_if(TK_ADDR)) {
-        return new_node(ND_ADDR, parse_unary_expr(), NULL);
+        return new_node(ND_ADDR, parse_unary_expr(), NULL, op_token);
     } else if(consume_if(TK_MUL)) {
-        return new_node(ND_DEREF, parse_unary_expr(), NULL);
+        return new_node(ND_DEREF, parse_unary_expr(), NULL, op_token);
     } else {
         return parse_prim_expr();
     }
@@ -234,13 +243,14 @@ Node *parse_mul_expr() {
     Node *rhs;
 
     while(true) {
+        Token *op_token = token;
         if(consume_if(TK_MUL)) {
             rhs = parse_unary_expr();
-            node = new_node(ND_MUL, node, rhs);
+            node = new_node(ND_MUL, node, rhs, op_token);
             continue;
         } else if(consume_if(TK_DIV)) {
             rhs = parse_unary_expr();
-            node = new_node(ND_DIV, node, rhs);
+            node = new_node(ND_DIV, node, rhs, op_token);
             continue;
         }
         return node;
@@ -252,13 +262,14 @@ Node *parse_add_expr() {
     Node *rhs;
 
     while(true) {
+        Token *op_token = token;
         if(consume_if(TK_ADD)) {
             rhs = parse_mul_expr();
-            node = new_node(ND_ADD, node, rhs);
+            node = new_node(ND_ADD, node, rhs, op_token);
             continue;
         } else if(consume_if(TK_SUB)) {
             rhs = parse_mul_expr();
-            node = new_node(ND_SUB, node, rhs);
+            node = new_node(ND_SUB, node, rhs, op_token);
             continue;
         }
         return node;
@@ -270,21 +281,22 @@ Node *parse_rel_expr() {
     Node *rhs;
 
     for(;;) {
+        Token *op_token = token;
         if(consume_if(TK_GE)) {
             rhs = parse_add_expr();
-            node = new_node(ND_GE, node, rhs);
+            node = new_node(ND_GE, node, rhs, op_token);
             continue;
         } else if(consume_if(TK_GT)) {
             rhs = parse_add_expr();
-            node = new_node(ND_GT, node, rhs);
+            node = new_node(ND_GT, node, rhs, op_token);
             continue;
         } else if(consume_if(TK_LE)) {
             rhs = parse_add_expr();
-            node = new_node(ND_GE, rhs, node);
+            node = new_node(ND_GE, rhs, node, op_token);
             continue;
         } else if(consume_if(TK_LT)) {
             rhs = parse_add_expr();
-            node = new_node(ND_GT, rhs, node);
+            node = new_node(ND_GT, rhs, node, op_token);
             continue;
         }
         return node;
@@ -296,13 +308,14 @@ Node *parse_eq_expr() {
     Node *rhs;
 
     for(;;) {
+        Token *op_token = token;
         if(consume_if(TK_EQ)) {
             rhs = parse_rel_expr();
-            node = new_node(ND_EQ, node, rhs);
+            node = new_node(ND_EQ, node, rhs, op_token);
             continue;
         } else if(consume_if(TK_NEQ)) {
             rhs = parse_rel_expr();
-            node = new_node(ND_NEQ, node, rhs);
+            node = new_node(ND_NEQ, node, rhs, op_token);
             continue;
         }
         return node;
@@ -311,9 +324,9 @@ Node *parse_eq_expr() {
 
 Node *parse_assign_expr() {
     Node *node = parse_eq_expr();
-
+    Token *op_token = token;
     if(consume_if(TK_ASSIGN)) {
-        node = new_node(ND_ASSIGN, node, parse_assign_expr());
+        node = new_node(ND_ASSIGN, node, parse_assign_expr(), op_token);
     }
     return node;
 }
@@ -360,15 +373,16 @@ Node *parse_stmt() {
         return NULL;
     Node *node;
     Node *then_;
+    Token *op_token = token;
     switch(token->kind) {
     case TK_RETURN:
         expect(TK_RETURN);
         if(consume_if(TK_SEMI))
-            return new_node(ND_RETURN, NULL, NULL);
+            return new_node(ND_RETURN, NULL, NULL, op_token);
         else {
             node = parse_expr();
             expect(TK_SEMI);
-            return new_node(ND_RETURN, node, NULL);
+            return new_node(ND_RETURN, node, NULL, op_token);
         }
     case TK_IF:
         expect(TK_IF);

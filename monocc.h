@@ -59,6 +59,7 @@ struct LVar {
 };
 
 typedef enum {
+    ND_IDENT,
     ND_NUM,
     ND_ADD,
     ND_SUB,
@@ -73,12 +74,12 @@ typedef enum {
     ND_DEREF,
     ND_LVAR,
     ND_CALL,
+
     ND_IF,
     ND_WHILE,
     ND_RETURN,
     ND_BLOCK,
     ND_FDECL,
-    ND_IDENT,
 } NodeKind;
 
 typedef struct Node Node;
@@ -99,6 +100,11 @@ struct Node {
     Token *token;
 };
 
+typedef struct {
+    int start;
+    int end;
+} Span;
+
 typedef struct Vector Vector;
 
 struct Vector {
@@ -112,6 +118,7 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 void error(char *fmt, ...);
 void error_at_char(char *source, char *fmt, ...);
 void error_at_token(Token *token, char *fmt, ...);
+void error_at_node(Node *node, char *fmt, ...);
 
 // Methods for Token
 
@@ -120,7 +127,7 @@ void tokenize(char *p);
 
 // Methods for Node
 
-Node *new_node(NodeKind kind, Node *lhs, Node *rhs);
+Node *new_node(NodeKind kind, Node *lhs, Node *rhs, Token *token);
 Node *new_node_num(int val);
 bool is_binary_op(NodeKind kind);
 bool is_expr(NodeKind kind);
