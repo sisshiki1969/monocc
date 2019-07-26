@@ -139,6 +139,8 @@ void gen_stmt(Node *node) {
     }
 }
 
+Type *type(Node *node);
+
 void gen(Node *node) {
     switch(node->kind) {
     // statement
@@ -200,11 +202,24 @@ void gen(Node *node) {
     if(is_binary_op(node->kind)) {
         gen(node->lhs);
         gen(node->rhs);
+        Type *l_ty = type(node->lhs);
+        Type *r_ty = type(node->rhs);
+        int size;
         printf("\tpop  rdi\n");
         printf("\tpop  rax\n");
         switch(node->kind) {
         case ND_ADD:
-            printf("\tadd  rax, rdi\n");
+            if(l_ty->ty == INT && r_ty->ty == INT) {
+                printf("\tadd  rax, rdi\n");
+            } else if(l_ty->ty == PTR && r_ty->ty == INT) {
+                if(l_ty->ptr_to->ty == INT)
+                    size = 4;
+                else
+                    size = 8;
+                printf("\timul rdi, %d\n", size);
+                printf("\tadd  rax, rdi\n");
+            } else
+                error_at_node(node, "Illegal operation. (Type mismatch)");
             break;
         case ND_SUB:
             printf("\tsub  rax, rdi\n");
@@ -243,4 +258,47 @@ void gen(Node *node) {
         return;
     }
     error_at_token(node->token, "gen(): Unimplemented NodeKind.");
+}
+
+Type *type(Node *node) {
+    Type *ty;
+    switch(node->kind) {
+    // statement
+    case ND_IF:
+    case ND_WHILE:
+    case ND_BLOCK:
+    case ND_RETURN:
+        error("Can not determine a type of statement.");
+    // declaration
+    case ND_FDECL:
+        error("Can not determine a type of declaration.");
+
+    // expression
+    case ND_NUM:
+        return new_type_int();
+    case ND_LVAR:
+        return node->ident_lvar->type;
+    case ND_ASSIGN:
+        return type(node->lhs);
+    case ND_CALL:
+        return new_type_int();
+    case ND_ADDR:
+        return new_type_ptr_to(type(node->lhs));
+    case ND_DEREF:
+        ty = type(node->lhs);
+        if(ty->ty != PTR)
+            error_at_node(node, "Can not dereference.\n");
+        return ty->ptr_to;
+    case ND_ADD:
+    case ND_SUB:
+        return type(node->lhs);
+    case ND_MUL:
+    case ND_DIV:
+    case ND_EQ:
+    case ND_NEQ:
+    case ND_GE:
+    case ND_GT:
+        return new_type_int();
+    }
+    error_at_node(node, "type(): Unimplemented NodeKind.");
 }

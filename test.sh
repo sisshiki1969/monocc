@@ -87,9 +87,10 @@ try2 9 "int main(){
     int *y;
     x = 3;
     y = &x;
-    1+*y = 9;
+    *y = 9;
     return x;
     }"
-try2 33 "int main(){ int x; int *y; x = 33; return *(&y + 8); }"
+try2 4 "int main(){ int x; int *y; y = &x; return y + 1 - y; }"
+try2 8 "int main(){ int x; int **y; y = &x; return y + 1 - y; }"
 
 echo OK

@@ -143,6 +143,9 @@ void print_nodes();
 void print_node(Node *node);
 void print_locals();
 
+Type *new_type_int();
+Type *new_type_ptr_to(Type *ptr_to);
+
 // Methods for Vector
 
 Vector *vec_new();
