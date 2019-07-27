@@ -14,54 +14,6 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
 
 bool is_nondigit(char c) { return isalnum(c) || c == '_'; }
 
-/// Print tokens.
-void print_tokens(Token *token) {
-    printf("// ");
-    while(token) {
-        switch(token->kind) {
-        case TK_NUM:
-        case TK_IDENT:
-        case TK_ADD:
-        case TK_SUB:
-        case TK_MUL:
-        case TK_DIV:
-        case TK_ADDR:
-        case TK_EQ:
-        case TK_NEQ:
-        case TK_GT:
-        case TK_GE:
-        case TK_LT:
-        case TK_LE:
-        case TK_ASSIGN:
-        case TK_SEMI:
-        case TK_OP_PAREN:
-        case TK_CL_PAREN:
-        case TK_OP_BRACE:
-        case TK_CL_BRACE:
-        case TK_COMMA:
-            printf("[%.*s]", token->len, token->str);
-            break;
-        // Reserved words
-        case TK_IF:
-        case TK_ELSE:
-        case TK_WHILE:
-        case TK_FOR:
-        case TK_RETURN:
-        case TK_INT:
-            printf("<%.*s>", token->len, token->str);
-            break;
-        case TK_EOF:
-            printf("<EOF>");
-            break;
-        default:
-            error_at_token(token, "print_tokens(): Unknown TokenKind.");
-            break;
-        }
-        token = token->next;
-    }
-    printf("\n");
-}
-
 bool is_reserved(char *str, int len, char *reserved) {
     return len == strlen(reserved) && strncmp(str, reserved, len) == 0;
 }
@@ -110,6 +62,8 @@ void tokenize(char *p) {
                 cur = new_token(TK_WHILE, cur, org_p, len);
             } else if(is_reserved(org_p, len, "int")) {
                 cur = new_token(TK_INT, cur, org_p, len);
+            } else if(is_reserved(org_p, len, "sizeof")) {
+                cur = new_token(TK_SIZEOF, cur, org_p, len);
             } else {
                 cur = new_token(TK_IDENT, cur, org_p, len);
             }

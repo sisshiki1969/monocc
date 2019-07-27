@@ -33,6 +33,7 @@ typedef enum {
     TK_WHILE,
     TK_FOR,
     TK_RETURN,
+    TK_SIZEOF,
 
     TK_INT,
 
@@ -142,10 +143,12 @@ void parse_program();
 void print_nodes();
 void print_node(Node *node);
 void print_locals();
-void print_type(Type *type);
+void print_type(FILE *stream, Type *type);
 
 Type *new_type_int();
 Type *new_type_ptr_to(Type *ptr_to);
+int sizeof_type(Type *type);
+Type *type(Node *node);
 
 // Methods for Vector
 

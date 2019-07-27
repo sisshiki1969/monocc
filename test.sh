@@ -91,6 +91,8 @@ try2 9 "int main(){
     return x;
     }"
 try2 1 "int main(){ int x; int *y; y = &x; return y + 1 - y; }"
-try2 1 "int main(){ int x; int **y; y = &x; return y + 1 - y; }"
+try2 4 "int main(){ int x; return sizeof x; }"
+try2 8 "int main(){ int x; return sizeof &x; }"
+try2 8 "int main(){ int x; return sizeof (&x + 12); }"
 
 echo OK

@@ -206,11 +206,11 @@ void gen(Node *node) {
         l_ty = type(node->lhs);
         r_ty = type(node->rhs);
         if(!is_same_type(l_ty, r_ty)) {
-            printf("Left: ");
-            print_type(l_ty);
-            printf("\nRight: ");
-            print_type(r_ty);
-            printf("\n");
+            fprintf(stderr, "Left: ");
+            print_type(stderr, l_ty);
+            fprintf(stderr, "\nRight: ");
+            print_type(stderr, r_ty);
+            fprintf(stderr, "\n");
             error_at_node(node->lhs, "Type mismatch in assignment operation.");
         }
         gen_lval(node->lhs);
