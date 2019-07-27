@@ -142,6 +142,7 @@ void parse_program();
 void print_nodes();
 void print_node(Node *node);
 void print_locals();
+void print_type(Type *type);
 
 Type *new_type_int();
 Type *new_type_ptr_to(Type *ptr_to);

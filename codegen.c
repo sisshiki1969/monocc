@@ -29,6 +29,31 @@ bool is_expr(NodeKind kind) {
     return true;
 }
 
+// Util methods for Type.
+
+bool is_int(Type *type) { return type->ty == INT; }
+
+bool is_ptr(Type *type) { return type->ty == PTR; }
+
+int sizeof_type(Type *type) {
+    if(type->ty == INT)
+        return 4;
+    else
+        return 8;
+}
+
+bool is_same_type(Type *l_type, Type *r_type) {
+    while(l_type) {
+        if(l_type->ty != r_type->ty)
+            return false;
+        if(l_type->ty != PTR)
+            return true;
+        l_type = l_type->ptr_to;
+        r_type = r_type->ptr_to;
+    }
+    error("Internal error: Invalid type structure.");
+}
+
 /// Generate a new label as a string.
 char *new_label() {
     char *label = (char *)malloc(10);
@@ -142,6 +167,8 @@ void gen_stmt(Node *node) {
 Type *type(Node *node);
 
 void gen(Node *node) {
+    Type *l_ty;
+    Type *r_ty;
     switch(node->kind) {
     // statement
     case ND_IF:
@@ -176,6 +203,16 @@ void gen(Node *node) {
         printf("\tpush rax\n");
         return;
     case ND_ASSIGN:
+        l_ty = type(node->lhs);
+        r_ty = type(node->rhs);
+        if(!is_same_type(l_ty, r_ty)) {
+            printf("Left: ");
+            print_type(l_ty);
+            printf("\nRight: ");
+            print_type(r_ty);
+            printf("\n");
+            error_at_node(node->lhs, "Type mismatch in assignment operation.");
+        }
         gen_lval(node->lhs);
         gen(node->rhs);
         printf("\tpop  rdi\n");
@@ -204,25 +241,34 @@ void gen(Node *node) {
         gen(node->rhs);
         Type *l_ty = type(node->lhs);
         Type *r_ty = type(node->rhs);
-        int size;
         printf("\tpop  rdi\n");
         printf("\tpop  rax\n");
         switch(node->kind) {
         case ND_ADD:
-            if(l_ty->ty == INT && r_ty->ty == INT) {
+            if(is_int(l_ty) && is_int(r_ty)) {
                 printf("\tadd  rax, rdi\n");
-            } else if(l_ty->ty == PTR && r_ty->ty == INT) {
-                if(l_ty->ptr_to->ty == INT)
-                    size = 4;
-                else
-                    size = 8;
-                printf("\timul rdi, %d\n", size);
+            } else if(is_ptr(l_ty) && is_int(r_ty)) {
+                printf("\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
+                printf("\tadd  rax, rdi\n");
+            } else if(is_int(l_ty) && is_ptr(r_ty)) {
+                printf("\timul rax, %d\n", sizeof_type(r_ty->ptr_to));
                 printf("\tadd  rax, rdi\n");
             } else
                 error_at_node(node, "Illegal operation. (Type mismatch)");
             break;
         case ND_SUB:
-            printf("\tsub  rax, rdi\n");
+            if(is_int(l_ty) && is_int(r_ty)) {
+                printf("\tsub  rax, rdi\n");
+            } else if(is_ptr(l_ty) && is_ptr(r_ty)) {
+                printf("\tsub  rax, rdi\n");
+                printf("\tcqo\n");
+                printf("\tmov  rdi, %d\n", sizeof_type(l_ty->ptr_to));
+                printf("\tidiv rdi\n");
+            } else if(is_ptr(l_ty) && is_int(r_ty)) {
+                printf("\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
+                printf("\tsub  rax, rdi\n");
+            } else
+                error_at_node(node, "Illegal operation. (Type mismatch)");
             break;
         case ND_MUL:
             printf("\timul rax, rdi\n");
