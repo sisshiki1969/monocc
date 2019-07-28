@@ -1,6 +1,6 @@
 #include "monocc.h"
 
-char registers[4][4] = {"rdi", "rsi", "rdx", "rcx"};
+char registers[5][4] = {"rdi", "rsi", "rdx", "rcx", "r8"};
 
 int main(int argc, char **argv) {
     if(argc < 2) {
@@ -13,7 +13,6 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-    char registers[4][4] = {"rdi", "rsi", "rdx", "rcx"};
     source_text = argv[1];
 
     tokenize(source_text);

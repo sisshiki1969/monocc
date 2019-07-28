@@ -32,21 +32,25 @@ bool is_expr(NodeKind kind) {
 // Util methods for Type.
 
 bool is_int(Type *type) { return type->ty == INT; }
-
 bool is_ptr(Type *type) { return type->ty == PTR; }
+bool is_array(Type *type) { return type->ty == ARRAY; }
 
 int sizeof_type(Type *type) {
-    if(type->ty == INT)
+    switch(type->ty) {
+    case INT:
         return 4;
-    else
+    case PTR:
         return 8;
+    case ARRAY:
+        return type->array_size * sizeof_type(type->ptr_to);
+    }
 }
 
 bool is_same_type(Type *l_type, Type *r_type) {
     while(l_type) {
         if(l_type->ty != r_type->ty)
             return false;
-        if(l_type->ty != PTR)
+        if(l_type->ty == INT)
             return true;
         l_type = l_type->ptr_to;
         r_type = r_type->ptr_to;
@@ -243,6 +247,10 @@ void gen(Node *node) {
         Type *r_ty = type(node->rhs);
         printf("\tpop  rdi\n");
         printf("\tpop  rax\n");
+        char *cmp_op;
+        char reg_l[2][4] = {"rax", "eax"};
+        char reg_r[2][4] = {"rdi", "edi"};
+        int reg_mode;
         switch(node->kind) {
         case ND_ADD:
             if(is_int(l_ty) && is_int(r_ty)) {
@@ -278,24 +286,32 @@ void gen(Node *node) {
             printf("\tidiv rax, rdi\n");
             break;
         case ND_EQ:
-            printf("\tcmp  rax, rdi\n");
-            printf("\tsete al\n");
-            printf("\tmovzb rax, al\n");
-            break;
         case ND_NEQ:
-            printf("\tcmp  rax, rdi\n");
-            printf("\tsetne al\n");
-            printf("\tmovzb rax, al\n");
-            break;
         case ND_GE:
-            printf("\tcmp  rax, rdi\n");
-            printf("\tsetge al\n");
-            printf("\tmovzb rax, al\n");
-            break;
         case ND_GT:
-            printf("\tcmp  rax, rdi\n");
-            printf("\tsetg al\n");
-            printf("\tmovzb rax, al\n");
+            if(is_int(l_ty) && is_int(r_ty)) {
+                reg_mode = 1;
+            } else if(is_ptr(l_ty) && is_ptr(r_ty)) {
+                reg_mode = 0;
+            } else
+                error_at_node(node, "Illegal operation. (Type mismatch)");
+            switch(node->kind) {
+            case ND_EQ:
+                cmp_op = "e";
+                break;
+            case ND_NEQ:
+                cmp_op = "ne";
+                break;
+            case ND_GE:
+                cmp_op = "ge";
+                break;
+            case ND_GT:
+                cmp_op = "g";
+                break;
+            }
+            printf("\tcmp  %s, %s\n", reg_l[reg_mode], reg_r[reg_mode]);
+            printf("\tset%s al\n", cmp_op);
+            printf("\tmovzb %s, al\n", reg_l[reg_mode]);
             break;
         default:
             error_at_token(node->token, "gen(): Unimplemented binary op.");

@@ -26,6 +26,8 @@ typedef enum {
     TK_CL_PAREN,
     TK_OP_BRACE,
     TK_CL_BRACE,
+    TK_OP_BRACKET,
+    TK_CL_BRACKET,
     TK_COMMA,
 
     TK_IF,
@@ -53,8 +55,9 @@ struct Token {
 typedef struct Type Type;
 
 struct Type {
-    enum { INT, PTR } ty;
+    enum { INT, PTR, ARRAY } ty;
     Type *ptr_to;
+    int array_size;
 };
 
 typedef struct LVar LVar;
@@ -147,6 +150,7 @@ void print_type(FILE *stream, Type *type);
 
 Type *new_type_int();
 Type *new_type_ptr_to(Type *ptr_to);
+Type *new_type_array(Type *ptr_to, int size);
 int sizeof_type(Type *type);
 Type *type(Node *node);
 
@@ -165,7 +169,7 @@ void gen_stmt(Node *node);
 // Globals
 
 char *source_text;
-char registers[4][4];
+char registers[5][4];
 Token *token;
 Vector *ext_declarations;
 LVar *locals;

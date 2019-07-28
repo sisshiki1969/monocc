@@ -58,6 +58,10 @@ return sum;"
 try 5 "int a; int b; a = foo(b = 37, 7, 6);
 print(a);
 return a;"
+try 1 "int a; int *p; int *q; p = &a; q = &a; return(p==q)"
+try 0 "int a; int *p; int *q; p = &a; q = &a; return(p!=q)"
+try 0 "int a; int b; int *p; int *q; p = &a; q = &b; return(p==q)"
+try 1 "int a; int b; int *p; int *q; p = &a; q = &b; return(p!=q)"
 
 try2() {
     expected="$1"
@@ -92,7 +96,18 @@ try2 9 "int main(){
     }"
 try2 1 "int main(){ int x; int *y; y = &x; return y + 1 - y; }"
 try2 4 "int main(){ int x; return sizeof x; }"
+try2 4 "int main(){ int x; return sizeof(7); }"
 try2 8 "int main(){ int x; return sizeof &x; }"
 try2 8 "int main(){ int x; return sizeof (&x + 12); }"
+try2 40 "int main(){ int x[10]; int y; return sizeof(x); }"
+try2 40 "int main(){ int *x[5]; int y; return sizeof(x); }"
+try2 1 "int main(){
+    int *p;
+    int a;
+    int b;
+    alloc4(&p, 1, 2, 4, 8);
+    if(*(p + 1)!=2) return 0;
+    if(*(p + 3)!=8) return 0;
+    return 1;}"
 
 echo OK

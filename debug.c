@@ -24,6 +24,8 @@ void print_tokens(Token *token) {
         case TK_CL_PAREN:
         case TK_OP_BRACE:
         case TK_CL_BRACE:
+        case TK_OP_BRACKET:
+        case TK_CL_BRACKET:
         case TK_COMMA:
         case TK_SIZEOF:
             printf("[%.*s]", token->len, token->str);
@@ -115,7 +117,7 @@ void print_node(Node *node) {
         return;
     }
     if(node->kind == ND_NUM) {
-        printf("(%d)", node->int_val);
+        printf(" %d ", node->int_val);
         return;
     }
     if(node->kind == ND_ASSIGN) {
@@ -202,6 +204,9 @@ void print_type(FILE *stream, Type *type) {
         fprintf(stream, "int ");
     } else if(type->ty == PTR) {
         fprintf(stream, "* ");
+        print_type(stream, type->ptr_to);
+    } else if(type->ty == ARRAY) {
+        fprintf(stream, "[%d] ", type->array_size);
         print_type(stream, type->ptr_to);
     }
 }

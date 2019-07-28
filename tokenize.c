@@ -152,6 +152,14 @@ void tokenize(char *p) {
             cur = new_token(TK_CL_BRACE, cur, p++, 1);
             continue;
         }
+        if(*p == '[') {
+            cur = new_token(TK_OP_BRACKET, cur, p++, 1);
+            continue;
+        }
+        if(*p == ']') {
+            cur = new_token(TK_CL_BRACKET, cur, p++, 1);
+            continue;
+        }
         if(*p == '&') {
             cur = new_token(TK_ADDR, cur, p++, 1);
             continue;

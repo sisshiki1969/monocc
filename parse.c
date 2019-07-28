@@ -96,6 +96,14 @@ Type *new_type_ptr_to(Type *ptr_to) {
     return type;
 }
 
+Type *new_type_array(Type *ptr_to, int size) {
+    Type *type = calloc(1, sizeof(Type));
+    type->ty = ARRAY;
+    type->ptr_to = ptr_to;
+    type->array_size = size;
+    return type;
+}
+
 // Methods for handling Token.
 
 /// If current token is EOF, return true.
@@ -151,9 +159,16 @@ LVar *new_lvar(Token *token, Type *type) {
     LVar *lvar = calloc(1, sizeof(LVar));
     lvar->next = locals;
     lvar->token = token;
-    int offset = 8;
-    if(locals)
-        offset = locals->offset + 8;
+    int offset;
+    int size = 8;
+    if(type->ty == ARRAY) {
+        size = size * type->array_size;
+    }
+    if(locals) {
+        offset = locals->offset + size;
+    } else {
+        offset = 8 + size;
+    }
     lvar->offset = offset;
     lvar->type = type;
     locals = lvar;
@@ -342,12 +357,16 @@ Node *parse_decl() {
         type = new_type_ptr_to(type);
     }
 
-    if(token->kind != TK_IDENT) {
-        error_at_token(token, "Identifier is expected.");
-    }
-
+    Token *token = expect(TK_IDENT);
     if(find_lvar(token))
         error_at_token(token, "Redefinition of variable.");
+
+    if(peek() == TK_OP_BRACKET) {
+        expect(TK_OP_BRACKET);
+        int size = expect(TK_NUM)->int_val;
+        type = new_type_array(type, size);
+        expect(TK_CL_BRACKET);
+    }
     LVar *lvar = new_lvar(token, type);
     Token *name_token = token;
     token = token->next;
