@@ -19,6 +19,7 @@ int main(int argc, char **argv) {
     print_tokens(token);
 
     parse_program();
+    print_globals();
     // print_nodes();
 
     labels = 0;

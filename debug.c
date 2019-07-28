@@ -208,17 +208,43 @@ void print_type(FILE *stream, Type *type) {
     } else if(type->ty == ARRAY) {
         fprintf(stream, "[%d] ", type->array_size);
         print_type(stream, type->ptr_to);
+    } else if(type->ty == FUNC) {
+        fprintf(stream, "func ");
+        Type *param = type->params;
+        fprintf(stream, "( ");
+        bool first = true;
+        while(param) {
+            if(!first)
+                fprintf(stream, ", ");
+            first = false;
+            print_type(stream, param);
+            param = param->params;
+        }
+        fprintf(stream, ") ");
+        print_type(stream, type->ptr_to);
     }
 }
 
 /// Print local variables in `locals`.
 void print_locals() {
     LVar *var = locals;
+    fprintf(stdout, "// Local variables\n");
     while(var) {
         fprintf(stdout, "// %.*s offset:%d ", var->token->len, var->token->str,
                 var->offset);
         print_type(stdout, var->type);
         fprintf(stdout, "\n");
         var = var->next;
+    }
+}
+
+void print_globals() {
+    Global *global = globals;
+    fprintf(stdout, "// Globals\n");
+    while(global) {
+        fprintf(stdout, "// %.*s ", global->token->len, global->token->str);
+        print_type(stdout, global->type);
+        fprintf(stdout, "\n");
+        global = global->next;
     }
 }

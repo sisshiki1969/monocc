@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Token
+
 typedef enum {
     TK_RESERVED,
     TK_IDENT,
@@ -52,13 +54,20 @@ struct Token {
     int len;
 };
 
+// Type
+
 typedef struct Type Type;
 
 struct Type {
-    enum { INT, PTR, ARRAY } ty;
+    enum { INT, PTR, ARRAY, FUNC } ty;
     Type *ptr_to;
+    /// array size for ARRAY
     int array_size;
+    /// parameter list for FUNC
+    Type *params;
 };
+
+// Local variables
 
 typedef struct LVar LVar;
 
@@ -68,6 +77,18 @@ struct LVar {
     Type *type;
     int offset;
 };
+
+// Global variables and functions
+
+typedef struct Global Global;
+
+struct Global {
+    Global *next;
+    Token *token;
+    Type *type;
+};
+
+// Node
 
 typedef enum {
     ND_IDENT,
@@ -146,11 +167,16 @@ void parse_program();
 void print_nodes();
 void print_node(Node *node);
 void print_locals();
+void print_globals();
 void print_type(FILE *stream, Type *type);
+
+// Methods for Type
 
 Type *new_type_int();
 Type *new_type_ptr_to(Type *ptr_to);
 Type *new_type_array(Type *ptr_to, int size);
+Type *new_type_func(Type *return_type);
+Type *new_type_from_token(Token *token);
 int sizeof_type(Type *type);
 Type *type(Node *node);
 Node *get_ptr_if_array(Node *node);
@@ -158,6 +184,8 @@ Node *get_ptr_if_array(Node *node);
 bool is_int(Type *type);
 bool is_ptr(Type *type);
 bool is_array(Type *type);
+
+bool is_assignable_type(Type *l_type, Type *r_type);
 
 // Methods for Vector
 
@@ -178,4 +206,5 @@ char registers[5][4];
 Token *token;
 Vector *ext_declarations;
 LVar *locals;
+Global *globals;
 int labels;

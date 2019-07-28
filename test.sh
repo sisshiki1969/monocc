@@ -119,6 +119,9 @@ try 11 "
     print(*(p+1));
     return *p + *(p + 1);"
 try 7 "int a[10]; int i; i = 3; int c; a[c=i+2] = 7; return a[c];"
+try2 9 "int main(int s){return 9;}
+    int *bar(int a, int *b, int **c[]){}
+    int *fee[](int a){}"
 
 # try2 4 "int main(){ int a; a = 6; return &(a +8); }"
 echo OK

@@ -93,29 +93,6 @@ Node *new_node_fdecl(Token *name, Vector *params, Node *body) {
     return node;
 }
 
-// Methods for Type;
-
-Type *new_type_int() {
-    Type *type = calloc(1, sizeof(Type));
-    type->ty = INT;
-    return type;
-}
-
-Type *new_type_ptr_to(Type *ptr_to) {
-    Type *type = calloc(1, sizeof(Type));
-    type->ty = PTR;
-    type->ptr_to = ptr_to;
-    return type;
-}
-
-Type *new_type_array(Type *ptr_to, int size) {
-    Type *type = calloc(1, sizeof(Type));
-    type->ty = ARRAY;
-    type->ptr_to = ptr_to;
-    type->array_size = size;
-    return type;
-}
-
 // Methods for handling Token.
 
 /// If current token is EOF, return true.
@@ -158,10 +135,19 @@ int consume_number() {
     return num;
 }
 
+/// Taken the current token and return it.
 Token *consume() {
     Token *ret = token;
     token = token->next;
     return ret;
+}
+
+bool is_type_specifier(TokenKind kind) {
+    switch(kind) {
+    case TK_INT:
+        return true;
+    }
+    return false;
 }
 
 // LVar
@@ -195,6 +181,17 @@ LVar *find_lvar(Token *token) {
         }
     }
     return NULL;
+}
+
+// Global
+
+Global *new_global(Token *ident, Type *type) {
+    Global *global = calloc(1, sizeof(Global));
+    global->next = globals;
+    global->token = ident;
+    global->type = type;
+    globals = global;
+    return global;
 }
 
 // Parser
@@ -232,12 +229,11 @@ Node *parse_prim_expr() {
             return new_node_call(name, vec, cur_token);
         } else if(peek_next() == TK_OP_BRACKET) {
             // TODO:a[] should be parsed in postfix-expr.
-            LVar *lvar = find_lvar(token);
+            LVar *lvar = find_lvar(consume());
             if(!lvar) {
-                error_at_token(token, "Identifier %.*s is not defined.",
-                               token->len, token->str);
+                error_at_token(cur_token, "Identifier %.*s is not defined.",
+                               cur_token->len, cur_token->str);
             }
-            token = token->next;
             Node *node = new_node_lvar(lvar, cur_token);
             expect(TK_OP_BRACKET);
             Node *index = parse_expr();
@@ -245,12 +241,11 @@ Node *parse_prim_expr() {
             expect(TK_CL_BRACKET);
             return new_node_without_conv(ND_DEREF, node, NULL, token);
         } else {
-            LVar *lvar = find_lvar(token);
+            LVar *lvar = find_lvar(consume());
             if(!lvar) {
-                error_at_token(token, "Identifier %.*s is not defined.",
-                               token->len, token->str);
+                error_at_token(cur_token, "Identifier %.*s is not defined.",
+                               cur_token->len, cur_token->str);
             }
-            token = token->next;
             return new_node_lvar(lvar, cur_token);
         }
     }
@@ -375,32 +370,49 @@ Node *parse_expr() {
     return node;
 }
 
-Node *parse_decl() {
+/// Information of declaration.
+struct DeclInfo {
+    Token *token;
     Type *type;
-    expect(TK_INT);
-    type = new_type_int();
+};
 
+typedef struct DeclInfo DeclInfo;
+
+DeclInfo *new_decl_info(Token *token, Type *type) {
+    DeclInfo *info = calloc(1, sizeof(DeclInfo));
+    info->token = token;
+    info->type = type;
+    return info;
+}
+
+DeclInfo *parse_decl() {
+    // declaration-specifiers
+    Type *type = new_type_from_token(consume());
+
+    // declarator
     while(peek() == TK_MUL) {
         expect(TK_MUL);
         type = new_type_ptr_to(type);
     }
 
-    Token *token = expect(TK_IDENT);
-    if(find_lvar(token))
-        error_at_token(token, "Redefinition of variable.");
+    // direct-declarator
+    Token *ident_token = expect(TK_IDENT);
+    if(find_lvar(ident_token))
+        error_at_token(ident_token, "Redefinition of variable.");
 
+    // direct-declarator [ assignment-expression ]
+    // TODO: support multi-dimensional array
     if(peek() == TK_OP_BRACKET) {
         expect(TK_OP_BRACKET);
-        int size = expect(TK_NUM)->int_val;
+        int size = 0;
+        if(peek() != TK_CL_BRACKET)
+            // this should be assignment-expression
+            size = expect(TK_NUM)->int_val;
         type = new_type_array(type, size);
         expect(TK_CL_BRACKET);
     }
-    LVar *lvar = new_lvar(token, type);
-    Token *name_token = token;
-    token = token->next;
-    Node *node = new_node_lvar(lvar, name_token);
-    expect(TK_SEMI);
-    return node;
+
+    return new_decl_info(ident_token, type);
 }
 
 Node *parse_stmt() {
@@ -450,8 +462,12 @@ Node *parse_block() {
     Vector *vec = vec_new();
     while(peek() != TK_CL_BRACE) {
         Node *node;
-        if(peek() == TK_INT) {
-            node = parse_decl();
+        if(is_type_specifier(peek())) {
+            DeclInfo *info = parse_decl();
+
+            LVar *lvar = new_lvar(info->token, info->type);
+            node = new_node_lvar(lvar, info->token);
+            expect(TK_SEMI);
         } else {
             node = parse_stmt();
         }
@@ -463,22 +479,27 @@ Node *parse_block() {
 }
 
 Node *parse_func_definition() {
-    locals = NULL;
-    expect(TK_INT);
-    Type *type = new_type_int();
-    Token *name = expect(TK_IDENT);
+    DeclInfo *info = parse_decl();
     expect(TK_OP_PAREN);
     Vector *params = vec_new();
+    locals = NULL;
+    Type *func_type = new_type_func(info->type);
+    Type *param_type = func_type;
+    new_global(info->token, func_type);
     while(peek() != TK_CL_PAREN) {
-        expect(TK_INT);
-        Token *param = expect(TK_IDENT);
-        vec_push(params, new_node_lvar(new_lvar(param, type), param));
+        DeclInfo *p_info = parse_decl();
+        // expect(TK_INT);
+        // Token *param = expect(TK_IDENT);
+        vec_push(params, new_node_lvar(new_lvar(p_info->token, p_info->type),
+                                       p_info->token));
+        param_type->params = p_info->type;
+        param_type = p_info->type;
         if(!consume_if(TK_COMMA))
             break;
     }
     expect(TK_CL_PAREN);
     Node *body = parse_block();
-    return new_node_fdecl(name, params, body);
+    return new_node_fdecl(info->token, params, body);
 }
 
 void parse_program() {
