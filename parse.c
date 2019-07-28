@@ -230,6 +230,20 @@ Node *parse_prim_expr() {
             }
             expect(TK_CL_PAREN);
             return new_node_call(name, vec, cur_token);
+        } else if(peek_next() == TK_OP_BRACKET) {
+            // TODO:a[] should be parsed in postfix-expr.
+            LVar *lvar = find_lvar(token);
+            if(!lvar) {
+                error_at_token(token, "Identifier %.*s is not defined.",
+                               token->len, token->str);
+            }
+            token = token->next;
+            Node *node = new_node_lvar(lvar, cur_token);
+            expect(TK_OP_BRACKET);
+            Node *index = parse_expr();
+            node = new_node(ND_ADD, node, index, token);
+            expect(TK_CL_BRACKET);
+            return new_node_without_conv(ND_DEREF, node, NULL, token);
         } else {
             LVar *lvar = find_lvar(token);
             if(!lvar) {

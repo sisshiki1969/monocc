@@ -99,17 +99,17 @@ try2 4 "int main(){ int x; return sizeof x; }"
 try2 4 "int main(){ int x; return sizeof(7); }"
 try2 8 "int main(){ int x; return sizeof &x; }"
 try2 8 "int main(){ int x; return sizeof (&x + 12); }"
-try2 40 "int main(){ int x[10]; int y; return sizeof(x); }"
-try2 40 "int main(){ int *x[5]; int y; return sizeof(x); }"
-try2 1 "int main(){
+try 40 "int x[10]; int y; return sizeof(x);"
+try 40 "int *x[5]; int y; return sizeof(x);"
+try 1 "
     int *p;
     int a;
     int b;
     alloc4(&p, 1, 2, 4, 8);
     if(*(p + 1)!=2) return 0;
     if(*(p + 3)!=8) return 0;
-    return 1;}"
-try2 11 "int main(){
+    return 1;"
+try 11 "
     int a[2];
     *a = 7;
     *(a + 1) = 4;
@@ -117,7 +117,8 @@ try2 11 "int main(){
     p = a;
     print(*p);
     print(*(p+1));
-    return *p + *(p + 1);
-}"
+    return *p + *(p + 1);"
+try 7 "int a[10]; int i; i = 3; int c; a[c=i+2] = 7; return a[c];"
+
 # try2 4 "int main(){ int a; a = 6; return &(a +8); }"
 echo OK
