@@ -153,6 +153,11 @@ Type *new_type_ptr_to(Type *ptr_to);
 Type *new_type_array(Type *ptr_to, int size);
 int sizeof_type(Type *type);
 Type *type(Node *node);
+Node *get_ptr_if_array(Node *node);
+
+bool is_int(Type *type);
+bool is_ptr(Type *type);
+bool is_array(Type *type);
 
 // Methods for Vector
 

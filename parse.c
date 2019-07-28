@@ -26,7 +26,19 @@ Node *new_node_lvar(LVar *lvar, Token *token) {
     return node;
 }
 
+/// Generate Node from lhs and rhs, with auto converting of array to ptr.
 Node *new_node(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = kind;
+    node->lhs = get_ptr_if_array(lhs);
+    node->rhs = get_ptr_if_array(rhs);
+    node->token = op_token;
+    return node;
+}
+
+/// Generate Node from lhs and rhs, without auto converting of array to ptr.
+Node *new_node_without_conv(NodeKind kind, Node *lhs, Node *rhs,
+                            Token *op_token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
     node->lhs = lhs;
@@ -167,7 +179,7 @@ LVar *new_lvar(Token *token, Type *type) {
     if(locals) {
         offset = locals->offset + size;
     } else {
-        offset = 8 + size;
+        offset = size;
     }
     lvar->offset = offset;
     lvar->type = type;
@@ -231,6 +243,16 @@ Node *parse_prim_expr() {
     error_at_token(token, "parse_prom_expr(): Unexpected token.");
 }
 
+Node *get_ptr_if_array(Node *node) {
+    if(!node)
+        return NULL;
+    if(is_array(type(node))) {
+        return new_node_without_conv(ND_ADDR, node, NULL, node->token);
+    } else {
+        return node;
+    }
+}
+
 Node *parse_unary_expr() {
     Token *op_token = token;
     if(consume_if(TK_ADD)) {
@@ -239,9 +261,11 @@ Node *parse_unary_expr() {
         return new_node(ND_SUB, new_node_num(0, token), parse_unary_expr(),
                         op_token);
     } else if(consume_if(TK_ADDR)) {
-        return new_node(ND_ADDR, parse_unary_expr(), NULL, op_token);
+        return new_node_without_conv(ND_ADDR, parse_unary_expr(), NULL,
+                                     op_token);
     } else if(consume_if(TK_MUL)) {
-        return new_node(ND_DEREF, parse_unary_expr(), NULL, op_token);
+        Node *node = parse_unary_expr();
+        return new_node(ND_DEREF, node, NULL, op_token);
     } else if(consume_if(TK_SIZEOF)) {
         return new_node_num(sizeof_type(type(parse_unary_expr())), op_token);
     } else {
@@ -270,17 +294,14 @@ Node *parse_mul_expr() {
 
 Node *parse_add_expr() {
     Node *node = parse_mul_expr();
-    Node *rhs;
 
     while(true) {
         Token *op_token = token;
         if(consume_if(TK_ADD)) {
-            rhs = parse_mul_expr();
-            node = new_node(ND_ADD, node, rhs, op_token);
+            node = new_node(ND_ADD, node, parse_mul_expr(), op_token);
             continue;
         } else if(consume_if(TK_SUB)) {
-            rhs = parse_mul_expr();
-            node = new_node(ND_SUB, node, rhs, op_token);
+            node = new_node(ND_SUB, node, parse_mul_expr(), op_token);
             continue;
         }
         return node;
@@ -289,25 +310,20 @@ Node *parse_add_expr() {
 
 Node *parse_rel_expr() {
     Node *node = parse_add_expr();
-    Node *rhs;
 
     for(;;) {
         Token *op_token = token;
         if(consume_if(TK_GE)) {
-            rhs = parse_add_expr();
-            node = new_node(ND_GE, node, rhs, op_token);
+            node = new_node(ND_GE, node, parse_add_expr(), op_token);
             continue;
         } else if(consume_if(TK_GT)) {
-            rhs = parse_add_expr();
-            node = new_node(ND_GT, node, rhs, op_token);
+            node = new_node(ND_GT, node, parse_add_expr(), op_token);
             continue;
         } else if(consume_if(TK_LE)) {
-            rhs = parse_add_expr();
-            node = new_node(ND_GE, rhs, node, op_token);
+            node = new_node(ND_GE, parse_add_expr(), node, op_token);
             continue;
         } else if(consume_if(TK_LT)) {
-            rhs = parse_add_expr();
-            node = new_node(ND_GT, rhs, node, op_token);
+            node = new_node(ND_GT, parse_add_expr(), node, op_token);
             continue;
         }
         return node;
@@ -316,17 +332,14 @@ Node *parse_rel_expr() {
 
 Node *parse_eq_expr() {
     Node *node = parse_rel_expr();
-    Node *rhs;
 
     for(;;) {
         Token *op_token = token;
         if(consume_if(TK_EQ)) {
-            rhs = parse_rel_expr();
-            node = new_node(ND_EQ, node, rhs, op_token);
+            node = new_node(ND_EQ, node, parse_rel_expr(), op_token);
             continue;
         } else if(consume_if(TK_NEQ)) {
-            rhs = parse_rel_expr();
-            node = new_node(ND_NEQ, node, rhs, op_token);
+            node = new_node(ND_NEQ, node, parse_rel_expr(), op_token);
             continue;
         }
         return node;
@@ -337,7 +350,8 @@ Node *parse_assign_expr() {
     Node *node = parse_eq_expr();
     Token *op_token = token;
     if(consume_if(TK_ASSIGN)) {
-        node = new_node(ND_ASSIGN, node, parse_assign_expr(), op_token);
+        Node *rhs = get_ptr_if_array(parse_assign_expr());
+        node = new_node_without_conv(ND_ASSIGN, node, rhs, op_token);
     }
     return node;
 }

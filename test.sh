@@ -109,5 +109,15 @@ try2 1 "int main(){
     if(*(p + 1)!=2) return 0;
     if(*(p + 3)!=8) return 0;
     return 1;}"
-
+try2 11 "int main(){
+    int a[2];
+    *a = 7;
+    *(a + 1) = 4;
+    int *p;
+    p = a;
+    print(*p);
+    print(*(p+1));
+    return *p + *(p + 1);
+}"
+# try2 4 "int main(){ int a; a = 6; return &(a +8); }"
 echo OK

@@ -58,6 +58,21 @@ bool is_same_type(Type *l_type, Type *r_type) {
     error("Internal error: Invalid type structure.");
 }
 
+bool is_assignable_type(Type *l_type, Type *r_type) {
+    if(l_type->ty == ARRAY) {
+        l_type = l_type->ptr_to;
+    }
+    while(l_type) {
+        if(l_type->ty != r_type->ty)
+            return false;
+        if(l_type->ty == INT)
+            return true;
+        l_type = l_type->ptr_to;
+        r_type = r_type->ptr_to;
+    }
+    error("Internal error: Invalid type structure.");
+}
+
 /// Generate a new label as a string.
 char *new_label() {
     char *label = (char *)malloc(10);
@@ -209,7 +224,7 @@ void gen(Node *node) {
     case ND_ASSIGN:
         l_ty = type(node->lhs);
         r_ty = type(node->rhs);
-        if(!is_same_type(l_ty, r_ty)) {
+        if(!is_assignable_type(l_ty, r_ty)) {
             fprintf(stderr, "Left: ");
             print_type(stderr, l_ty);
             fprintf(stderr, "\nRight: ");
@@ -234,6 +249,10 @@ void gen(Node *node) {
         gen_lval(node->lhs);
         return;
     case ND_DEREF:
+        if(!is_ptr(type(node->lhs)))
+            error_at_node(
+                node->lhs,
+                "Illegal operation. (dereference of non-pointer type)");
         gen(node->lhs);
         printf("\tpop  rax\n");
         printf("\tmov  rax, [rax]\n");
@@ -279,11 +298,19 @@ void gen(Node *node) {
                 error_at_node(node, "Illegal operation. (Type mismatch)");
             break;
         case ND_MUL:
-            printf("\timul rax, rdi\n");
+            if(is_int(l_ty) && is_int(r_ty)) {
+                printf("\timul rax, rdi\n");
+            } else
+                error_at_node(node,
+                              "Illegal operation. (Not an arythmetic type)");
             break;
         case ND_DIV:
-            printf("\tcqo\n");
-            printf("\tidiv rax, rdi\n");
+            if(is_int(l_ty) && is_int(r_ty)) {
+                printf("\tcqo\n");
+                printf("\tidiv rax, rdi\n");
+            } else
+                error_at_node(node,
+                              "Illegal operation. (Not an arythmetic type)");
             break;
         case ND_EQ:
         case ND_NEQ:
@@ -345,12 +372,18 @@ Type *type(Node *node) {
     case ND_CALL:
         return new_type_int();
     case ND_ADDR:
-        return new_type_ptr_to(type(node->lhs));
+        ty = type(node->lhs);
+        if(is_array(ty))
+            return new_type_ptr_to(ty->ptr_to);
+        else
+            return new_type_ptr_to(ty);
     case ND_DEREF:
         ty = type(node->lhs);
-        if(ty->ty != PTR)
+        if(is_ptr(ty))
+            return ty->ptr_to;
+        else
             error_at_node(node, "Can not dereference.\n");
-        return ty->ptr_to;
+
     case ND_ADD:
     case ND_SUB:
         return type(node->lhs);
