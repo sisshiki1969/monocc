@@ -130,6 +130,7 @@ struct Node {
     int ident_offset;
     Vector *nodes;
     Token *token;
+    Type *type;
 };
 
 typedef struct {
@@ -159,7 +160,7 @@ void tokenize(char *p);
 
 // Methods for Node
 
-Node *new_node(NodeKind kind, Node *lhs, Node *rhs, Token *token);
+Node *new_node_binary(NodeKind kind, Node *lhs, Node *rhs, Token *token);
 Node *new_node_num(int val, Token *token);
 bool is_binary_op(NodeKind kind);
 bool is_expr(NodeKind kind);

@@ -80,51 +80,97 @@ bool is_assignable_type(Type *l_type, Type *r_type) {
     error("Internal error: Invalid type structure.");
 }
 
+bool is_comparable_type(Type *l_type, Type *r_type) {
+    if(is_int(l_type) && is_int(r_type))
+        return true;
+    else if(is_ptr(l_type) && is_ptr(r_type))
+        return true;
+    else
+        return false;
+}
+
 Type *type(Node *node) {
-    Type *ty;
+    if(node->type)
+        return node->type;
+    Type *l_ty;
+    Type *r_ty;
     switch(node->kind) {
     // statement
     case ND_IF:
     case ND_WHILE:
     case ND_BLOCK:
-    case ND_RETURN:
         error("Can not determine a type of statement.");
+    case ND_RETURN:
+        return NULL;
     // declaration
     case ND_FDECL:
         error("Can not determine a type of declaration.");
 
     // expression
     case ND_NUM:
-        return new_type_int();
+        // return new_type_int();
     case ND_LVAR:
-        return node->ident_lvar->type;
+        // return node->ident_lvar->type;
+        error_at_node(node, "Internal error: type of node is missing.");
     case ND_ASSIGN:
         return type(node->lhs);
     case ND_CALL:
         return new_type_int();
     case ND_ADDR:
-        ty = type(node->lhs);
-        if(is_array(ty))
-            return new_type_ptr_to(ty->ptr_to);
+        l_ty = type(node->lhs);
+        if(is_array(l_ty))
+            node->type = new_type_ptr_to(l_ty->ptr_to);
         else
-            return new_type_ptr_to(ty);
+            node->type = new_type_ptr_to(l_ty);
+        return node->type;
     case ND_DEREF:
-        ty = type(node->lhs);
-        if(is_ptr(ty))
-            return ty->ptr_to;
-        else
-            error_at_node(node, "Can not dereference.\n");
+        l_ty = type(node->lhs);
+        if(is_ptr(l_ty)) {
+            node->type = l_ty->ptr_to;
+            return node->type;
+        } else
+            error_at_node(
+                node, "Operand of dereference operator must be a pointer.\n");
+    }
 
+    l_ty = type(node->lhs);
+    r_ty = type(node->rhs);
+    switch(node->kind) {
     case ND_ADD:
+        if(is_int(l_ty) && is_int(r_ty)) {
+            node->type = l_ty;
+        } else if(is_ptr(l_ty) && is_int(r_ty)) {
+            node->type = l_ty;
+        } else if(is_int(l_ty) && is_ptr(r_ty)) {
+            node->type = r_ty;
+        } else
+            error_at_node(node, "Illegal operation. (Type mismatch)");
+        return node->type;
     case ND_SUB:
-        return type(node->lhs);
+        if(is_int(l_ty) && is_int(r_ty))
+            node->type = l_ty;
+        else if(is_ptr(l_ty) && is_int(r_ty))
+            node->type = l_ty;
+        else if(is_ptr(l_ty) && is_ptr(r_ty))
+            node->type = new_type_int();
+        else
+            error_at_node(node, "Illegal operation. (Type mismatch)");
+        return node->type;
     case ND_MUL:
     case ND_DIV:
+        if(is_int(l_ty) && is_int(r_ty))
+            node->type = l_ty;
+        else
+            error_at_node(node, "Illegal operation. (Type mismatch)");
+        return node->type;
     case ND_EQ:
     case ND_NEQ:
     case ND_GE:
     case ND_GT:
-        return new_type_int();
+        if(!is_comparable_type(l_ty, r_ty))
+            error_at_node(node, "Illegal operation. (Type mismatch)");
+        node->type = new_type_int();
+        return node->type;
     }
     error_at_node(node, "type(): Unimplemented NodeKind.");
 }

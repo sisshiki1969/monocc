@@ -1,12 +1,13 @@
 #include "monocc.h"
 
-// Method for Node
+// Methods for Node
 
 Node *new_node_num(int val, Token *token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_NUM;
     node->int_val = val;
     node->token = token;
+    node->type = new_type_int();
     return node;
 }
 
@@ -23,27 +24,30 @@ Node *new_node_lvar(LVar *lvar, Token *token) {
     node->ident_lvar = lvar;
     node->ident_offset = lvar->offset;
     node->token = token;
+    node->type = lvar->type;
     return node;
 }
 
-/// Generate Node from lhs and rhs, with auto converting of array to ptr.
-Node *new_node(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
+/// Generate Node from lhs and rhs, with typing and auto converting of array to
+/// ptr.
+Node *new_node_binary(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
     node->lhs = get_ptr_if_array(lhs);
     node->rhs = get_ptr_if_array(rhs);
     node->token = op_token;
+    node->type = type(node);
     return node;
 }
 
 /// Generate Node from lhs and rhs, without auto converting of array to ptr.
-Node *new_node_without_conv(NodeKind kind, Node *lhs, Node *rhs,
-                            Token *op_token) {
+Node *new_node_expr(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
     node->lhs = lhs;
     node->rhs = rhs;
     node->token = op_token;
+    node->type = type(node);
     return node;
 }
 
@@ -95,11 +99,24 @@ Node *new_node_fdecl(Token *name, Vector *params, Node *body) {
 
 // Methods for handling Token.
 
+// Return TokenKind of the current token.
+TokenKind peek() { return token->kind; }
+
+// Return TokenKind of the next token.
+TokenKind peek_next() { return token->next->kind; }
+
 /// If current token is EOF, return true.
 /// Otherwise return false.
 bool at_eof() { return token->kind == TK_EOF; }
 
-/// If current token is `kind`, take it ans return true.
+/// Consume the current token and return it.
+Token *consume() {
+    Token *ret = token;
+    token = token->next;
+    return ret;
+}
+
+/// If current token is `kind`, consume and return true.
 /// Otherwise, return false.
 bool consume_if(TokenKind kind) {
     if(token->kind == kind) {
@@ -109,22 +126,7 @@ bool consume_if(TokenKind kind) {
     return false;
 }
 
-TokenKind peek() { return token->kind; }
-
-TokenKind peek_next() { return token->next->kind; }
-
-/// If current token is `kind`, take it.
-/// Otherwise, raise error.
-Token *expect(TokenKind kind) {
-    if(token->kind != kind) {
-        error_at_token(token, "Unexpected token.");
-    }
-    Token *ret = token;
-    token = token->next;
-    return ret;
-}
-
-/// If current token is a number, take it and return int_val.
+/// If current token is a number, consume and return int_val.
 /// Otherwise, raise error.
 int consume_number() {
     if(token->kind != TK_NUM) {
@@ -135,13 +137,18 @@ int consume_number() {
     return num;
 }
 
-/// Taken the current token and return it.
-Token *consume() {
+/// If current token is `kind`, consume and return it.
+/// Otherwise, raise error.
+Token *expect(TokenKind kind) {
+    if(token->kind != kind) {
+        error_at_token(token, "Unexpected token.");
+    }
     Token *ret = token;
     token = token->next;
     return ret;
 }
 
+/// Examine whether the Token is type-specifier.
 bool is_type_specifier(TokenKind kind) {
     switch(kind) {
     case TK_INT:
@@ -152,7 +159,7 @@ bool is_type_specifier(TokenKind kind) {
 
 // LVar
 
-/// Generate LVar from token and put it to the locals list.
+/// Generate LVar from token and put it to the local var list.
 LVar *new_lvar(Token *token, Type *type) {
     LVar *lvar = calloc(1, sizeof(LVar));
     lvar->next = locals;
@@ -183,7 +190,7 @@ LVar *find_lvar(Token *token) {
     return NULL;
 }
 
-// Global
+// Global variables and function definitions
 
 Global *new_global(Token *ident, Type *type) {
     Global *global = calloc(1, sizeof(Global));
@@ -237,9 +244,9 @@ Node *parse_prim_expr() {
             Node *node = new_node_lvar(lvar, cur_token);
             expect(TK_OP_BRACKET);
             Node *index = parse_expr();
-            node = new_node(ND_ADD, node, index, token);
+            node = new_node_binary(ND_ADD, node, index, token);
             expect(TK_CL_BRACKET);
-            return new_node_without_conv(ND_DEREF, node, NULL, token);
+            return new_node_expr(ND_DEREF, node, NULL, token);
         } else {
             LVar *lvar = find_lvar(consume());
             if(!lvar) {
@@ -256,7 +263,7 @@ Node *get_ptr_if_array(Node *node) {
     if(!node)
         return NULL;
     if(is_array(type(node))) {
-        return new_node_without_conv(ND_ADDR, node, NULL, node->token);
+        return new_node_expr(ND_ADDR, node, NULL, node->token);
     } else {
         return node;
     }
@@ -267,14 +274,13 @@ Node *parse_unary_expr() {
     if(consume_if(TK_ADD)) {
         return parse_unary_expr();
     } else if(consume_if(TK_SUB)) {
-        return new_node(ND_SUB, new_node_num(0, token), parse_unary_expr(),
-                        op_token);
+        return new_node_binary(ND_SUB, new_node_num(0, token),
+                               parse_unary_expr(), op_token);
     } else if(consume_if(TK_ADDR)) {
-        return new_node_without_conv(ND_ADDR, parse_unary_expr(), NULL,
-                                     op_token);
+        return new_node_expr(ND_ADDR, parse_unary_expr(), NULL, op_token);
     } else if(consume_if(TK_MUL)) {
         Node *node = parse_unary_expr();
-        return new_node(ND_DEREF, node, NULL, op_token);
+        return new_node_binary(ND_DEREF, node, NULL, op_token);
     } else if(consume_if(TK_SIZEOF)) {
         return new_node_num(sizeof_type(type(parse_unary_expr())), op_token);
     } else {
@@ -290,11 +296,11 @@ Node *parse_mul_expr() {
         Token *op_token = token;
         if(consume_if(TK_MUL)) {
             rhs = parse_unary_expr();
-            node = new_node(ND_MUL, node, rhs, op_token);
+            node = new_node_binary(ND_MUL, node, rhs, op_token);
             continue;
         } else if(consume_if(TK_DIV)) {
             rhs = parse_unary_expr();
-            node = new_node(ND_DIV, node, rhs, op_token);
+            node = new_node_binary(ND_DIV, node, rhs, op_token);
             continue;
         }
         return node;
@@ -307,10 +313,10 @@ Node *parse_add_expr() {
     while(true) {
         Token *op_token = token;
         if(consume_if(TK_ADD)) {
-            node = new_node(ND_ADD, node, parse_mul_expr(), op_token);
+            node = new_node_binary(ND_ADD, node, parse_mul_expr(), op_token);
             continue;
         } else if(consume_if(TK_SUB)) {
-            node = new_node(ND_SUB, node, parse_mul_expr(), op_token);
+            node = new_node_binary(ND_SUB, node, parse_mul_expr(), op_token);
             continue;
         }
         return node;
@@ -323,16 +329,16 @@ Node *parse_rel_expr() {
     for(;;) {
         Token *op_token = token;
         if(consume_if(TK_GE)) {
-            node = new_node(ND_GE, node, parse_add_expr(), op_token);
+            node = new_node_binary(ND_GE, node, parse_add_expr(), op_token);
             continue;
         } else if(consume_if(TK_GT)) {
-            node = new_node(ND_GT, node, parse_add_expr(), op_token);
+            node = new_node_binary(ND_GT, node, parse_add_expr(), op_token);
             continue;
         } else if(consume_if(TK_LE)) {
-            node = new_node(ND_GE, parse_add_expr(), node, op_token);
+            node = new_node_binary(ND_GE, parse_add_expr(), node, op_token);
             continue;
         } else if(consume_if(TK_LT)) {
-            node = new_node(ND_GT, parse_add_expr(), node, op_token);
+            node = new_node_binary(ND_GT, parse_add_expr(), node, op_token);
             continue;
         }
         return node;
@@ -345,10 +351,10 @@ Node *parse_eq_expr() {
     for(;;) {
         Token *op_token = token;
         if(consume_if(TK_EQ)) {
-            node = new_node(ND_EQ, node, parse_rel_expr(), op_token);
+            node = new_node_binary(ND_EQ, node, parse_rel_expr(), op_token);
             continue;
         } else if(consume_if(TK_NEQ)) {
-            node = new_node(ND_NEQ, node, parse_rel_expr(), op_token);
+            node = new_node_binary(ND_NEQ, node, parse_rel_expr(), op_token);
             continue;
         }
         return node;
@@ -360,7 +366,7 @@ Node *parse_assign_expr() {
     Token *op_token = token;
     if(consume_if(TK_ASSIGN)) {
         Node *rhs = get_ptr_if_array(parse_assign_expr());
-        node = new_node_without_conv(ND_ASSIGN, node, rhs, op_token);
+        node = new_node_expr(ND_ASSIGN, node, rhs, op_token);
     }
     return node;
 }
@@ -425,11 +431,11 @@ Node *parse_stmt() {
     case TK_RETURN:
         expect(TK_RETURN);
         if(consume_if(TK_SEMI))
-            return new_node(ND_RETURN, NULL, NULL, op_token);
+            return new_node_binary(ND_RETURN, NULL, NULL, op_token);
         else {
             node = parse_expr();
             expect(TK_SEMI);
-            return new_node(ND_RETURN, node, NULL, op_token);
+            return new_node_binary(ND_RETURN, node, NULL, op_token);
         }
     case TK_IF:
         expect(TK_IF);
