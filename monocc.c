@@ -20,6 +20,7 @@ int main(int argc, char **argv) {
 
     parse_program();
     print_globals();
+    print_funcs();
     // print_nodes();
 
     labels = 0;

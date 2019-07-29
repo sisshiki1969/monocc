@@ -67,27 +67,6 @@ struct Type {
     Type *params;
 };
 
-// Local variables
-
-typedef struct LVar LVar;
-
-struct LVar {
-    LVar *next;
-    Token *token;
-    Type *type;
-    int offset;
-};
-
-// Global variables and functions
-
-typedef struct Global Global;
-
-struct Global {
-    Global *next;
-    Token *token;
-    Type *type;
-};
-
 // Node
 
 typedef enum {
@@ -114,6 +93,17 @@ typedef enum {
     ND_FDECL,
 } NodeKind;
 
+// Local variables
+
+typedef struct LVar LVar;
+
+struct LVar {
+    LVar *next;
+    Token *token;
+    Type *type;
+    int offset;
+};
+
 typedef struct Node Node;
 typedef struct Vector Vector;
 
@@ -131,6 +121,17 @@ struct Node {
     Vector *nodes;
     Token *token;
     Type *type;
+};
+
+// Global variables and functions
+
+typedef struct Global Global;
+
+struct Global {
+    Global *next;
+    Token *token;
+    Type *type;
+    Node *func_decl;
 };
 
 typedef struct {
@@ -169,6 +170,7 @@ void print_nodes();
 void print_node(Node *node);
 void print_locals();
 void print_globals();
+void print_funcs();
 void print_type(FILE *stream, Type *type);
 
 // Methods for Type
@@ -208,4 +210,5 @@ Token *token;
 Vector *ext_declarations;
 LVar *locals;
 Global *globals;
+Global *functions;
 int labels;

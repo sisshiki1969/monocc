@@ -248,3 +248,14 @@ void print_globals() {
         global = global->next;
     }
 }
+
+void print_funcs() {
+    Global *func = functions;
+    fprintf(stdout, "// Functions\n");
+    while(func) {
+        fprintf(stdout, "// %.*s ", func->token->len, func->token->str);
+        print_type(stdout, func->type);
+        fprintf(stdout, "\n");
+        func = func->next;
+    }
+}

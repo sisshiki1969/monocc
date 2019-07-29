@@ -5,7 +5,7 @@
 
 Vector *vec_new() {
     Vector *vec = (Vector *)malloc(sizeof(Vector));
-    vec->data = malloc(5 * sizeof(void *));
+    vec->data = (Node **)malloc(5 * sizeof(void *));
     vec->len = 0;
     vec->capacity = 5;
     return vec;

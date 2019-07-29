@@ -13,7 +13,7 @@ Node *new_node_num(int val, Token *token) {
 
 Node *new_node_ident(Token *token) {
     Node *node = calloc(1, sizeof(Node));
-    node->kind = TK_IDENT;
+    node->kind = ND_IDENT;
     node->token = token;
     return node;
 }
@@ -190,7 +190,7 @@ LVar *find_lvar(Token *token) {
     return NULL;
 }
 
-// Global variables and function definitions
+// Global variables.
 
 Global *new_global(Token *ident, Type *type) {
     Global *global = calloc(1, sizeof(Global));
@@ -199,6 +199,17 @@ Global *new_global(Token *ident, Type *type) {
     global->type = type;
     globals = global;
     return global;
+}
+
+// functions.
+
+Global *new_func(Token *ident, Type *type, Node *func_decl) {
+    Global *func = calloc(1, sizeof(Global));
+    func->next = functions;
+    func->token = ident;
+    func->type = type;
+    functions = func;
+    return func;
 }
 
 // Parser
@@ -220,43 +231,47 @@ Node *parse_prim_expr() {
         expect(TK_CL_PAREN);
         return node;
     }
-    if(peek() == TK_IDENT) {
-        // TODO:func() should be parsed in postfix-expr.
-        if(peek_next() == TK_OP_PAREN) {
-            // TODO: Currently, only TK_IDENT is allowed as a callee.
-            Node *name = new_node_ident(expect(TK_IDENT));
-            expect(TK_OP_PAREN);
-            Vector *vec = vec_new();
-            while(peek() != TK_CL_PAREN) {
-                vec_push(vec, parse_assign_expr());
-                if(!consume_if(TK_COMMA))
-                    break;
-            }
-            expect(TK_CL_PAREN);
-            return new_node_call(name, vec, cur_token);
-        } else if(peek_next() == TK_OP_BRACKET) {
-            // TODO:a[] should be parsed in postfix-expr.
-            LVar *lvar = find_lvar(consume());
-            if(!lvar) {
-                error_at_token(cur_token, "Identifier %.*s is not defined.",
-                               cur_token->len, cur_token->str);
-            }
-            Node *node = new_node_lvar(lvar, cur_token);
-            expect(TK_OP_BRACKET);
-            Node *index = parse_expr();
-            node = new_node_binary(ND_ADD, node, index, token);
-            expect(TK_CL_BRACKET);
-            return new_node_expr(ND_DEREF, node, NULL, token);
-        } else {
-            LVar *lvar = find_lvar(consume());
-            if(!lvar) {
-                error_at_token(cur_token, "Identifier %.*s is not defined.",
-                               cur_token->len, cur_token->str);
-            }
-            return new_node_lvar(lvar, cur_token);
-        }
+    if(consume_if(TK_IDENT)) {
+        return new_node_ident(cur_token);
     }
     error_at_token(token, "parse_prom_expr(): Unexpected token.");
+}
+
+Node *parse_postfix_expr() {
+    Node *node = parse_prim_expr();
+    if(peek() == TK_OP_PAREN) {
+        if(node->kind != ND_IDENT)
+            error_at_node(node, "Currently, callee must be an identifier.");
+        expect(TK_OP_PAREN);
+        Vector *vec = vec_new();
+        while(peek() != TK_CL_PAREN) {
+            vec_push(vec, parse_assign_expr());
+            if(!consume_if(TK_COMMA))
+                break;
+        }
+        expect(TK_CL_PAREN);
+        node = new_node_call(node, vec, node->token);
+    } else if(peek() == TK_OP_BRACKET) {
+        LVar *lvar = find_lvar(node->token);
+        if(!lvar) {
+            error_at_token(node->token, "Identifier %.*s is not defined.",
+                           node->token->len, node->token->str);
+        }
+        Node *lvar_node = new_node_lvar(lvar, node->token);
+        expect(TK_OP_BRACKET);
+        Node *index = parse_expr();
+        node = new_node_binary(ND_ADD, lvar_node, index, token);
+        expect(TK_CL_BRACKET);
+        node = new_node_expr(ND_DEREF, node, NULL, token);
+    } else if(node->kind == ND_IDENT) {
+        LVar *lvar = find_lvar(node->token);
+        if(!lvar) {
+            error_at_token(node->token, "Identifier %.*s is not defined.",
+                           node->token->len, node->token->str);
+        }
+        node = new_node_lvar(lvar, node->token);
+    }
+    return node;
 }
 
 Node *get_ptr_if_array(Node *node) {
@@ -284,7 +299,7 @@ Node *parse_unary_expr() {
     } else if(consume_if(TK_SIZEOF)) {
         return new_node_num(sizeof_type(type(parse_unary_expr())), op_token);
     } else {
-        return parse_prim_expr();
+        return parse_postfix_expr();
     }
 }
 
@@ -484,18 +499,14 @@ Node *parse_block() {
     return new_node_block(vec);
 }
 
-Node *parse_func_definition() {
-    DeclInfo *info = parse_decl();
+Node *parse_func_definition(DeclInfo *info) {
     expect(TK_OP_PAREN);
     Vector *params = vec_new();
     locals = NULL;
     Type *func_type = new_type_func(info->type);
     Type *param_type = func_type;
-    new_global(info->token, func_type);
     while(peek() != TK_CL_PAREN) {
         DeclInfo *p_info = parse_decl();
-        // expect(TK_INT);
-        // Token *param = expect(TK_IDENT);
         vec_push(params, new_node_lvar(new_lvar(p_info->token, p_info->type),
                                        p_info->token));
         param_type->params = p_info->type;
@@ -504,14 +515,16 @@ Node *parse_func_definition() {
             break;
     }
     expect(TK_CL_PAREN);
-    Node *body = parse_block();
-    return new_node_fdecl(info->token, params, body);
+    Node *decl = new_node_fdecl(info->token, params, parse_block());
+    new_func(info->token, func_type, decl);
+    return decl;
 }
 
 void parse_program() {
     ext_declarations = vec_new();
     while(!at_eof()) {
-        Node *decl = parse_func_definition();
+        DeclInfo *info = parse_decl();
+        Node *decl = parse_func_definition(info);
         printf("// ");
         print_node(decl);
         printf("\n");
