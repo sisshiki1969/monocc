@@ -3,7 +3,7 @@ try() {
     expected="$1"
     input="$2"
 
-    ./monocc "int main(){${input};}" > tmp.s
+    ./monocc "int foo(int a, int b, int c); int print(int a); int alloc4(int **p, int i1, int i2, int i3, int i4); int main(){${input};}" > tmp.s
     gcc -o tmp tmp.s lib.o
     ./tmp
     actual="$?"
@@ -43,7 +43,7 @@ try 1 "1 + 4 > 4"
 try 0 "4 < 4 - 1"
 try 0 "1 - 4 > 4"
 try 9 "int alpha5; alpha5 = 5; alpha5 * 6 - 21;"
-try 45 "int alpha5; int beta_9; alpha5 = 5; beta_9 = alpha5 * 6 - 21; beta_9*alpha5"
+try 45 "int alpha5; int beta_9; alpha5 = 5; beta_9 = alpha5 * 6 - 21; print(alpha5); print(beta_9); beta_9*alpha5"
 try 37 "int a; a = 5 *5 +12;return a;"
 try 13 "int a; int b; a=8; if(a==4) b=19; else b=13; return b;"
 try 13 "int a; int b; a=8; if(a==4) ; else b=13; return b;"
@@ -82,10 +82,13 @@ try2() {
 
 try2 5 "int main(){ return 5 ;}"
 try2 1 "int main(){ int a; a = 3; return -+-+-a == -3; }"
-try2 1 "int main(){ int e; e = 32740; print(bar(5, 10)); return bar(8, 11) == e + 5;}
-int bar(int a,int b){ int e; e = 22745; print(a); print(b); return 10000 + e;}"
-try2 1 "int main(){ print(fibo(30)); return fibo(30) == 1346269;}
-int fibo(int x){ if (x < 2) return 1; return fibo(x-1) + fibo(x-2); }"
+try2 1 "int print(int a);
+    int bar(int a,int b){ int e; e = 22745; print(a); print(b); return 10000 + e;}
+    int main(){ int e; e = 32740; print(bar(5, 10)); return bar(8, 11) == e + 5;}"
+try2 1 "int print(int a);
+    int fibo(int x);
+    int fibo(int x){ if (x < 2) return 1; return fibo(x-1) + fibo(x-2); }
+    int main(){ print(fibo(30)); return fibo(30) == 1346269; }"
 try2 9 "int main(){
     int x;
     int *y;
@@ -121,7 +124,8 @@ try 11 "
 try 7 "int a[10]; int i; i = 3; int c; a[c=i+2] = 7; return a[c];"
 try2 9 "int main(int s){return 9;}
     int *bar(int a, int *b, int c[]){int d[5]; d[3] = 13; return *(c-a);}
-    int *fee[](int a){}"
+    int *fee[](int a){}
+    int bee(int a, int *b[]);"
 
 # try2 4 "int main(){ int a; a = 6; return &(a +8); }"
 echo OK

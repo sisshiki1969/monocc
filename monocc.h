@@ -205,7 +205,7 @@ void gen_stmt(Node *node);
 // Globals
 
 char *source_text;
-char registers[5][4];
+char registers[2][5][4];
 Token *token;
 Vector *ext_declarations;
 LVar *locals;

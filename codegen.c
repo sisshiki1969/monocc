@@ -49,7 +49,7 @@ void gen_lval(Node *node) {
         gen(node->lhs);
         printf("\tpush rax\n");
     } else {
-        error_at_node(node, "Invalid left hand side value.");
+        error_at_node(node, "Expected l-value.");
     }
 }
 
@@ -97,7 +97,7 @@ void gen_call(Node *node) {
     Node **args = node->nodes->data;
     for(int i = 0; i < len; i++) {
         gen(args[i]);
-        printf("\tpop  %s\n", registers[i]);
+        printf("\tpop  %s\n", registers[0][i]);
     }
     Token *name = node->lhs->token; // node->lhs: callee
     printf("\tmov  rax, 0\n");
@@ -106,22 +106,29 @@ void gen_call(Node *node) {
 }
 
 void gen_fdecl(Node *node) {
-    int max_offset = 8;
-    if(locals) {
-        max_offset = locals->offset + 8;
-    }
+    if(!node->lhs)
+        return;
 
     printf("%.*s:\n", node->token->len, node->token->str);
 
     printf("\tpush rbp\n");
     printf("\tmov  rbp, rsp\n");
-    printf("\tsub  rsp, %d\n", max_offset);
+    int offset = (node->ident_offset + 15) / 16 * 16;
+    printf("\tsub  rsp, %d\n", offset);
 
     int len = vec_len(node->nodes);
     Node **params = node->nodes->data;
     for(int i = 0; i < len; i++) {
+        int data_size = sizeof_type(params[i]->ident_lvar->type);
+        int reg_size = 0;
+        if(data_size == 8)
+            reg_size = 0;
+        else if(data_size == 4)
+            reg_size = 1;
+        else
+            error("Internal error in gen_decl(): Illegal data size.");
         printf("\tmov  [rbp - %d], %s\n", params[i]->ident_lvar->offset,
-               registers[i]);
+               registers[reg_size][i]);
     }
 
     gen_block(node->lhs);
@@ -142,6 +149,10 @@ void gen_stmt(Node *node) {
 void gen(Node *node) {
     Type *l_ty;
     Type *r_ty;
+    char reg_l[2][4] = {"rax", "eax"};
+    char reg_r[2][4] = {"rdi", "edi"};
+    int data_size;
+    int reg_size;
     switch(node->kind) {
     // statement
     case ND_IF:
@@ -172,7 +183,15 @@ void gen(Node *node) {
     case ND_LVAR:
         gen_lval(node);
         printf("\tpop  rax\n");
-        printf("\tmov  rax, [rax]\n");
+        data_size = sizeof_type(type(node));
+        reg_size = 0;
+        if(data_size == 8)
+            reg_size = 0;
+        else if(data_size == 4)
+            reg_size = 1;
+        else
+            error("Internal error in gen_decl(): Illegal data size.");
+        printf("\tmov  %s, [rax]\n", reg_l[reg_size]);
         printf("\tpush rax\n");
         return;
     case ND_ASSIGN:
@@ -188,9 +207,17 @@ void gen(Node *node) {
         }
         gen_lval(node->lhs);
         gen(node->rhs);
+        data_size = sizeof_type(type(node->lhs));
+        reg_size = 0;
+        if(data_size == 8)
+            reg_size = 0;
+        else if(data_size == 4)
+            reg_size = 1;
+        else
+            error("Internal error in gen_decl(): Illegal data size.");
         printf("\tpop  rdi\n");
         printf("\tpop  rax\n");
-        printf("\tmov  [rax], rdi\n");
+        printf("\tmov  [rax], %s\n", reg_r[reg_size]);
         printf("\tpush rdi\n");
         return;
     case ND_CALL:
@@ -218,16 +245,16 @@ void gen(Node *node) {
         gen(node->rhs);
         Type *l_ty = type(node->lhs);
         Type *r_ty = type(node->rhs);
+
         printf("\tpop  rdi\n");
         printf("\tpop  rax\n");
         char *cmp_op;
-        char reg_l[2][4] = {"rax", "eax"};
-        char reg_r[2][4] = {"rdi", "edi"};
+
         int reg_mode;
         switch(node->kind) {
         case ND_ADD:
             if(is_int(l_ty) && is_int(r_ty)) {
-                printf("\tadd  rax, rdi\n");
+                printf("\tadd  eax, edi\n");
             } else if(is_ptr(l_ty) && is_int(r_ty)) {
                 printf("\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
                 printf("\tadd  rax, rdi\n");

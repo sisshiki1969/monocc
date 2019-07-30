@@ -88,11 +88,12 @@ Node *new_node_block(Vector *vec) {
     return node;
 }
 
-Node *new_node_fdecl(Token *name, Vector *params, Node *body) {
+Node *new_node_fdecl(Token *name, Vector *params, int max_offset, Node *body) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_FDECL;
     node->lhs = body;
     node->nodes = params;
+    node->ident_offset = max_offset;
     node->token = name;
     return node;
 }
@@ -165,10 +166,7 @@ LVar *new_lvar(Token *token, Type *type) {
     lvar->next = locals;
     lvar->token = token;
     int offset;
-    int size = 8;
-    if(type->ty == ARRAY) {
-        size = size * type->array_size;
-    }
+    int size = sizeof_type(type);
     if(locals) {
         offset = locals->offset + size;
     } else {
@@ -212,6 +210,16 @@ Global *new_func(Token *ident, Type *type, Node *func_decl) {
     return func;
 }
 
+Global *find_func(Token *token) {
+    for(Global *func = functions; func; func = func->next) {
+        if(func->token->len == token->len &&
+           memcmp(func->token->str, token->str, token->len) == 0) {
+            return func;
+        }
+    }
+    return NULL;
+}
+
 // Parser
 
 Node *parse_expr();
@@ -242,6 +250,8 @@ Node *parse_postfix_expr() {
     if(consume_if(TK_OP_PAREN)) {
         if(node->kind != ND_IDENT)
             error_at_node(node, "Currently, callee must be an identifier.");
+        if(!find_func(node->token))
+            error_at_node(node, "Undefined identifier.");
         Vector *vec = vec_new();
         while(peek() != TK_CL_PAREN) {
             vec_push(vec, parse_assign_expr());
@@ -421,7 +431,7 @@ DeclInfo *parse_decl() {
     // direct-declarator [ assignment-expression ]
     // TODO: support multi-dimensional array
     if(consume_if(TK_OP_BRACKET)) {
-        int size = 0;
+        int size = 1;
         if(peek() != TK_CL_BRACKET)
             // this should be assignment-expression
             size = expect(TK_NUM)->int_val;
@@ -480,10 +490,11 @@ Node *parse_block() {
     while(peek() != TK_CL_BRACE) {
         Node *node;
         if(is_type_specifier(peek())) {
+            // local var declaration
             DeclInfo *info = parse_decl();
 
             LVar *lvar = new_lvar(info->token, info->type);
-            node = new_node_lvar(lvar, info->token);
+            node = NULL;
             expect(TK_SEMI);
         } else {
             node = parse_stmt();
@@ -511,7 +522,18 @@ Node *parse_func_definition(DeclInfo *info) {
             break;
     }
     expect(TK_CL_PAREN);
-    Node *decl = new_node_fdecl(info->token, params, parse_block());
+    Node *decl;
+    if(consume_if(TK_SEMI)) {
+        // function declaration
+        decl = new_node_fdecl(info->token, params, 0, NULL);
+    } else {
+        // function definition
+        Node *body = parse_block();
+        int max_offset = 0;
+        if(locals)
+            max_offset = locals->offset;
+        decl = new_node_fdecl(info->token, params, max_offset, body);
+    }
     new_func(info->token, func_type, decl);
     return decl;
 }

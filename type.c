@@ -50,6 +50,8 @@ int sizeof_type(Type *type) {
         return 8;
     case ARRAY:
         return type->array_size * sizeof_type(type->ptr_to);
+    default:
+        error("Internal error: can not calculate size of unknown type.");
     }
 }
 

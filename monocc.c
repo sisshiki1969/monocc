@@ -1,6 +1,7 @@
 #include "monocc.h"
 
-char registers[5][4] = {"rdi", "rsi", "rdx", "rcx", "r8"};
+char registers[2][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
+                           {"edi", "esi", "edx", "ecx", "r8d"}};
 
 int main(int argc, char **argv) {
     if(argc < 2) {
