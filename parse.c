@@ -234,15 +234,14 @@ Node *parse_prim_expr() {
     if(consume_if(TK_IDENT)) {
         return new_node_ident(cur_token);
     }
-    error_at_token(token, "parse_prom_expr(): Unexpected token.");
+    error_at_token(token, "parse_prim_expr(): Unexpected token.");
 }
 
 Node *parse_postfix_expr() {
     Node *node = parse_prim_expr();
-    if(peek() == TK_OP_PAREN) {
+    if(consume_if(TK_OP_PAREN)) {
         if(node->kind != ND_IDENT)
             error_at_node(node, "Currently, callee must be an identifier.");
-        expect(TK_OP_PAREN);
         Vector *vec = vec_new();
         while(peek() != TK_CL_PAREN) {
             vec_push(vec, parse_assign_expr());
@@ -251,14 +250,13 @@ Node *parse_postfix_expr() {
         }
         expect(TK_CL_PAREN);
         node = new_node_call(node, vec, node->token);
-    } else if(peek() == TK_OP_BRACKET) {
+    } else if(consume_if(TK_OP_BRACKET)) {
         LVar *lvar = find_lvar(node->token);
         if(!lvar) {
             error_at_token(node->token, "Identifier %.*s is not defined.",
                            node->token->len, node->token->str);
         }
         Node *lvar_node = new_node_lvar(lvar, node->token);
-        expect(TK_OP_BRACKET);
         Node *index = parse_expr();
         node = new_node_binary(ND_ADD, lvar_node, index, token);
         expect(TK_CL_BRACKET);
@@ -411,8 +409,7 @@ DeclInfo *parse_decl() {
     Type *type = new_type_from_token(consume());
 
     // declarator
-    while(peek() == TK_MUL) {
-        expect(TK_MUL);
+    while(consume_if(TK_MUL)) {
         type = new_type_ptr_to(type);
     }
 
@@ -423,8 +420,7 @@ DeclInfo *parse_decl() {
 
     // direct-declarator [ assignment-expression ]
     // TODO: support multi-dimensional array
-    if(peek() == TK_OP_BRACKET) {
-        expect(TK_OP_BRACKET);
+    if(consume_if(TK_OP_BRACKET)) {
         int size = 0;
         if(peek() != TK_CL_BRACKET)
             // this should be assignment-expression
