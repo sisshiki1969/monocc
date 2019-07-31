@@ -62,6 +62,8 @@ void tokenize(char *p) {
                 cur = new_token(TK_WHILE, cur, org_p, len);
             } else if(is_reserved(org_p, len, "int")) {
                 cur = new_token(TK_INT, cur, org_p, len);
+            } else if(is_reserved(org_p, len, "char")) {
+                cur = new_token(TK_CHAR, cur, org_p, len);
             } else if(is_reserved(org_p, len, "sizeof")) {
                 cur = new_token(TK_SIZEOF, cur, org_p, len);
             } else {
@@ -162,6 +164,18 @@ void tokenize(char *p) {
         }
         if(*p == '&') {
             cur = new_token(TK_ADDR, cur, p++, 1);
+            continue;
+        }
+        if(*p == '"') {
+            p++;
+            char *start = p;
+            while(*p != '"' && *p) {
+                p++;
+            }
+            if(!*p)
+                error_at_char(p - 1, "Missing closing quote.");
+            cur = new_token(TK_STR, cur, start, (int)(p - start));
+            p++;
             continue;
         }
         error_at_char(p, "Unexpected character.");

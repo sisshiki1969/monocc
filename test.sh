@@ -97,13 +97,17 @@ try2 9 "int main(){
     *y = 9;
     return x;
     }"
-try2 1 "int main(){ int x; int *y; y = &x; return y + 1 - y; }"
-try2 4 "int main(){ int x; return sizeof x; }"
-try2 4 "int main(){ int x; return sizeof(7); }"
-try2 8 "int main(){ int x; return sizeof &x; }"
-try2 8 "int main(){ int x; return sizeof (&x + 12); }"
-try 40 "int x[10]; int y; return sizeof(x);"
-try 40 "int *x[5]; int y; return sizeof(x);"
+try 1 "int x; int *y; y = &x; return y + 1 - y;"
+try 4 "int x; return sizeof x;"
+try 4 "int x; return sizeof(7);"
+try 8 "int x; return sizeof &x;"
+try 8 "int x; return sizeof (&x + 12);"
+try 1 "char x; return sizeof (x);"
+try 8 "char *x; return sizeof (x);"
+try 1 "char x[12][5]; return sizeof (x) == 60;"
+try 1 "char *x[12][5]; return sizeof (x) == 480;"
+try 1 "int x[10]; int y; return sizeof(x) == 40;"
+try 1 "int *x[5]; int y; return sizeof(x) == 40;"
 try 1 "
     int *p;
     int a;
@@ -133,8 +137,30 @@ try2 84 "int print(int a);
             }
             i = i + 1;
         }
+
         if(a[0][1] != 1) return 0;
         if(a[9][7] != 97) return 0;
         return a[8][4];}"
+
+try2 84 "int print(int a);
+        int a[10][8];
+        int i;
+        int j;
+        int main(){
+        i = 0;
+        while(i<=9){
+            j = 0;
+            while(j<=7){
+                a[i][j] = i * 10 + j;
+                j = j + 1;
+            }
+            i = i + 1;
+        }
+
+        if(a[0][1] != 1) return 0;
+        if(a[9][7] != 97) return 0;
+        return a[8][4];}"
+try 3 "char x[3]; x[0] = -1; x[1] = 2; int y; y = 4; return x[0] + y;"
+try 119 "char *x; x = \"hello world\"; return x[6]"
 
 echo OK

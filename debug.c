@@ -37,10 +37,14 @@ void print_tokens(Token *token) {
         case TK_FOR:
         case TK_RETURN:
         case TK_INT:
+        case TK_CHAR:
             printf("<%.*s>", token->len, token->str);
             break;
         case TK_EOF:
             printf("<EOF>");
+            break;
+        case TK_STR:
+            printf("\"%.*s\"", token->len, token->str);
             break;
         default:
             error_at_token(token, "print_tokens(): Unknown TokenKind.");
@@ -120,6 +124,10 @@ void print_node(Node *node) {
         printf(" %d ", node->int_val);
         return;
     }
+    if(node->kind == ND_STR) {
+        printf(" \"%.*s\" ", node->token->len, node->token->str);
+        return;
+    }
     if(node->kind == ND_ASSIGN) {
         printf("(= ");
         print_node(node->lhs);
@@ -163,6 +171,10 @@ void print_node(Node *node) {
         printf("(LVAR %d)", node->ident_offset);
         return;
     }
+    if(node->kind == ND_GVAR) {
+        printf("(GVAR %.*s)", node->token->len, node->token->str);
+        return;
+    }
     if(node->kind == ND_RETURN) {
         printf("(RETURN ");
         print_node(node->lhs);
@@ -202,6 +214,8 @@ void print_nodes() {
 void print_type(FILE *stream, Type *type) {
     if(type->ty == INT) {
         fprintf(stream, "int ");
+    } else if(type->ty == CHAR) {
+        fprintf(stream, "char ");
     } else if(type->ty == PTR) {
         fprintf(stream, "* ");
         print_type(stream, type->ptr_to);
@@ -257,5 +271,15 @@ void print_funcs() {
         print_type(stdout, func->type);
         fprintf(stdout, "\n");
         func = func->next;
+    }
+}
+
+void print_strings() {
+    fprintf(stdout, "// Stringss\n");
+    int i = 0;
+    while(i < vec_len(strings)) {
+        fprintf(stdout, "// \"%.*s\"\n", strings->data[i]->token->len,
+                strings->data[i]->token->str);
+        i++;
     }
 }

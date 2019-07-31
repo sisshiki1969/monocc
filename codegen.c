@@ -45,6 +45,8 @@ int reg_size(Type *type) {
         return 0;
     else if(data_size == 4)
         return 1;
+    else if(data_size == 1)
+        return 3;
     else
         error("Internal error in reg_size(): Illegal data size.");
 }
@@ -56,9 +58,17 @@ void gen_lval(Node *node) {
         printf("\tsub  rax, %d\n", node->ident_offset);
         printf("\tpush rax\n");
         return;
+    } else if(node->kind == ND_GVAR) {
+        printf("\tlea  rax, %.*s[rip]\n", node->token->len, node->token->str);
+        printf("\tpush rax\n");
+        return;
     } else if(node->kind == ND_DEREF) {
         gen(node->lhs);
         printf("\tpush rax\n");
+    } else if(node->kind == ND_STR) {
+        printf("\tlea  rax, .LS%06d[rip]\n", node->token->int_val);
+        printf("\tpush rax\n");
+        return;
     } else {
         error_at_node(node, "Expected l-value.");
     }
@@ -152,8 +162,8 @@ void gen_stmt(Node *node) {
 void gen(Node *node) {
     Type *l_ty;
     Type *r_ty;
-    char reg_l[2][4] = {"rax", "eax"};
-    char reg_r[2][4] = {"rdi", "edi"};
+    char reg_l[4][4] = {"rax", "eax", "ax", "al"};
+    char reg_r[4][4] = {"rdi", "edi", "di", "dil"};
     switch(node->kind) {
     // statement
     case ND_IF:
@@ -182,9 +192,22 @@ void gen(Node *node) {
         printf("\tpush %d\n", node->int_val);
         return;
     case ND_LVAR:
+    case ND_GVAR:
         gen_lval(node);
         printf("\tpop  rax\n");
-        printf("\tmov  %s, [rax]\n", reg_l[reg_size(type(node))]);
+        switch(reg_size(type(node))) {
+        case 0:
+            printf("\tmov  rax, [rax]\n");
+            break;
+        case 1:
+            printf("\tmov  eax, [rax]\n");
+            break;
+        case 3:
+            printf("\tmovsx eax, BYTE PTR [rax]\n");
+            break;
+        default:
+            error_at_node(node, "Size of the variable is unknown.");
+        }
         printf("\tpush rax\n");
         return;
     case ND_ASSIGN:
@@ -238,8 +261,8 @@ void gen(Node *node) {
         int reg_mode;
         switch(node->kind) {
         case ND_ADD:
-            if(is_int(l_ty) && is_int(r_ty)) {
-                printf("\tadd  eax, edi\n");
+            if(is_arythmetic(l_ty) && is_arythmetic(r_ty)) {
+                printf("\tadd  rax, rdi\n");
             } else if(is_ptr(l_ty) && is_int(r_ty)) {
                 printf("\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
                 printf("\tadd  rax, rdi\n");
@@ -250,7 +273,7 @@ void gen(Node *node) {
                 error_at_node(node, "Illegal operation. (Type mismatch)");
             break;
         case ND_SUB:
-            if(is_int(l_ty) && is_int(r_ty)) {
+            if(is_arythmetic(l_ty) && is_arythmetic(r_ty)) {
                 printf("\tsub  rax, rdi\n");
             } else if(is_ptr(l_ty) && is_ptr(r_ty)) {
                 printf("\tsub  rax, rdi\n");

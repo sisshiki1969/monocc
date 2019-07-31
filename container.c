@@ -13,7 +13,7 @@ Vector *vec_new() {
 
 int vec_len(Vector *vec) { return vec->len; }
 
-void vec_push(Vector *vec, void *data) {
+void vec_push(Vector *vec, Node *data) {
     if(vec->len == vec->capacity) {
         vec->capacity *= 2;
         vec->data = realloc(vec->data, vec->capacity * sizeof(void *));

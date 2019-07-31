@@ -8,6 +8,12 @@ Type *new_type_int() {
     return type;
 }
 
+Type *new_type_char() {
+    Type *type = calloc(1, sizeof(Type));
+    type->ty = CHAR;
+    return type;
+}
+
 Type *new_type_ptr_to(Type *ptr_to) {
     Type *type = calloc(1, sizeof(Type));
     type->ty = PTR;
@@ -34,16 +40,29 @@ Type *new_type_from_token(Token *token) {
     switch(token->kind) {
     case TK_INT:
         return new_type_int();
+    case TK_CHAR:
+        return new_type_char();
     }
     error_at_token(token, "Unimplemented type.");
 }
 
 bool is_int(Type *type) { return type->ty == INT; }
+bool is_char(Type *type) { return type->ty == CHAR; }
 bool is_ptr(Type *type) { return type->ty == PTR; }
 bool is_array(Type *type) { return type->ty == ARRAY; }
+bool is_arythmetic(Type *type) {
+    switch(type->ty) {
+    case INT:
+    case CHAR:
+        return true;
+    }
+    return false;
+}
 
 int sizeof_type(Type *type) {
     switch(type->ty) {
+    case CHAR:
+        return 1;
     case INT:
         return 4;
     case PTR:
@@ -59,7 +78,7 @@ bool is_identical_type(Type *l_type, Type *r_type) {
     while(l_type) {
         if(l_type->ty != r_type->ty)
             return false;
-        if(l_type->ty == INT)
+        if(l_type->ty != PTR && l_type->ty != ARRAY)
             return true;
         l_type = l_type->ptr_to;
         r_type = r_type->ptr_to;
@@ -71,10 +90,12 @@ bool is_assignable_type(Type *l_type, Type *r_type) {
     if(l_type->ty == ARRAY) {
         l_type = l_type->ptr_to;
     }
+    if(is_arythmetic(l_type) && is_arythmetic(r_type))
+        return true;
     while(l_type) {
         if(l_type->ty != r_type->ty)
             return false;
-        if(l_type->ty == INT)
+        if(l_type->ty != PTR && l_type->ty != ARRAY)
             return true;
         l_type = l_type->ptr_to;
         r_type = r_type->ptr_to;
@@ -139,7 +160,7 @@ Type *type(Node *node) {
     r_ty = type(node->rhs);
     switch(node->kind) {
     case ND_ADD:
-        if(is_int(l_ty) && is_int(r_ty)) {
+        if(is_arythmetic(l_ty) && is_arythmetic(r_ty)) {
             node->type = l_ty;
         } else if(is_ptr(l_ty) && is_int(r_ty)) {
             node->type = l_ty;

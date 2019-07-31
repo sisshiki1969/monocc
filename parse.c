@@ -11,6 +11,16 @@ Node *new_node_num(int val, Token *token) {
     return node;
 }
 
+Node *new_node_str(Token *token) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_STR;
+    node->token = token;
+    node->type = new_type_array(new_type_char(), token->len);
+    node->int_val = vec_len(strings);
+    vec_push(strings, node);
+    return node;
+}
+
 Node *new_node_ident(Token *token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_IDENT;
@@ -25,6 +35,14 @@ Node *new_node_lvar(LVar *lvar, Token *token) {
     node->ident_offset = lvar->offset;
     node->token = token;
     node->type = lvar->type;
+    return node;
+}
+
+Node *new_node_gvar(Global *gvar, Token *token) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_GVAR;
+    node->token = token;
+    node->type = gvar->type;
     return node;
 }
 
@@ -153,6 +171,7 @@ Token *expect(TokenKind kind) {
 bool is_type_specifier(TokenKind kind) {
     switch(kind) {
     case TK_INT:
+    case TK_CHAR:
         return true;
     }
     return false;
@@ -190,13 +209,23 @@ LVar *find_lvar(Token *token) {
 
 // Global variables.
 
-Global *new_global(Token *ident, Type *type) {
+Global *new_gvar(Token *ident, Type *type) {
     Global *global = calloc(1, sizeof(Global));
     global->next = globals;
     global->token = ident;
     global->type = type;
     globals = global;
     return global;
+}
+
+Global *find_gvar(Token *token) {
+    for(Global *var = globals; var; var = var->next) {
+        if(var->token->len == token->len &&
+           memcmp(var->token->str, token->str, token->len) == 0) {
+            return var;
+        }
+    }
+    return NULL;
 }
 
 // functions.
@@ -234,6 +263,9 @@ Node *parse_prim_expr() {
     if(peek() == TK_NUM) {
         return new_node_num(consume_number(), cur_token);
     }
+    if(peek() == TK_STR) {
+        return new_node_str(consume());
+    }
     if(consume_if(TK_OP_PAREN)) {
         Node *node = parse_expr();
         expect(TK_CL_PAREN);
@@ -243,6 +275,9 @@ Node *parse_prim_expr() {
         LVar *lvar = find_lvar(cur_token);
         if(lvar)
             return new_node_lvar(lvar, cur_token);
+        Global *gvar = find_gvar(cur_token);
+        if(gvar)
+            return new_node_gvar(gvar, cur_token);
         if(peek() == TK_OP_PAREN) {
             if(find_func(cur_token))
                 return new_node_ident(cur_token);
@@ -512,7 +547,6 @@ Node *parse_block() {
 Node *parse_func_definition(DeclInfo *info) {
     expect(TK_OP_PAREN);
     Vector *params = vec_new();
-    locals = NULL;
     Type *func_type = new_type_func(info->type);
     Type *param_type = func_type;
     while(peek() != TK_CL_PAREN) {
@@ -528,7 +562,7 @@ Node *parse_func_definition(DeclInfo *info) {
     Node *decl;
     if(consume_if(TK_SEMI)) {
         // function declaration
-        decl = new_node_fdecl(info->token, params, 0, NULL);
+        decl = NULL; // new_node_fdecl(info->token, params, 0, NULL);
     } else {
         // function definition
         Node *body = parse_block();
@@ -541,11 +575,28 @@ Node *parse_func_definition(DeclInfo *info) {
     return decl;
 }
 
+void *parse_gvar_declaration(DeclInfo *info) {
+    if(find_gvar(info->token))
+        error_at_token(info->token, "Redefinition of global variable");
+    new_gvar(info->token, info->type);
+    expect(TK_SEMI);
+}
+
 void parse_program() {
     ext_declarations = vec_new();
     while(!at_eof()) {
+        locals = NULL;
+        Node *decl;
         DeclInfo *info = parse_decl();
-        Node *decl = parse_func_definition(info);
+        if(peek() == TK_OP_PAREN)
+            decl = parse_func_definition(info);
+        else if(peek() == TK_SEMI) {
+            parse_gvar_declaration(info);
+            continue;
+        } else
+            error_at_token(token, "Unexpected token.");
+        if(!decl)
+            continue;
         printf("// ");
         print_node(decl);
         printf("\n");

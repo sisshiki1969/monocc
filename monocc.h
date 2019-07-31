@@ -11,6 +11,8 @@ typedef enum {
     TK_RESERVED,
     TK_IDENT,
     TK_NUM,
+    TK_STR,
+
     TK_ADD,
     TK_SUB,
     TK_MUL,
@@ -40,6 +42,7 @@ typedef enum {
     TK_SIZEOF,
 
     TK_INT,
+    TK_CHAR,
 
     TK_EOF,
 } TokenKind;
@@ -59,7 +62,7 @@ struct Token {
 typedef struct Type Type;
 
 struct Type {
-    enum { INT, PTR, ARRAY, FUNC } ty;
+    enum { INT, CHAR, PTR, ARRAY, FUNC } ty;
     Type *ptr_to;
     /// array size for ARRAY
     int array_size;
@@ -72,6 +75,8 @@ struct Type {
 typedef enum {
     ND_IDENT,
     ND_NUM,
+    ND_STR,
+
     ND_ADD,
     ND_SUB,
     ND_MUL,
@@ -84,6 +89,7 @@ typedef enum {
     ND_ADDR,
     ND_DEREF,
     ND_LVAR,
+    ND_GVAR,
     ND_CALL,
 
     ND_IF,
@@ -170,12 +176,14 @@ void print_nodes();
 void print_node(Node *node);
 void print_locals();
 void print_globals();
+void print_strings();
 void print_funcs();
 void print_type(FILE *stream, Type *type);
 
 // Methods for Type
 
 Type *new_type_int();
+Type *new_type_char();
 Type *new_type_ptr_to(Type *ptr_to);
 Type *new_type_array(Type *ptr_to, int size);
 Type *new_type_func(Type *return_type);
@@ -187,14 +195,15 @@ Node *get_ptr_if_array(Node *node);
 bool is_int(Type *type);
 bool is_ptr(Type *type);
 bool is_array(Type *type);
-
+bool is_arythmetic(Type *type);
+bool is_identical_type(Type *l_type, Type *r_type);
 bool is_assignable_type(Type *l_type, Type *r_type);
 
 // Methods for Vector
 
 Vector *vec_new();
 int vec_len(Vector *vec);
-void vec_push(Vector *vec, void *data);
+void vec_push(Vector *vec, Node *data);
 void test_vec();
 
 // Codegen
@@ -208,6 +217,7 @@ char *source_text;
 char registers[2][5][4];
 Token *token;
 Vector *ext_declarations;
+Vector *strings;
 LVar *locals;
 Global *globals;
 Global *functions;

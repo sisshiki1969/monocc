@@ -73,6 +73,7 @@ Span *get_node_span(Node *node) {
     case ND_IDENT:
     case ND_NUM:
     case ND_LVAR:
+    case ND_STR:
         span = new_span(node->token);
         break;
     case ND_ADD:
@@ -98,7 +99,7 @@ Span *get_node_span(Node *node) {
         merge_span(span, get_node_span(node->lhs));
         break;
     default:
-        fprintf(stderr, "default\n");
+        fprintf(stderr, "node span is not determined for this Node type.\n");
         span = new_span(node->token);
     }
     // fprintf(stderr, "span (%d:%d)\n", span->start, span->end);
