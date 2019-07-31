@@ -247,39 +247,38 @@ Node *parse_prim_expr() {
 
 Node *parse_postfix_expr() {
     Node *node = parse_prim_expr();
-    if(consume_if(TK_OP_PAREN)) {
-        if(node->kind != ND_IDENT)
-            error_at_node(node, "Currently, callee must be an identifier.");
-        if(!find_func(node->token))
-            error_at_node(node, "Undefined identifier.");
-        Vector *vec = vec_new();
-        while(peek() != TK_CL_PAREN) {
-            vec_push(vec, parse_assign_expr());
-            if(!consume_if(TK_COMMA))
-                break;
+    while(true) {
+        if(consume_if(TK_OP_PAREN)) {
+            if(node->kind != ND_IDENT)
+                error_at_node(node, "Currently, callee must be an identifier.");
+            if(!find_func(node->token))
+                error_at_node(node, "Undefined identifier.");
+            Vector *vec = vec_new();
+            while(peek() != TK_CL_PAREN) {
+                vec_push(vec, parse_assign_expr());
+                if(!consume_if(TK_COMMA))
+                    break;
+            }
+            expect(TK_CL_PAREN);
+            node = new_node_call(node, vec, node->token);
+            continue;
         }
-        expect(TK_CL_PAREN);
-        node = new_node_call(node, vec, node->token);
-    } else if(consume_if(TK_OP_BRACKET)) {
-        LVar *lvar = find_lvar(node->token);
-        if(!lvar) {
-            error_at_token(node->token, "Identifier %.*s is not defined.",
-                           node->token->len, node->token->str);
+        if(node->kind == ND_IDENT) {
+            LVar *lvar = find_lvar(node->token);
+            if(!lvar) {
+                error_at_token(node->token, "Identifier %.*s is not defined.",
+                               node->token->len, node->token->str);
+            }
+            node = new_node_lvar(lvar, node->token);
         }
-        Node *lvar_node = new_node_lvar(lvar, node->token);
-        Node *index = parse_expr();
-        node = new_node_binary(ND_ADD, lvar_node, index, token);
-        expect(TK_CL_BRACKET);
-        node = new_node_expr(ND_DEREF, node, NULL, token);
-    } else if(node->kind == ND_IDENT) {
-        LVar *lvar = find_lvar(node->token);
-        if(!lvar) {
-            error_at_token(node->token, "Identifier %.*s is not defined.",
-                           node->token->len, node->token->str);
-        }
-        node = new_node_lvar(lvar, node->token);
+        if(consume_if(TK_OP_BRACKET)) {
+            Node *index = parse_expr();
+            node = new_node_binary(ND_ADD, node, index, token);
+            node = new_node_expr(ND_DEREF, node, NULL, token);
+            expect(TK_CL_BRACKET);
+        } else
+            return node;
     }
-    return node;
 }
 
 Node *get_ptr_if_array(Node *node) {
@@ -430,14 +429,19 @@ DeclInfo *parse_decl() {
 
     // direct-declarator [ assignment-expression ]
     // TODO: support multi-dimensional array
-    if(consume_if(TK_OP_BRACKET)) {
+    Type head;
+    head.ptr_to = type;
+    Type *cursor = &head;
+    while(consume_if(TK_OP_BRACKET)) {
         int size = 1;
         if(peek() != TK_CL_BRACKET)
             // this should be assignment-expression
             size = expect(TK_NUM)->int_val;
-        type = new_type_array(type, size);
+        cursor->ptr_to = new_type_array(type, size);
+        cursor = cursor->ptr_to;
         expect(TK_CL_BRACKET);
     }
+    type = head.ptr_to;
 
     return new_decl_info(ident_token, type);
 }

@@ -122,10 +122,19 @@ try 11 "
     print(*(p+1));
     return *p + *(p + 1);"
 try 7 "int a[10]; int i; i = 3; int c; a[c=i+2] = 7; return a[c];"
-try2 9 "int main(int s){return 9;}
-    int *bar(int a, int *b, int c[]){int d[5]; d[3] = 13; return *(c-a);}
-    int *fee[](int a){}
-    int bee(int a, int *b[]);"
+try2 84 "int print(int a);
+        int main(int s){int a[10][8]; int i; int j;
+        i = 0;
+        while(i<=9){
+            j = 0;
+            while(j<=7){
+                a[i][j] = i * 10 + j;
+                j = j + 1;
+            }
+            i = i + 1;
+        }
+        if(a[0][1] != 1) return 0;
+        if(a[9][7] != 97) return 0;
+        return a[8][4];}"
 
-# try2 4 "int main(){ int a; a = 6; return &(a +8); }"
 echo OK
