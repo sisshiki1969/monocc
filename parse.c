@@ -240,7 +240,15 @@ Node *parse_prim_expr() {
         return node;
     }
     if(consume_if(TK_IDENT)) {
-        return new_node_ident(cur_token);
+        LVar *lvar = find_lvar(cur_token);
+        if(lvar)
+            return new_node_lvar(lvar, cur_token);
+        if(peek() == TK_OP_PAREN) {
+            if(find_func(cur_token))
+                return new_node_ident(cur_token);
+        }
+        error_at_token(cur_token, "Identifier %.*s is not defined.",
+                       cur_token->len, cur_token->str);
     }
     error_at_token(token, "parse_prim_expr(): Unexpected token.");
 }
@@ -262,14 +270,6 @@ Node *parse_postfix_expr() {
             expect(TK_CL_PAREN);
             node = new_node_call(node, vec, node->token);
             continue;
-        }
-        if(node->kind == ND_IDENT) {
-            LVar *lvar = find_lvar(node->token);
-            if(!lvar) {
-                error_at_token(node->token, "Identifier %.*s is not defined.",
-                               node->token->len, node->token->str);
-            }
-            node = new_node_lvar(lvar, node->token);
         }
         if(consume_if(TK_OP_BRACKET)) {
             Node *index = parse_expr();
@@ -428,7 +428,6 @@ DeclInfo *parse_decl() {
         error_at_token(ident_token, "Redefinition of variable.");
 
     // direct-declarator [ assignment-expression ]
-    // TODO: support multi-dimensional array
     Type head;
     head.ptr_to = type;
     Type *cursor = &head;

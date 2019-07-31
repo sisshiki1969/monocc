@@ -38,6 +38,17 @@ char *new_label() {
     return label;
 }
 
+/// Calculate required register size.
+int reg_size(Type *type) {
+    int data_size = sizeof_type(type);
+    if(data_size == 8)
+        return 0;
+    else if(data_size == 4)
+        return 1;
+    else
+        error("Internal error in reg_size(): Illegal data size.");
+}
+
 /// Generate address of a local variable.
 void gen_lval(Node *node) {
     if(node->kind == ND_LVAR) {
@@ -119,16 +130,8 @@ void gen_fdecl(Node *node) {
     int len = vec_len(node->nodes);
     Node **params = node->nodes->data;
     for(int i = 0; i < len; i++) {
-        int data_size = sizeof_type(params[i]->ident_lvar->type);
-        int reg_size = 0;
-        if(data_size == 8)
-            reg_size = 0;
-        else if(data_size == 4)
-            reg_size = 1;
-        else
-            error("Internal error in gen_decl(): Illegal data size.");
         printf("\tmov  [rbp - %d], %s\n", params[i]->ident_lvar->offset,
-               registers[reg_size][i]);
+               registers[reg_size(type(params[i]))][i]);
     }
 
     gen_block(node->lhs);
@@ -151,8 +154,6 @@ void gen(Node *node) {
     Type *r_ty;
     char reg_l[2][4] = {"rax", "eax"};
     char reg_r[2][4] = {"rdi", "edi"};
-    int data_size;
-    int reg_size;
     switch(node->kind) {
     // statement
     case ND_IF:
@@ -183,15 +184,7 @@ void gen(Node *node) {
     case ND_LVAR:
         gen_lval(node);
         printf("\tpop  rax\n");
-        data_size = sizeof_type(type(node));
-        reg_size = 0;
-        if(data_size == 8)
-            reg_size = 0;
-        else if(data_size == 4)
-            reg_size = 1;
-        else
-            error("Internal error in gen_decl(): Illegal data size.");
-        printf("\tmov  %s, [rax]\n", reg_l[reg_size]);
+        printf("\tmov  %s, [rax]\n", reg_l[reg_size(type(node))]);
         printf("\tpush rax\n");
         return;
     case ND_ASSIGN:
@@ -207,17 +200,9 @@ void gen(Node *node) {
         }
         gen_lval(node->lhs);
         gen(node->rhs);
-        data_size = sizeof_type(type(node->lhs));
-        reg_size = 0;
-        if(data_size == 8)
-            reg_size = 0;
-        else if(data_size == 4)
-            reg_size = 1;
-        else
-            error("Internal error in gen_decl(): Illegal data size.");
         printf("\tpop  rdi\n");
         printf("\tpop  rax\n");
-        printf("\tmov  [rax], %s\n", reg_r[reg_size]);
+        printf("\tmov  [rax], %s\n", reg_r[reg_size(type(node->lhs))]);
         printf("\tpush rdi\n");
         return;
     case ND_CALL:
