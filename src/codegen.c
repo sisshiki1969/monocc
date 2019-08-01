@@ -64,7 +64,6 @@ void gen_lval(Node *node) {
         return;
     } else if(node->kind == ND_DEREF) {
         gen(node->lhs);
-        printf("\tpush rax\n");
     } else if(node->kind == ND_STR) {
         printf("\tlea  rax, .LS%06d[rip]\n", node->token->int_val);
         printf("\tpush rax\n");

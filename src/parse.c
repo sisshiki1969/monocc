@@ -551,6 +551,7 @@ Node *parse_func_definition(DeclInfo *info) {
     expect(TK_OP_PAREN);
     Vector *params = vec_new();
     Type *func_type = new_type_func(info->type);
+    Global *func = new_func(info->token, func_type, NULL);
     Type *param_type = func_type;
     while(peek() != TK_CL_PAREN) {
         DeclInfo *p_info = parse_decl();
@@ -574,7 +575,7 @@ Node *parse_func_definition(DeclInfo *info) {
             max_offset = locals->offset;
         decl = new_node_fdecl(info->token, params, max_offset, body);
     }
-    new_func(info->token, func_type, decl);
+    func->func_decl = decl;
     return decl;
 }
 
