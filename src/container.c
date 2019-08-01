@@ -21,13 +21,6 @@ void vec_push(Vector *vec, Node *data) {
     vec->data[vec->len++] = data;
 }
 
-void assert_expect(int line, int expected, int actual) {
-    if(expected == actual)
-        return;
-    fprintf(stderr, "%d: %d expected, but got %d\n", line, expected, actual);
-    exit(1);
-}
-
 void test_vec() {
     Vector *vec = vec_new();
     for(int i = 0; i < 100; i++)

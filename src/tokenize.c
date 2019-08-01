@@ -19,7 +19,8 @@ bool is_reserved(char *str, int len, char *reserved) {
 }
 
 /// Tokenize the input string.
-void tokenize(char *p) {
+void tokenize() {
+    char *p = source_text;
     Token head;
     head.next = NULL;
     Token *cur = &head;
@@ -27,6 +28,20 @@ void tokenize(char *p) {
     while(*p) {
         if(isspace(*p)) {
             p++;
+            continue;
+        }
+        if(*p == '#') {
+            char *cursor = strchr(p, '\n');
+            p = cursor + 1;
+            continue;
+        }
+        if(strncmp(p, "//", 2) == 0) {
+            p += 2;
+            char *next = strchr(p, '\n');
+            if(!next) {
+                p = strchr(p, '\n');
+            } else
+                p = next + 1;
             continue;
         }
         if(isdigit(*p)) {

@@ -1,17 +1,18 @@
 CFLAGS=-std=c11 -g -static
-SRCS=$(wildcard *.c)
+SRCS=$(wildcard ./src/*.c)
 OBJS=$(SRCS:.c=.o)
 
 monocc: $(OBJS)
-	$(CC) -o monocc $(OBJS) $(LDFLAGS)
+	$(CC) -c lib.c
+	$(CC) -o ./src/monocc $(OBJS) $(LDFLAGS)
 
-$(OBJS): monocc.h
+$(OBJS): ./src/monocc.h
 
 test: monocc
-	./monocc -test
+	./src/monocc -test
 	./test.sh
 
 clean:
-	rm -f monocc *.o *~ tmp*
+	rm -f ./src/monocc ./src/*.o *~ tmp*
 
 .PHONY: test clean

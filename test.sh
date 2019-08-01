@@ -3,7 +3,10 @@ try() {
     expected="$1"
     input="$2"
 
-    ./monocc "int foo(int a, int b, int c); int print(int a); int alloc4(int **p, int i1, int i2, int i3, int i4); int main(){${input};}" > tmp.s
+    ./src/monocc "int foo(int a, int b, int c); int print(int a);
+        int alloc4(int **p, int i1, int i2, int i3, int i4);
+        int print_str(char* x);
+        int main(){${input};}" > tmp.s
     gcc -o tmp tmp.s lib.o
     ./tmp
     actual="$?"
@@ -67,7 +70,7 @@ try2() {
     expected="$1"
     input="$2"
 
-    ./monocc "$input" > tmp.s
+    ./src/monocc "$input" > tmp.s
     gcc -o tmp tmp.s lib.o
     ./tmp
     actual="$?"
@@ -161,6 +164,6 @@ try2 84 "int print(int a);
         if(a[9][7] != 97) return 0;
         return a[8][4];}"
 try 3 "char x[3]; x[0] = -1; x[1] = 2; int y; y = 4; return x[0] + y;"
-try 119 "char *x; x = \"hello world\"; return x[6]"
+try 119 "char *x; x = \"hello world\n\"; print_str(x); return x[6]"
 
 echo OK

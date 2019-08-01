@@ -237,6 +237,9 @@ void gen(Node *node) {
     case ND_ADDR:
         gen_lval(node->lhs);
         return;
+    case ND_STR:
+        gen_lval(node);
+        return;
     case ND_DEREF:
         if(!is_ptr(type(node->lhs)))
             error_at_node(

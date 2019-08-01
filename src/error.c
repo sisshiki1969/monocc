@@ -12,9 +12,18 @@ void error(char *fmt, ...) {
 void error_at_char(char *err_char, char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
-
-    int pos = err_char - source_text;
-    fprintf(stderr, "%s\n", source_text);
+    char *p = source_text;
+    char *cursor;
+    int line = 1;
+    while(cursor = strchr(p, '\n')) {
+        if(cursor > err_char)
+            break;
+        p = cursor + 1;
+        line++;
+    }
+    int pos = err_char - p;
+    fprintf(stderr, "line: %d\n", line);
+    fprintf(stderr, "%.*s\n", (int)(cursor - p), p);
     fprintf(stderr, "%*s^\n", pos, "");
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
@@ -27,18 +36,22 @@ void error_at_token(Token *token, char *fmt, ...) {
 
     char *p = source_text;
     char *line_end;
+    int line = 1;
     while(line_end = strchr(p, '\n')) {
         if(line_end > token->str)
             break;
         p = line_end + 1;
+        line++;
     }
     if(!line_end) {
         line_end = strchr(p, '\0');
     }
 
     int pos = token->str - p;
+    fprintf(stderr, "line: %d\n", line);
     fprintf(stderr, "%.*s\n", (int)(line_end - p), p);
-    fprintf(stderr, "%*s%.*s\n", pos, "", token->len, "^^^^^^^^^^^^");
+    fprintf(stderr, "%*s%.*s\n", pos, "", token->len,
+            "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
     exit(1);
@@ -115,16 +128,19 @@ void error_at_node(Node *node, char *fmt, ...) {
 
     char *line_start = source_text;
     char *line_end;
+    int line = 1;
     while(line_end = strchr(line_start, '\n')) {
         if(line_end > source_text + span->start)
             break;
         line_start = line_end + 1;
+        line++;
     }
     if(!line_end) {
         line_end = strchr(line_start, '\0');
     }
 
     int pos = span->start - (int)(line_start - source_text);
+    fprintf(stderr, "line: %d\n", line);
     fprintf(stderr, "%.*s\n", (int)(line_end - line_start), line_start);
     fprintf(stderr, "%*s%.*s\n", pos, "", span->end - span->start,
             "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");

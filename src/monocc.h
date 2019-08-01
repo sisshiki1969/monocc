@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <errno.h>
 #include <stdarg.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -163,7 +164,7 @@ void error_at_node(Node *node, char *fmt, ...);
 // Methods for Token
 
 void print_tokens(Token *token);
-void tokenize(char *p);
+void tokenize();
 
 // Methods for Node
 
@@ -172,6 +173,10 @@ Node *new_node_num(int val, Token *token);
 bool is_binary_op(NodeKind kind);
 bool is_expr(NodeKind kind);
 void parse_program();
+
+// for debug and test.
+
+void assert_expect(int line, int expected, int actual);
 void print_nodes();
 void print_node(Node *node);
 void print_locals();
