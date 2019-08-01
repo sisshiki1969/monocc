@@ -116,8 +116,10 @@ void gen_call(Node *node) {
     // TODO: Currently, only TK_IDENT is allowed as a callee.
     int len = vec_len(node->nodes);
     Node **args = node->nodes->data;
-    for(int i = 0; i < len; i++) {
+    for(int i = len - 1; i >= 0; i--) {
         gen(args[i]);
+    }
+    for(int i = 0; i < len; i++) {
         printf("\tpop  %s\n", registers[0][i]);
     }
     Token *name = node->lhs->token; // node->lhs: callee

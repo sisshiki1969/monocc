@@ -18,3 +18,11 @@ void alloc4(int **p, int i1, int i2, int i3, int i4) {
 }
 
 void print_str(char *str) { printf("%s", str); }
+
+int assert_expect(int line, int expected, int actual) {
+    if(expected == actual)
+        return 0;
+    fprintf(stderr, "line %d: %d expected, but got %d\n", line, expected,
+            actual);
+    exit(1);
+}

@@ -38,6 +38,7 @@ void print_tokens(Token *token) {
         case TK_RETURN:
         case TK_INT:
         case TK_CHAR:
+        case TK_MACRO:
             printf("<%.*s>", token->len, token->str);
             break;
         case TK_EOF:

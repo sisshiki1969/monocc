@@ -46,6 +46,8 @@ typedef enum {
     TK_CHAR,
 
     TK_EOF,
+
+    TK_MACRO,
 } TokenKind;
 
 typedef struct Token Token;
@@ -156,6 +158,7 @@ struct Vector {
 
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 
+int get_line(char *p);
 void error(char *fmt, ...);
 void error_at_char(char *source, char *fmt, ...);
 void error_at_token(Token *token, char *fmt, ...);
@@ -185,6 +188,9 @@ void print_strings();
 void print_funcs();
 void print_type(FILE *stream, Type *type);
 
+void test_vec();
+void test_expression();
+
 // Methods for Type
 
 Type *new_type_int();
@@ -209,7 +215,6 @@ bool is_assignable_type(Type *l_type, Type *r_type);
 Vector *vec_new();
 int vec_len(Vector *vec);
 void vec_push(Vector *vec, Node *data);
-void test_vec();
 
 // Codegen
 

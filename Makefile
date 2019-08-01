@@ -10,7 +10,9 @@ $(OBJS): ./src/monocc.h
 
 test: monocc
 	./src/monocc -test
-	./test.sh
+	./src/monocc -file ./test/test.c > tmp.s
+	$(CC) -o tmp tmp.s lib.o
+	./tmp
 
 clean:
 	rm -f ./src/monocc ./src/*.o *~ tmp*

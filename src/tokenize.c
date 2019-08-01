@@ -44,6 +44,11 @@ void tokenize() {
                 p = next + 1;
             continue;
         }
+        if(strncmp(p, "__LINE__", 8) == 0) {
+            cur = new_token(TK_MACRO, cur, p, 8);
+            p += 8;
+            continue;
+        }
         if(isdigit(*p)) {
             char *org_p = p;
             int num = *p - '0';

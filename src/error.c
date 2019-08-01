@@ -1,5 +1,18 @@
 #include "monocc.h"
 
+int get_line(char *p) {
+    char *line_start = source_text;
+    char *cursor;
+    int line = 1;
+    while(cursor = strchr(line_start, '\n')) {
+        if(cursor > p)
+            break;
+        line_start = cursor + 1;
+        line++;
+    }
+    return line;
+}
+
 void error(char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);

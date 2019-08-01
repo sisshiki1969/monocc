@@ -285,6 +285,9 @@ Node *parse_prim_expr() {
         error_at_token(cur_token, "Identifier %.*s is not defined.",
                        cur_token->len, cur_token->str);
     }
+    if(consume_if(TK_MACRO)) {
+        return new_node_num(get_line(cur_token->str), cur_token);
+    }
     error_at_token(token, "parse_prim_expr(): Unexpected token.");
 }
 
