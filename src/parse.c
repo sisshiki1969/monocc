@@ -76,6 +76,7 @@ Node *new_node_call(Node *callee, Vector *vec, Token *token) {
     node->lhs = callee;
     node->nodes = vec;
     node->token = token;
+    node->type = callee->type;
     return node;
 }
 
@@ -172,6 +173,7 @@ bool is_type_specifier(TokenKind kind) {
     switch(kind) {
     case TK_INT:
     case TK_CHAR:
+    case TK_VOID:
         return true;
     }
     return false;
@@ -309,8 +311,10 @@ Node *parse_postfix_expr() {
         if(consume_if(TK_OP_PAREN)) {
             if(node->kind != ND_IDENT)
                 error_at_node(node, "Currently, callee must be an identifier.");
-            if(!find_func(node->token))
+            Global *fn_global = find_func(node->token);
+            if(!fn_global)
                 error_at_node(node, "Undefined identifier.");
+            node->type = fn_global->type->ptr_to;
             Vector *vec = vec_new();
             while(peek() != TK_CL_PAREN) {
                 vec_push(vec, parse_assign_expr());

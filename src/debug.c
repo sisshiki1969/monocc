@@ -38,6 +38,7 @@ void print_tokens(Token *token) {
         case TK_RETURN:
         case TK_INT:
         case TK_CHAR:
+        case TK_VOID:
         case TK_MACRO:
             printf("<%.*s>", token->len, token->str);
             break;
@@ -217,6 +218,8 @@ void print_type(FILE *stream, Type *type) {
         fprintf(stream, "int ");
     } else if(type->ty == CHAR) {
         fprintf(stream, "char ");
+    } else if(type->ty == VOID) {
+        fprintf(stream, "void ");
     } else if(type->ty == PTR) {
         fprintf(stream, "* ");
         print_type(stream, type->ptr_to);

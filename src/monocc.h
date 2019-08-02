@@ -44,6 +44,7 @@ typedef enum {
 
     TK_INT,
     TK_CHAR,
+    TK_VOID,
 
     TK_EOF,
 
@@ -65,7 +66,7 @@ struct Token {
 typedef struct Type Type;
 
 struct Type {
-    enum { INT, CHAR, PTR, ARRAY, FUNC } ty;
+    enum { VOID, INT, CHAR, PTR, ARRAY, FUNC } ty;
     Type *ptr_to;
     /// array size for ARRAY
     int array_size;

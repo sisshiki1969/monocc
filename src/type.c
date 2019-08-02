@@ -14,6 +14,12 @@ Type *new_type_char() {
     return type;
 }
 
+Type *new_type_void() {
+    Type *type = calloc(1, sizeof(Type));
+    type->ty = VOID;
+    return type;
+}
+
 Type *new_type_ptr_to(Type *ptr_to) {
     Type *type = calloc(1, sizeof(Type));
     type->ty = PTR;
@@ -42,12 +48,15 @@ Type *new_type_from_token(Token *token) {
         return new_type_int();
     case TK_CHAR:
         return new_type_char();
+    case TK_VOID:
+        return new_type_void();
     }
     error_at_token(token, "Unimplemented type.");
 }
 
 bool is_int(Type *type) { return type->ty == INT; }
 bool is_char(Type *type) { return type->ty == CHAR; }
+bool is_void(Type *type) { return type->ty == VOID; }
 bool is_ptr(Type *type) { return type->ty == PTR; }
 bool is_array(Type *type) { return type->ty == ARRAY; }
 bool is_arythmetic(Type *type) {
@@ -62,6 +71,7 @@ bool is_arythmetic(Type *type) {
 int sizeof_type(Type *type) {
     switch(type->ty) {
     case CHAR:
+    case VOID:
         return 1;
     case INT:
         return 4;
@@ -87,9 +97,11 @@ bool is_identical_type(Type *l_type, Type *r_type) {
 }
 
 bool is_assignable_type(Type *l_type, Type *r_type) {
-    if(l_type->ty == ARRAY) {
+    if(is_array(l_type)) {
         l_type = l_type->ptr_to;
     }
+    if(is_void(l_type) || is_void(r_type))
+        return false;
     if(is_arythmetic(l_type) && is_arythmetic(r_type))
         return true;
     while(l_type) {
@@ -138,7 +150,7 @@ Type *type(Node *node) {
     case ND_ASSIGN:
         return type(node->lhs);
     case ND_CALL:
-        return new_type_int();
+        return node->type;
     case ND_ADDR:
         l_ty = type(node->lhs);
         if(is_array(l_ty))

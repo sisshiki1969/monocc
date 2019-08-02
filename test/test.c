@@ -1,6 +1,6 @@
-int assert_expect(int line, int expected, int actual);
-int print(int a);
-int print_str(char *str);
+void assert_expect(int line, int expected, int actual);
+void print(int a);
+void print_str(char *str);
 
 int fibo(int x) {
     if(x < 2)
@@ -101,6 +101,13 @@ int main() {
     assert_expect(__LINE__, 1, 1 + 4 > 4);
     assert_expect(__LINE__, 0, 4 < 4 - 1);
     assert_expect(__LINE__, 0, 1 - 4 > 4);
+    int i;
+    i = 77;
+    if(i == 77)
+        i = 55;
+    else
+        i = 66;
+    assert_expect(__LINE__, 55, i);
     assert_expect(__LINE__, 1346269, fibo(30));
     array_global();
     array_local();
