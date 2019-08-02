@@ -111,6 +111,8 @@ struct LVar {
     Token *token;
     Type *type;
     int offset;
+    int out_of_scope;
+    int scope;
 };
 
 typedef struct Node Node;
@@ -232,3 +234,4 @@ LVar *locals;
 Global *globals;
 Global *functions;
 int labels;
+int scope;

@@ -19,32 +19,6 @@ try() {
     fi
 }
 
-try 32 32
-try 7 7
-try 9 "+9"
-try 4 "-3 + 7"
-try 21 " 5  +  20 -4"
-try 52 "  5257-5212+  7 +23-23 "
-try 21 "5 + 4 * 4"
-try 13 "6+3*4-15/3"
-try 33 "(6+3)*(15-4)/3"
-try 24 "(4 *(5 -2)) * (4 - 2)"
-try 1 " 5257-5212+  7 == 52"
-try 0 " 3 == 3 +1"
-try 1 "4 != 4* 2"
-try 0 "3!=1 *3"
-try 1 "5>=8 -4"
-try 1 "5>=7-2"
-try 0 "11-8>=5"
-try 1 "3<=2 * 30"
-try 1 "3<=9/ 3"
-try 0 "3<=20-18"
-try 1 "-5*2+10 == 0"
-try 1 "+6/2 == 9/3"
-try 1 "4 < 4 + 1"
-try 1 "1 + 4 > 4"
-try 0 "4 < 4 - 1"
-try 0 "1 - 4 > 4"
 try 9 "int alpha5; alpha5 = 5; alpha5 * 6 - 21;"
 try 45 "int alpha5; int beta_9; alpha5 = 5; beta_9 = alpha5 * 6 - 21; print(alpha5); print(beta_9); beta_9*alpha5"
 try 37 "int a; a = 5 *5 +12;return a;"
@@ -129,41 +103,6 @@ try 11 "
     print(*(p+1));
     return *p + *(p + 1);"
 try 7 "int a[10]; int i; i = 3; int c; a[c=i+2] = 7; return a[c];"
-try2 84 "int print(int a);
-        int main(int s){int a[10][8]; int i; int j;
-        i = 0;
-        while(i<=9){
-            j = 0;
-            while(j<=7){
-                a[i][j] = i * 10 + j;
-                j = j + 1;
-            }
-            i = i + 1;
-        }
-
-        if(a[0][1] != 1) return 0;
-        if(a[9][7] != 97) return 0;
-        return a[8][4];}"
-
-try2 84 "int print(int a);
-        int a[10][8];
-        int i;
-        int j;
-        int main(){
-        i = 0;
-        while(i<=9){
-            j = 0;
-            while(j<=7){
-                a[i][j] = i * 10 + j;
-                j = j + 1;
-            }
-            i = i + 1;
-        }
-
-        if(a[0][1] != 1) return 0;
-        if(a[9][7] != 97) return 0;
-        return a[8][4];}"
 try 3 "char x[3]; x[0] = -1; x[1] = 2; int y; y = 4; return x[0] + y;"
-try 119 "char *x; x = \"hello world\n\"; print_str(x); return x[6]"
 
 echo OK

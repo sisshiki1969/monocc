@@ -21,9 +21,9 @@ int array_local() {
         }
         i = i + 1;
     }
-    assert_expect(__LINE__, a[0][1], 1);
-    assert_expect(__LINE__, a[9][7], 97);
-    assert_expect(__LINE__, a[8][4], 84);
+    assert_expect(__LINE__, 1, a[0][1]);
+    assert_expect(__LINE__, 97, a[9][7]);
+    assert_expect(__LINE__, 84, a[8][4]);
     return 0;
 }
 
@@ -54,6 +54,30 @@ int string() {
     assert_expect(__LINE__, 'w', str[6]);
 }
 
+int block_scope() {
+    i = 1;
+    assert_expect(__LINE__, 1, i);
+    int i;
+    i = 5;
+    assert_expect(__LINE__, 5, i);
+    {
+        int i;
+        i = 2;
+        {
+            int i;
+            i = 3;
+            {
+                int i;
+                i = 4;
+                assert_expect(__LINE__, 4, i);
+            }
+            assert_expect(__LINE__, 3, i);
+        }
+        assert_expect(__LINE__, 2, i);
+    }
+    assert_expect(__LINE__, 5, i);
+}
+
 int main() {
     assert_expect(__LINE__, 9, +9);
     assert_expect(__LINE__, 4, -3 + 7);
@@ -81,6 +105,7 @@ int main() {
     array_global();
     array_local();
     string();
+    block_scope();
     print_str("passed tests.\n");
     return 0;
 }

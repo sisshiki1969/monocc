@@ -193,18 +193,30 @@ LVar *new_lvar(Token *token, Type *type) {
     }
     lvar->offset = offset;
     lvar->type = type;
+    lvar->out_of_scope = 0;
+    lvar->scope;
     locals = lvar;
     return lvar;
 }
 
 LVar *find_lvar(Token *token) {
     for(LVar *var = locals; var; var = var->next) {
-        if(var->token->len == token->len &&
+        if(!var->out_of_scope && var->token->len == token->len &&
            memcmp(var->token->str, token->str, token->len) == 0) {
             return var;
         }
     }
     return NULL;
+}
+
+void check_duplicate_lvar(Token *token) {
+    for(LVar *var = locals; var; var = var->next) {
+        if(var->scope != scope || var->out_of_scope)
+            break;
+        if(var->token->len == token->len &&
+           memcmp(var->token->str, token->str, token->len) == 0)
+            error_at_token(token, "Redefinition of variable.");
+    }
 }
 
 // Global variables.
@@ -462,8 +474,7 @@ DeclInfo *parse_decl() {
 
     // direct-declarator
     Token *ident_token = expect(TK_IDENT);
-    if(find_lvar(ident_token))
-        error_at_token(ident_token, "Redefinition of variable.");
+    check_duplicate_lvar(ident_token);
 
     // direct-declarator [ assignment-expression ]
     Type head;
@@ -519,8 +530,6 @@ Node *parse_stmt() {
         return parse_block();
     }
     node = parse_expr();
-    if(at_eof())
-        return node;
     expect(TK_SEMI);
     return node;
 }
@@ -528,6 +537,8 @@ Node *parse_stmt() {
 Node *parse_block() {
     expect(TK_OP_BRACE);
     Vector *vec = vec_new();
+    LVar *save_locals = locals;
+    scope++;
     while(peek() != TK_CL_BRACE) {
         Node *node;
         if(is_type_specifier(peek())) {
@@ -544,6 +555,12 @@ Node *parse_block() {
             vec_push(vec, node);
     }
     expect(TK_CL_BRACE);
+    LVar *cursor = locals;
+    while(cursor != save_locals) {
+        cursor->out_of_scope = 1;
+        cursor = cursor->next;
+    }
+    scope--;
     return new_node_block(vec);
 }
 
@@ -590,6 +607,7 @@ void parse_program() {
     ext_declarations = vec_new();
     while(!at_eof()) {
         locals = NULL;
+        scope = 0;
         Node *decl;
         DeclInfo *info = parse_decl();
         if(peek() == TK_OP_PAREN)
