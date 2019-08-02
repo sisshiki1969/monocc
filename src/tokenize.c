@@ -198,6 +198,15 @@ void tokenize() {
             p++;
             continue;
         }
+        if(*p == '\'') {
+            p++;
+            char ch = *p++;
+            if(*p++ != '\'')
+                error_at_char(p - 1, "Unexpected token. Expected \"'\".");
+            cur = new_token(TK_NUM, cur, p - 2, 1);
+            cur->int_val = ch;
+            continue;
+        }
         error_at_char(p, "Unexpected character.");
     }
     cur = new_token(TK_EOF, cur, p++, 1);

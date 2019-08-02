@@ -51,6 +51,22 @@ int reg_size(Type *type) {
         error("Internal error in reg_size(): Illegal data size.");
 }
 
+void print_deref_rax(Node *node) {
+    switch(reg_size(type(node))) {
+    case 0:
+        printf("\tmov  rax, [rax]\n");
+        break;
+    case 1:
+        printf("\tmov  eax, [rax]\n");
+        break;
+    case 3:
+        printf("\tmovsx eax, BYTE PTR [rax]\n");
+        break;
+    default:
+        error_at_node(node, "Size of the variable is unknown.");
+    }
+}
+
 /// Generate address of a local variable.
 void gen_lval(Node *node) {
     if(node->kind == ND_LVAR) {
@@ -65,7 +81,7 @@ void gen_lval(Node *node) {
     } else if(node->kind == ND_DEREF) {
         gen(node->lhs);
     } else if(node->kind == ND_STR) {
-        printf("\tlea  rax, .LS%06d[rip]\n", node->token->int_val);
+        printf("\tlea  rax, .LS%06d[rip]\n", node->int_val);
         printf("\tpush rax\n");
         return;
     } else {
@@ -196,19 +212,7 @@ void gen(Node *node) {
     case ND_GVAR:
         gen_lval(node);
         printf("\tpop  rax\n");
-        switch(reg_size(type(node))) {
-        case 0:
-            printf("\tmov  rax, [rax]\n");
-            break;
-        case 1:
-            printf("\tmov  eax, [rax]\n");
-            break;
-        case 3:
-            printf("\tmovsx eax, BYTE PTR [rax]\n");
-            break;
-        default:
-            error_at_node(node, "Size of the variable is unknown.");
-        }
+        print_deref_rax(node);
         printf("\tpush rax\n");
         return;
     case ND_ASSIGN:
@@ -248,7 +252,7 @@ void gen(Node *node) {
                 "Illegal operation. (dereference of non-pointer type)");
         gen(node->lhs);
         printf("\tpop  rax\n");
-        printf("\tmov  rax, [rax]\n");
+        print_deref_rax(node);
         printf("\tpush rax\n");
         return;
     }

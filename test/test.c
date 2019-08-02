@@ -21,7 +21,6 @@ int array_local() {
         }
         i = i + 1;
     }
-    print(a[8][4]);
     assert_expect(__LINE__, a[0][1], 1);
     assert_expect(__LINE__, a[9][7], 97);
     assert_expect(__LINE__, a[8][4], 84);
@@ -42,11 +41,17 @@ int array_global() {
         }
         i = i + 1;
     }
-    print(a[8][4]);
     assert_expect(__LINE__, a[0][1], 1);
     assert_expect(__LINE__, a[9][7], 97);
     assert_expect(__LINE__, a[8][4], 84);
     return 0;
+}
+
+int string() {
+    char *str;
+    str = "Hello world!\n";
+    assert_expect(__LINE__, 119, 'w');
+    assert_expect(__LINE__, 'w', str[6]);
 }
 
 int main() {
@@ -75,6 +80,7 @@ int main() {
     assert_expect(__LINE__, 1346269, fibo(30));
     array_global();
     array_local();
+    string();
     print_str("passed tests.\n");
     return 0;
 }
