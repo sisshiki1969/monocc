@@ -170,7 +170,7 @@ void print_node(Node *node) {
         return;
     }
     if(node->kind == ND_LVAR) {
-        printf("(LVAR %d)", node->ident_offset);
+        printf("(LVAR %d)", node->lvar->offset);
         return;
     }
     if(node->kind == ND_GVAR) {

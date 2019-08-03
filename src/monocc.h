@@ -126,10 +126,10 @@ struct Node {
     Node *xhs;
     /// Value in integer valid for ND_NUM only.
     int int_val;
-    /// ptr to LVar (valid for ND_LVAR only).
-    LVar *ident_lvar;
-    /// Offset (valid for ND_LVAR only).
-    int ident_offset;
+    /// Pomtter to LVar (valid for ND_LVAR only).
+    LVar *lvar;
+    /// Max offset of local vars (valid for ND_FDECL only).
+    int offset;
     Vector *nodes;
     Token *token;
     Type *type;
