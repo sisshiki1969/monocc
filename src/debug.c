@@ -3,7 +3,10 @@
 /// Print tokens.
 void print_tokens(Token *token) {
     printf("// ");
+    int i = 0;
     while(token) {
+        if(i % 15 == 14)
+            printf("\n// ");
         switch(token->kind) {
         case TK_NUM:
         case TK_IDENT:
@@ -53,6 +56,7 @@ void print_tokens(Token *token) {
             break;
         }
         token = token->next;
+        i++;
     }
     printf("\n");
 }

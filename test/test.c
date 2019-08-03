@@ -54,7 +54,7 @@ int string() {
     assert_expect(__LINE__, 'w', str[6]);
 }
 
-int block_scope() {
+void block_scope() {
     i = 1;
     assert_expect(__LINE__, 1, i);
     int i;
@@ -76,6 +76,19 @@ int block_scope() {
         assert_expect(__LINE__, 2, i);
     }
     assert_expect(__LINE__, 5, i);
+}
+
+void for_() {
+    int x;
+    x = 100;
+    assert_expect(__LINE__, 100, x);
+    for(int x; x < 5; x = x + 1) {
+        print(x);
+        int x;
+        x = 9;
+        assert_expect(__LINE__, 9, x);
+    }
+    assert_expect(__LINE__, 100, x);
 }
 
 int main() {
@@ -113,6 +126,7 @@ int main() {
     array_local();
     string();
     block_scope();
+    for_();
     print_str("passed tests.\n");
     return 0;
 }

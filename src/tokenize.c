@@ -80,6 +80,8 @@ void tokenize() {
                 cur = new_token(TK_ELSE, cur, org_p, len);
             } else if(is_reserved(org_p, len, "while")) {
                 cur = new_token(TK_WHILE, cur, org_p, len);
+            } else if(is_reserved(org_p, len, "for")) {
+                cur = new_token(TK_FOR, cur, org_p, len);
             } else if(is_reserved(org_p, len, "int")) {
                 cur = new_token(TK_INT, cur, org_p, len);
             } else if(is_reserved(org_p, len, "char")) {

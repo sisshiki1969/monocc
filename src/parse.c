@@ -107,6 +107,15 @@ Node *new_node_block(Vector *vec) {
     return node;
 }
 
+void add_stmt_to_block(Node *block, Node *node) {
+    if(block->kind == ND_BLOCK) {
+        if(node)
+            vec_push(block->nodes, node);
+        return;
+    } else
+        error_at_node(block, "Must be block.");
+}
+
 Node *new_node_fdecl(Token *name, Vector *params, int max_offset, Node *body) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_FDECL;
@@ -268,6 +277,7 @@ Global *find_func(Token *token) {
 Node *parse_expr();
 Node *parse_assign_expr();
 Node *parse_block();
+Node *parse_stmt();
 
 Node *parse_prim_expr() {
     Token *cur_token = token;
@@ -498,6 +508,41 @@ DeclInfo *parse_decl() {
     return new_decl_info(ident_token, type);
 }
 
+Node *parse_for() {
+    Node *node = new_node_block(vec_new());
+    Node *init;
+    Node *cond;
+    Node *post;
+    Node *body;
+    expect(TK_FOR);
+    expect(TK_OP_PAREN);
+    LVar *save_locals = locals;
+    scope++;
+    if(is_type_specifier(peek())) {
+        DeclInfo *info = parse_decl();
+        new_lvar(info->token, info->type);
+        init = NULL;
+    } else {
+        init = parse_expr();
+    }
+    add_stmt_to_block(node, init);
+    expect(TK_SEMI);
+    cond = parse_expr();
+    expect(TK_SEMI);
+    post = parse_expr();
+    expect(TK_CL_PAREN);
+    body = parse_stmt();
+    add_stmt_to_block(body, post);
+    add_stmt_to_block(node, new_node_while(cond, body));
+    LVar *cursor = locals;
+    while(cursor != save_locals) {
+        cursor->out_of_scope = 1;
+        cursor = cursor->next;
+    }
+    scope--;
+    return node;
+}
+
 Node *parse_stmt() {
     if(consume_if(TK_SEMI))
         return NULL;
@@ -530,6 +575,8 @@ Node *parse_stmt() {
         node = parse_expr();
         expect(TK_CL_PAREN);
         return new_node_while(node, parse_stmt());
+    case TK_FOR:
+        return parse_for();
     case TK_OP_BRACE:
         return parse_block();
     }
@@ -538,23 +585,26 @@ Node *parse_stmt() {
     return node;
 }
 
+Node *parse_block_item() {
+    if(is_type_specifier(peek())) {
+        // local var declaration
+        DeclInfo *info = parse_decl();
+
+        LVar *lvar = new_lvar(info->token, info->type);
+        expect(TK_SEMI);
+        return NULL;
+    } else {
+        return parse_stmt();
+    }
+}
+
 Node *parse_block() {
     expect(TK_OP_BRACE);
     Vector *vec = vec_new();
     LVar *save_locals = locals;
     scope++;
     while(peek() != TK_CL_BRACE) {
-        Node *node;
-        if(is_type_specifier(peek())) {
-            // local var declaration
-            DeclInfo *info = parse_decl();
-
-            LVar *lvar = new_lvar(info->token, info->type);
-            node = NULL;
-            expect(TK_SEMI);
-        } else {
-            node = parse_stmt();
-        }
+        Node *node = parse_block_item();
         if(node)
             vec_push(vec, node);
     }
