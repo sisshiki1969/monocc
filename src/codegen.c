@@ -71,7 +71,7 @@ void print_deref_rax(Node *node) {
 void gen_lval(Node *node) {
     if(node->kind == ND_LVAR) {
         printf("\tmov  rax, rbp\n");
-        printf("\tsub  rax, %d\n", node->ident_offset);
+        printf("\tsub  rax, %d\n", node->lvar->offset);
         printf("\tpush rax\n");
         return;
     } else if(node->kind == ND_GVAR) {
@@ -151,13 +151,13 @@ void gen_fdecl(Node *node) {
 
     printf("\tpush rbp\n");
     printf("\tmov  rbp, rsp\n");
-    int offset = (node->ident_offset + 15) / 16 * 16;
+    int offset = (node->offset + 15) / 16 * 16;
     printf("\tsub  rsp, %d\n", offset);
 
     int len = vec_len(node->nodes);
     Node **params = node->nodes->data;
     for(int i = 0; i < len; i++) {
-        printf("\tmov  [rbp - %d], %s\n", params[i]->ident_lvar->offset,
+        printf("\tmov  [rbp - %d], %s\n", params[i]->lvar->offset,
                registers[reg_size(type(params[i]))][i]);
     }
 

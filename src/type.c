@@ -145,7 +145,7 @@ Type *type(Node *node) {
     case ND_NUM:
         // return new_type_int();
     case ND_LVAR:
-        // return node->ident_lvar->type;
+        // return node->lvar->type;
         error_at_node(node, "Internal error: type of node is missing.");
     case ND_ASSIGN:
         return type(node->lhs);

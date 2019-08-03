@@ -2,6 +2,11 @@
 
 // Methods for Node
 
+/// number(int)
+/// kind: ND_NUM
+/// int_val: int value
+/// token: Token *token
+/// type: int
 Node *new_node_num(int val, Token *token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_NUM;
@@ -11,6 +16,11 @@ Node *new_node_num(int val, Token *token) {
     return node;
 }
 
+/// string literal
+/// kind: ND_STR
+/// int_val: int length
+/// token: Token *token
+/// type: char *
 Node *new_node_str(Token *token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_STR;
@@ -21,6 +31,10 @@ Node *new_node_str(Token *token) {
     return node;
 }
 
+/// function designator
+/// kind: ND_IDENT
+/// token: Token *token
+/// type:
 Node *new_node_ident(Token *token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_IDENT;
@@ -28,16 +42,25 @@ Node *new_node_ident(Token *token) {
     return node;
 }
 
+/// local variable
+/// kind: ND_LVAR
+/// lvar: LVar *lvar
+/// token: Token *token
+/// type: lvar->type
 Node *new_node_lvar(LVar *lvar, Token *token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_LVAR;
-    node->ident_lvar = lvar;
-    node->ident_offset = lvar->offset;
+    node->lvar = lvar;
     node->token = token;
     node->type = lvar->type;
     return node;
 }
 
+/// global variable
+/// kind: ND_GVAR
+/// lvar: LVar *lvar
+/// token: Token *token
+/// type: gvar->type
 Node *new_node_gvar(Global *gvar, Token *token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_GVAR;
@@ -46,8 +69,13 @@ Node *new_node_gvar(Global *gvar, Token *token) {
     return node;
 }
 
-/// Generate Node from lhs and rhs, with typing and auto converting of array to
-/// ptr.
+/// Generate Node for binary op.
+/// If either or both of operands is an array, convert it to ptr to the array.
+/// kind: NodeKind
+/// lhs: operand 1
+/// rhs: operand 2
+/// token: Token *op_token (indicates operator)
+/// type: type of the result value.
 Node *new_node_binary(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
@@ -58,7 +86,8 @@ Node *new_node_binary(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     return node;
 }
 
-/// Generate Node from lhs and rhs, without auto converting of array to ptr.
+/// Generate Node from lhs and rhs.
+/// for DEREF, ADDR, ASSIGN
 Node *new_node_expr(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
@@ -69,8 +98,14 @@ Node *new_node_expr(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     return node;
 }
 
+/// function call
+/// kind: ND_CALL
+/// lhs: callee (ND_IDENT)
+/// nodes: vector of arguments
+/// token: Token *token
+/// type: return type of callee
 Node *new_node_call(Node *callee, Vector *vec, Token *token) {
-    // TODO: Currently, only TK_IDENT is allowed as a callee.
+    // TODO: Currently, only ND_IDENT is allowed as a callee.
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_CALL;
     node->lhs = callee;
@@ -80,6 +115,12 @@ Node *new_node_call(Node *callee, Vector *vec, Token *token) {
     return node;
 }
 
+/// if-then-else statement
+/// kind: ND_IF
+/// lhs: Node *cond
+/// rhs: Node *then
+/// xhs: Node *else
+/// token: Token *token
 Node *new_node_if_then(Node *cond_, Node *then_, Node *else_) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_IF;
@@ -90,6 +131,11 @@ Node *new_node_if_then(Node *cond_, Node *then_, Node *else_) {
     return node;
 }
 
+/// while statement
+/// kind: ND_WHITE
+/// lhs: Node *cond
+/// rhs: Node *do
+/// token: Token *token
 Node *new_node_while(Node *cond_, Node *do_) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_WHILE;
@@ -99,10 +145,14 @@ Node *new_node_while(Node *cond_, Node *do_) {
     return node;
 }
 
-Node *new_node_block(Vector *vec) {
+/// compound statement
+/// kind: ND_BLOCK
+/// nodes: Vector *stmts
+/// token: Token *token
+Node *new_node_block(Vector *stmts) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_BLOCK;
-    node->nodes = vec;
+    node->nodes = stmts;
     node->token = token;
     return node;
 }
@@ -116,22 +166,28 @@ void add_stmt_to_block(Node *block, Node *node) {
         error_at_node(block, "Must be block.");
 }
 
+/// func declaration
+/// kind: ND_FDECL
+/// lhs: Node *body
+/// nodes: Vector *params
+/// offset: int max_offset
+/// token: Token *name
 Node *new_node_fdecl(Token *name, Vector *params, int max_offset, Node *body) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_FDECL;
     node->lhs = body;
     node->nodes = params;
-    node->ident_offset = max_offset;
+    node->offset = max_offset;
     node->token = name;
     return node;
 }
 
 // Methods for handling Token.
 
-// Return TokenKind of the current token.
+/// Return TokenKind of the current token.
 TokenKind peek() { return token->kind; }
 
-// Return TokenKind of the next token.
+/// Return TokenKind of the next token.
 TokenKind peek_next() { return token->next->kind; }
 
 /// If current token is EOF, return true.
