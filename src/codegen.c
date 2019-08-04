@@ -241,8 +241,23 @@ void gen_call(Node *node) {
         printf("\tpop  %s\n", registers[0][i]);
     }
     Token *name = node->lhs->token; // node->lhs: callee
+
+    char *label1 = new_label();
+    char *label2 = new_label();
+    printf("\tmov  rax, rsp\n");
+    printf("\tand  rax, 15\n");
+    printf("\tjnz  %s\n", label1);
     printf("\tmov  rax, 0\n");
     printf("\tcall %.*s\n", name->len, name->str);
+    emit_jmp(label2);
+
+    emit_label(label1);
+    printf("\tsub  rsp, 8\n");
+    printf("\tmov  rax, 0\n");
+    printf("\tcall %.*s\n", name->len, name->str);
+    printf("\tadd  rsp, 8\n");
+
+    emit_label(label2);
     printf("\tpush rax\n");
 }
 
