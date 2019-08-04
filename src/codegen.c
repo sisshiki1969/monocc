@@ -12,7 +12,8 @@ struct Loop {
     Loop *next;
     char *continue_dest;
     char *break_dest;
-    LVar *lvar;
+    /// Link to switch node.
+    Node *node;
 };
 
 Loop *labels = NULL;
@@ -75,12 +76,12 @@ void push_loop() {
     labels = label;
 }
 
-void push_loop_switch(LVar *lvar) {
+void push_loop_switch(Node *node) {
     char *break_label = new_label();
     Loop *label = (Loop *)calloc(1, sizeof(Loop));
     label->break_dest = break_label;
     label->continue_dest = NULL;
-    label->lvar = lvar;
+    label->node = node;
     label->next = labels;
     labels = label;
 }
@@ -100,6 +101,15 @@ char *get_break(Token *token) {
             token,
             "a break statement may only be used within a loop or switch.");
     return labels->break_dest;
+}
+
+Node *get_inner_switch() {
+    Loop *cursor = labels;
+    while(cursor && !cursor->node)
+        cursor = cursor->next;
+    if(!cursor)
+        error("get_inner_switch(): Internal error.");
+    return cursor->node;
 }
 
 /// Calculate required register size.
@@ -272,6 +282,9 @@ void gen_stmt(Node *node) {
 void gen(Node *node) {
     if(!node)
         return;
+    Node *parent;
+    char *label;
+    int i;
     Type *l_ty;
     Type *r_ty;
     char reg_l[4][4] = {"rax", "eax", "ax", "al"};
@@ -376,7 +389,7 @@ void gen(Node *node) {
         gen_for(node);
         return;
     case ND_SWITCH:
-        push_loop_switch(node->lvar);
+        push_loop_switch(node);
         // evaluate const-expr and save as a local var.
         emit_lvar_addr(node->lvar);
         gen(node->lhs);
@@ -384,6 +397,12 @@ void gen(Node *node) {
         printf("\tpop  rax\n");
         printf("\tmov  [rax], edi\n");
         gen_stmt(node->rhs);
+        emit_jmp(get_break(NULL));
+        for(i = 0; i < vec_len(node->nodes); i++) {
+            parent = node->nodes->data[i];
+            emit_label(parent->label);
+            gen_stmt(parent);
+        }
         emit_label(get_break(NULL));
         pop_loop();
         return;
@@ -402,19 +421,23 @@ void gen(Node *node) {
         printf("\tret\n");
         return;
     case ND_CASE:
+        parent = get_inner_switch();
         gen(node->lhs);
-        emit_lvar_addr(labels->lvar);
+        emit_lvar_addr(parent->lvar);
         printf("\tpop  rax\n");
         printf("\tmov  eax, [rax]\n");
         printf("\tpop  rdi\n");
         printf("\tcmp  eax, edi\n");
-        char *end_label = new_label();
-        printf("\tjne   %s\n", end_label);
-        gen_stmt(node->rhs);
-        emit_label(end_label);
+        label = new_label();
+        printf("\tje   %s\n", label);
+        node->rhs->label = label;
+        vec_push(parent->nodes, node->rhs);
         return;
     case ND_DEFAULT:
-        gen_stmt(node->lhs);
+        label = new_label();
+        emit_jmp(label);
+        node->lhs->label = label;
+        vec_push(parent->nodes, node->lhs);
         return;
 
     // expression

@@ -142,6 +142,7 @@ struct Node {
     LVar *lvar;
     /// Max offset of local vars (valid for ND_FDECL only).
     int offset;
+    char *label;
     Vector *nodes;
     Token *token;
     Type *type;

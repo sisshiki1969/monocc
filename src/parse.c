@@ -155,6 +155,7 @@ Node *new_node_switch(Node *expr, Node *stmt, Token *token) {
     node->lvar = new_lvar(token, new_type_int());
     node->lhs = expr;
     node->rhs = stmt;
+    node->nodes = vec_new();
     node->token = token;
     return node;
 }
