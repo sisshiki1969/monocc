@@ -30,6 +30,7 @@ void print_tokens(Token *token) {
         case TK_OP_BRACKET:
         case TK_CL_BRACKET:
         case TK_COMMA:
+        case TK_COLON:
         case TK_SIZEOF:
             printf("[%.*s]", token->len, token->str);
             break;
@@ -38,6 +39,9 @@ void print_tokens(Token *token) {
         case TK_ELSE:
         case TK_WHILE:
         case TK_FOR:
+        case TK_SWITCH:
+        case TK_CASE:
+        case TK_DEFAULT:
         case TK_BREAK:
         case TK_CONTINUE:
         case TK_RETURN:
@@ -160,6 +164,31 @@ void print_node(Node *node) {
         printf(")");
         return;
     }
+    if(node->kind == ND_SWITCH) {
+        printf("(SWITCH cond: ");
+        print_node(node->lhs);
+        printf(" body: ");
+        print_node(node->rhs);
+        printf(")");
+        return;
+    }
+
+    if(node->kind == ND_CASE) {
+        printf("(CASE cond:");
+        print_node(node->lhs);
+        printf(" body:");
+        print_node(node->rhs);
+        printf(")");
+        return;
+    }
+
+    if(node->kind == ND_DEFAULT) {
+        printf("(DEFAULT body:");
+        print_node(node->lhs);
+        printf(")");
+        return;
+    }
+
     if(node->kind == ND_WHILE) {
         printf("( WHILE cond:");
         print_node(node->lhs);
@@ -178,7 +207,6 @@ void print_node(Node *node) {
         printf(" body ");
         print_node(node->nodes->data[0]);
         printf(")");
-
         return;
     }
     if(node->kind == ND_BLOCK) {

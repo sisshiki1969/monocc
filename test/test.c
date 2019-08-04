@@ -138,6 +138,22 @@ int main() {
     string();
     block_scope();
     for_();
+    switch(i) {
+    case 45:
+        i = 9;
+        break;
+    case 50:
+        i = 7;
+        break;
+    case 55:
+        i = 5;
+    case 58:
+        i = 1;
+        break;
+    default:
+        i = 3;
+    }
+    assert_expect(__LINE__, 1, i);
     print_str("passed tests.\n");
     return 0;
 }

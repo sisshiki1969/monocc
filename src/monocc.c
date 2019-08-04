@@ -36,8 +36,6 @@ void compile() {
     print_funcs();
     print_strings();
 
-    label_count = 0;
-
     printf("\n");
     printf(".intel_syntax noprefix\n");
 

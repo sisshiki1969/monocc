@@ -1,5 +1,22 @@
 #include "monocc.h"
 
+// Globals
+
+int label_count = 0;
+
+// Loop
+
+typedef struct Loop Loop;
+
+struct Loop {
+    Loop *next;
+    char *continue_dest;
+    char *break_dest;
+    LVar *lvar;
+};
+
+Loop *labels = NULL;
+
 // Methods for handling Node.
 
 bool is_binary_op(NodeKind kind) {
@@ -23,6 +40,9 @@ bool is_expr(NodeKind kind) {
     case ND_WHILE:
     case ND_BLOCK:
     case ND_FOR:
+    case ND_SWITCH:
+    case ND_CASE:
+    case ND_DEFAULT:
     case ND_BREAK:
     case ND_CONTINUE:
     case ND_RETURN:
@@ -45,17 +65,27 @@ char *new_label() {
 void emit_label(char *label) { printf("%s:\n", label); }
 void emit_jmp(char *label) { printf("\tjmp  %s\n", label); }
 
-void push_label() {
+void push_loop() {
     char *continue_label = new_label();
     char *break_label = new_label();
-    Label *label = (Label *)calloc(1, sizeof(Label));
+    Loop *label = (Loop *)calloc(1, sizeof(Loop));
     label->break_dest = break_label;
     label->continue_dest = continue_label;
     label->next = labels;
     labels = label;
 }
 
-void pop_label() { labels = labels->next; }
+void push_loop_switch(LVar *lvar) {
+    char *break_label = new_label();
+    Loop *label = (Loop *)calloc(1, sizeof(Loop));
+    label->break_dest = break_label;
+    label->continue_dest = NULL;
+    label->lvar = lvar;
+    label->next = labels;
+    labels = label;
+}
+
+void pop_loop() { labels = labels->next; }
 
 char *get_continue(Token *token) {
     if(!labels)
@@ -85,6 +115,7 @@ int reg_size(Type *type) {
         error("Internal error in reg_size(): Illegal data size.");
 }
 
+/// Load [RAX] to RAX.(size sensitive)
 void emit_deref_rax(Node *node) {
     switch(reg_size(type(node))) {
     case 0:
@@ -101,12 +132,17 @@ void emit_deref_rax(Node *node) {
     }
 }
 
+/// Push address of local var.
+void emit_lvar_addr(LVar *lvar) {
+    printf("\tmov  rax, rbp\n");
+    printf("\tsub  rax, %d\n", lvar->offset);
+    printf("\tpush rax\n");
+}
+
 /// Generate address of a local variable.
 void gen_lval(Node *node) {
     if(node->kind == ND_LVAR) {
-        printf("\tmov  rax, rbp\n");
-        printf("\tsub  rax, %d\n", node->lvar->offset);
-        printf("\tpush rax\n");
+        emit_lvar_addr(node->lvar);
         return;
     } else if(node->kind == ND_GVAR) {
         printf("\tlea  rax, %.*s[rip]\n", node->token->len, node->token->str);
@@ -140,7 +176,7 @@ void gen_if(Node *node) {
 }
 
 void gen_while(Node *node) {
-    push_label();
+    push_loop();
     char *cond_str = get_continue(node->token);
     char *end_str = get_break(node->token);
     emit_label(cond_str);
@@ -151,11 +187,11 @@ void gen_while(Node *node) {
     gen_stmt(node->rhs);
     emit_jmp(cond_str);
     emit_label(end_str);
-    pop_label();
+    pop_loop();
 }
 
 void gen_for(Node *node) {
-    push_label();
+    push_loop();
     char *loop_label = new_label();
     char *post_label = get_continue(node->token);
     char *end_label = get_break(node->token);
@@ -172,7 +208,7 @@ void gen_for(Node *node) {
         printf("\tpop  rax\n");
     emit_jmp(loop_label);
     emit_label(end_label);
-    pop_label();
+    pop_loop();
 }
 
 void gen_block(Node *node) {
@@ -240,90 +276,7 @@ void gen(Node *node) {
     Type *r_ty;
     char reg_l[4][4] = {"rax", "eax", "ax", "al"};
     char reg_r[4][4] = {"rdi", "edi", "di", "dil"};
-    switch(node->kind) {
-    // statement
-    case ND_IF:
-        gen_if(node);
-        return;
-    case ND_WHILE:
-        gen_while(node);
-        return;
-    case ND_FOR:
-        gen_for(node);
-        return;
-    case ND_BLOCK:
-        gen_block(node);
-        return;
-    case ND_RETURN:
-        // TODO: return without expression returns undefined value.
-        if(node->lhs) {
-            gen(node->lhs);
-            printf("\tpop  rax\n");
-        }
 
-        printf("\tmov  rsp, rbp\n");
-        printf("\tpop  rbp\n");
-        printf("\tret\n");
-        return;
-
-    // expression
-    case ND_NUM:
-        printf("\tpush %d\n", node->int_val);
-        return;
-    case ND_LVAR:
-    case ND_GVAR:
-        gen_lval(node);
-        printf("\tpop  rax\n");
-        emit_deref_rax(node);
-        printf("\tpush rax\n");
-        return;
-    case ND_ASSIGN:
-        l_ty = type(node->lhs);
-        r_ty = type(node->rhs);
-        if(!is_assignable_type(l_ty, r_ty)) {
-            fprintf(stderr, "Left: ");
-            print_type(stderr, l_ty);
-            fprintf(stderr, "\nRight: ");
-            print_type(stderr, r_ty);
-            fprintf(stderr, "\n");
-            error_at_node(node->lhs, "Type mismatch in assignment operation.");
-        }
-        gen_lval(node->lhs);
-        gen(node->rhs);
-        printf("\tpop  rdi\n");
-        printf("\tpop  rax\n");
-        printf("\tmov  [rax], %s\n", reg_r[reg_size(type(node->lhs))]);
-        printf("\tpush rdi\n");
-        return;
-    case ND_CALL:
-        gen_call(node);
-        return;
-    case ND_FDECL:
-        gen_fdecl(node);
-        return;
-    case ND_ADDR:
-        gen_lval(node->lhs);
-        return;
-    case ND_STR:
-        gen_lval(node);
-        return;
-    case ND_DEREF:
-        if(!is_ptr(type(node->lhs)))
-            error_at_node(
-                node->lhs,
-                "Illegal operation. (dereference of non-pointer type)");
-        gen(node->lhs);
-        printf("\tpop  rax\n");
-        emit_deref_rax(node);
-        printf("\tpush rax\n");
-        return;
-    case ND_BREAK:
-        emit_jmp(get_break(node->token));
-        return;
-    case ND_CONTINUE:
-        emit_jmp(get_continue(node->token));
-        return;
-    }
     if(is_binary_op(node->kind)) {
         gen(node->lhs);
         gen(node->rhs);
@@ -411,5 +364,117 @@ void gen(Node *node) {
         printf("\tpush rax\n");
         return;
     }
+    switch(node->kind) {
+    // statement
+    case ND_IF:
+        gen_if(node);
+        return;
+    case ND_WHILE:
+        gen_while(node);
+        return;
+    case ND_FOR:
+        gen_for(node);
+        return;
+    case ND_SWITCH:
+        push_loop_switch(node->lvar);
+        // evaluate const-expr and save as a local var.
+        emit_lvar_addr(node->lvar);
+        gen(node->lhs);
+        printf("\tpop  rdi\n");
+        printf("\tpop  rax\n");
+        printf("\tmov  [rax], edi\n");
+        gen_stmt(node->rhs);
+        emit_label(get_break(NULL));
+        pop_loop();
+        return;
+    case ND_BLOCK:
+        gen_block(node);
+        return;
+    case ND_RETURN:
+        // TODO: return without expression returns undefined value.
+        if(node->lhs) {
+            gen(node->lhs);
+            printf("\tpop  rax\n");
+        }
+
+        printf("\tmov  rsp, rbp\n");
+        printf("\tpop  rbp\n");
+        printf("\tret\n");
+        return;
+    case ND_CASE:
+        gen(node->lhs);
+        emit_lvar_addr(labels->lvar);
+        printf("\tpop  rax\n");
+        printf("\tmov  eax, [rax]\n");
+        printf("\tpop  rdi\n");
+        printf("\tcmp  eax, edi\n");
+        char *end_label = new_label();
+        printf("\tjne   %s\n", end_label);
+        gen_stmt(node->rhs);
+        emit_label(end_label);
+        return;
+    case ND_DEFAULT:
+        gen_stmt(node->lhs);
+        return;
+
+    // expression
+    case ND_NUM:
+        printf("\tpush %d\n", node->int_val);
+        return;
+    case ND_LVAR:
+    case ND_GVAR:
+        gen_lval(node);
+        printf("\tpop  rax\n");
+        emit_deref_rax(node);
+        printf("\tpush rax\n");
+        return;
+    case ND_ASSIGN:
+        l_ty = type(node->lhs);
+        r_ty = type(node->rhs);
+        if(!is_assignable_type(l_ty, r_ty)) {
+            fprintf(stderr, "Left: ");
+            print_type(stderr, l_ty);
+            fprintf(stderr, "\nRight: ");
+            print_type(stderr, r_ty);
+            fprintf(stderr, "\n");
+            error_at_node(node->lhs, "Type mismatch in assignment operation.");
+        }
+        gen_lval(node->lhs);
+        gen(node->rhs);
+        printf("\tpop  rdi\n");
+        printf("\tpop  rax\n");
+        printf("\tmov  [rax], %s\n", reg_r[reg_size(type(node->lhs))]);
+        printf("\tpush rdi\n");
+        return;
+    case ND_CALL:
+        gen_call(node);
+        return;
+    case ND_FDECL:
+        gen_fdecl(node);
+        return;
+    case ND_ADDR:
+        gen_lval(node->lhs);
+        return;
+    case ND_STR:
+        gen_lval(node);
+        return;
+    case ND_DEREF:
+        if(!is_ptr(type(node->lhs)))
+            error_at_node(
+                node->lhs,
+                "Illegal operation. (dereference of non-pointer type)");
+        gen(node->lhs);
+        printf("\tpop  rax\n");
+        emit_deref_rax(node);
+        printf("\tpush rax\n");
+        return;
+    case ND_BREAK:
+        emit_jmp(get_break(node->token));
+        return;
+    case ND_CONTINUE:
+        emit_jmp(get_continue(node->token));
+        return;
+    }
+
     error_at_token(node->token, "gen(): Unimplemented NodeKind.");
 }

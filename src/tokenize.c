@@ -82,6 +82,12 @@ void tokenize() {
                 cur = new_token(TK_WHILE, cur, org_p, len);
             } else if(is_reserved(org_p, len, "for")) {
                 cur = new_token(TK_FOR, cur, org_p, len);
+            } else if(is_reserved(org_p, len, "switch")) {
+                cur = new_token(TK_SWITCH, cur, org_p, len);
+            } else if(is_reserved(org_p, len, "case")) {
+                cur = new_token(TK_CASE, cur, org_p, len);
+            } else if(is_reserved(org_p, len, "default")) {
+                cur = new_token(TK_DEFAULT, cur, org_p, len);
             } else if(is_reserved(org_p, len, "break")) {
                 cur = new_token(TK_BREAK, cur, org_p, len);
             } else if(is_reserved(org_p, len, "continue")) {
@@ -164,6 +170,10 @@ void tokenize() {
         }
         if(*p == ';') {
             cur = new_token(TK_SEMI, cur, p++, 1);
+            continue;
+        }
+        if(*p == ':') {
+            cur = new_token(TK_COLON, cur, p++, 1);
             continue;
         }
         if(*p == '(') {

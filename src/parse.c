@@ -1,5 +1,12 @@
 #include "monocc.h"
 
+// Globals
+
+/// the level of switch-statement.
+int switch_level;
+/// scope level.
+int scope;
+
 // Methods for Node
 
 /// number(int)
@@ -140,6 +147,35 @@ Node *new_node_if_then(Node *cond_, Node *then_, Node *else_) {
     return node;
 }
 
+LVar *new_lvar(Token *token, Type *type);
+
+Node *new_node_switch(Node *expr, Node *stmt, Token *token) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_SWITCH;
+    node->lvar = new_lvar(token, new_type_int());
+    node->lhs = expr;
+    node->rhs = stmt;
+    node->token = token;
+    return node;
+}
+
+Node *new_node_case(Node *const_expr, Node *body, Token *token) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_CASE;
+    node->lhs = const_expr;
+    node->rhs = body;
+    node->token = token;
+    return node;
+}
+
+Node *new_node_default(Node *body, Token *token) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_DEFAULT;
+    node->lhs = body;
+    node->token = token;
+    return node;
+}
+
 /// while statement
 /// kind: ND_WHITE
 /// lhs: Node *cond
@@ -178,7 +214,7 @@ Node *new_node_for(Node *init_, Node *cond_, Node *post_, Node *body_,
 /// compound statement
 /// kind: ND_BLOCK
 /// nodes: Vector *stmts
-/// token: Token *token
+/// token: current token
 Node *new_node_block(Vector *stmts) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_BLOCK;
@@ -398,6 +434,8 @@ Node *parse_prim_expr() {
     if(consume_if(TK_MACRO)) {
         return new_node_num(get_line(cur_token->str), cur_token);
     }
+    if(is_type_specifier(peek()))
+        error_at_token(token, "Can not use declaration here.");
     error_at_token(token, "parse_prim_expr(): Unexpected token.");
 }
 
@@ -663,6 +701,15 @@ Node *parse_stmt() {
             return new_node_if_then(node, then_, parse_stmt());
         else
             return new_node_if_then(node, then_, NULL);
+    case TK_SWITCH:
+        switch_level++;
+        expect(TK_SWITCH);
+        expect(TK_OP_PAREN);
+        Node *expr = parse_eq_expr(); // this should be a conditional-expr.
+        expect(TK_CL_PAREN);
+        Node *stmt = parse_stmt();
+        switch_level--;
+        return new_node_switch(expr, stmt, op_token);
     case TK_WHILE:
         expect(TK_WHILE);
         expect(TK_OP_PAREN);
@@ -681,6 +728,26 @@ Node *parse_stmt() {
         expect(TK_CONTINUE);
         expect(TK_SEMI);
         return new_node(ND_CONTINUE, op_token);
+    case TK_CASE:
+        if(switch_level == 0)
+            error_at_token(op_token,
+                           "a case label may only be used within a switch.");
+        expect(TK_CASE);
+        Node *const_expr = parse_expr();
+        expect(TK_COLON);
+        Node *body = new_node_block(vec_new());
+        while(peek() != TK_CASE && peek() != TK_DEFAULT &&
+              peek() != TK_CL_BRACE)
+            add_stmt_to_block(body, parse_stmt());
+        return new_node_case(const_expr, body, op_token);
+    case TK_DEFAULT:
+        if(switch_level == 0)
+            error_at_token(op_token,
+                           "a default label may only be used within a switch.");
+        expect(TK_DEFAULT);
+        expect(TK_COLON);
+        body = parse_stmt();
+        return new_node_default(body, op_token);
     }
     node = parse_expr();
     expect(TK_SEMI);
@@ -763,8 +830,9 @@ void parse_program() {
     ext_declarations = vec_new();
     while(!at_eof()) {
         locals = NULL;
-        labels = NULL;
+        // labels = NULL;
         scope = 0;
+        switch_level = 0;
         Node *decl;
         DeclInfo *info = parse_decl();
         if(peek() == TK_OP_PAREN)
