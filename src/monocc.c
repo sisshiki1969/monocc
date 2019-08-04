@@ -1,7 +1,9 @@
 #include "monocc.h"
 
-char registers[2][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
-                           {"edi", "esi", "edx", "ecx", "r8d"}};
+char registers[4][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
+                           {"edi", "esi", "edx", "ecx", "r8d"},
+                           {"di", "si", "dx", "cx", "r8w"},
+                           {"dil", "sil", "dl", "cl", "r8b"}};
 
 /// Read file and return char* of data.
 char *read_file(char *path) {

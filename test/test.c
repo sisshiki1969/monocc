@@ -102,6 +102,42 @@ void for_() {
     assert_expect(__LINE__, 6, x);
 }
 
+int switch_(int s) {
+    int i;
+    switch(s) {
+    case 1:
+        i = 11;
+        break;
+    case 2:
+    case 3:
+        i = 12;
+    case 4:
+        i = 13;
+        return i;
+    case 5:
+        i = 14;
+    default:
+        i = 15;
+    }
+    return i;
+}
+
+int switch2_(char s) {
+    int i;
+    switch(s) {
+    case 'a':
+        i = 11;
+        break;
+    case 'b':
+    case 'c':
+        i = 12;
+        break;
+    default:
+        i = 15;
+    }
+    return i;
+}
+
 int main() {
     assert_expect(__LINE__, 9, +9);
     assert_expect(__LINE__, 4, -3 + 7);
@@ -125,6 +161,7 @@ int main() {
     assert_expect(__LINE__, 1, 1 + 4 > 4);
     assert_expect(__LINE__, 0, 4 < 4 - 1);
     assert_expect(__LINE__, 0, 1 - 4 > 4);
+
     int i;
     i = 77;
     if(i == 77)
@@ -138,22 +175,19 @@ int main() {
     string();
     block_scope();
     for_();
-    switch(i) {
-    case 45:
-        i = 9;
-        break;
-    case 50:
-        i = 7;
-        break;
-    case 55:
-        i = 5;
-    case 58:
-        i = 1;
-        break;
-    default:
-        i = 3;
-    }
-    assert_expect(__LINE__, 1, i);
+
+    assert_expect(__LINE__, 11, switch_(1));
+    assert_expect(__LINE__, 13, switch_(2));
+    assert_expect(__LINE__, 13, switch_(3));
+    assert_expect(__LINE__, 13, switch_(4));
+    assert_expect(__LINE__, 15, switch_(5));
+    assert_expect(__LINE__, 15, switch_(6));
+
+    assert_expect(__LINE__, 11, switch2_('a'));
+    assert_expect(__LINE__, 12, switch2_('b'));
+    assert_expect(__LINE__, 12, switch2_('c'));
+    assert_expect(__LINE__, 15, switch2_('z'));
+
     print_str("passed tests.\n");
     return 0;
 }
