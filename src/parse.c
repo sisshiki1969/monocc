@@ -98,6 +98,15 @@ Node *new_node_expr(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     return node;
 }
 
+/// Generate Node.
+/// for BREAK, CONTINUE
+Node *new_node(NodeKind kind, Token *op_token) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = kind;
+    node->token = op_token;
+    return node;
+}
+
 /// function call
 /// kind: ND_CALL
 /// lhs: callee (ND_IDENT)
@@ -141,6 +150,27 @@ Node *new_node_while(Node *cond_, Node *do_) {
     node->kind = ND_WHILE;
     node->lhs = cond_;
     node->rhs = do_;
+    node->token = token;
+    return node;
+}
+
+/// for statement
+/// kind: ND_FOR
+/// lhs: Node *init
+/// rhs: Node *cond
+/// xhs: Node *post
+/// nodes: [ Node *body ]
+/// token: Token *token
+Node *new_node_for(Node *init_, Node *cond_, Node *post_, Node *body_,
+                   Token *token) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_FOR;
+    node->lhs = init_;
+    node->rhs = cond_;
+    node->xhs = post_;
+    Vector *vec = vec_new();
+    vec_push(vec, body_);
+    node->nodes = vec;
     node->token = token;
     return node;
 }
@@ -261,7 +291,7 @@ LVar *new_lvar(Token *token, Type *type) {
     lvar->offset = offset;
     lvar->type = type;
     lvar->out_of_scope = 0;
-    lvar->scope;
+    lvar->scope = scope;
     locals = lvar;
     return lvar;
 }
@@ -279,7 +309,7 @@ LVar *find_lvar(Token *token) {
 void check_duplicate_lvar(Token *token) {
     for(LVar *var = locals; var; var = var->next) {
         if(var->scope != scope || var->out_of_scope)
-            break;
+            continue;
         if(var->token->len == token->len &&
            memcmp(var->token->str, token->str, token->len) == 0)
             error_at_token(token, "Redefinition of variable.");
@@ -565,7 +595,7 @@ DeclInfo *parse_decl() {
 }
 
 Node *parse_for() {
-    Node *node = new_node_block(vec_new());
+    Token *op_token = token;
     Node *init;
     Node *cond;
     Node *post;
@@ -574,29 +604,37 @@ Node *parse_for() {
     expect(TK_OP_PAREN);
     LVar *save_locals = locals;
     scope++;
-    if(is_type_specifier(peek())) {
-        DeclInfo *info = parse_decl();
-        new_lvar(info->token, info->type);
-        init = NULL;
-    } else {
-        init = parse_expr();
+    if(peek() != TK_SEMI) {
+        if(is_type_specifier(peek())) {
+            DeclInfo *info = parse_decl();
+            new_lvar(info->token, info->type);
+            init = NULL;
+        } else {
+            init = parse_expr();
+        }
     }
-    add_stmt_to_block(node, init);
     expect(TK_SEMI);
-    cond = parse_expr();
+    if(peek() != TK_SEMI) {
+        cond = parse_expr();
+    } else {
+        cond = new_node_num(1, token);
+    }
     expect(TK_SEMI);
-    post = parse_expr();
+    if(peek() != TK_CL_PAREN)
+        post = parse_expr();
+    else
+        post = NULL;
     expect(TK_CL_PAREN);
+    scope++;
     body = parse_stmt();
-    add_stmt_to_block(body, post);
-    add_stmt_to_block(node, new_node_while(cond, body));
+    scope--;
     LVar *cursor = locals;
     while(cursor != save_locals) {
         cursor->out_of_scope = 1;
         cursor = cursor->next;
     }
     scope--;
-    return node;
+    return new_node_for(init, cond, post, body, op_token);
 }
 
 Node *parse_stmt() {
@@ -635,6 +673,14 @@ Node *parse_stmt() {
         return parse_for();
     case TK_OP_BRACE:
         return parse_block();
+    case TK_BREAK:
+        expect(TK_BREAK);
+        expect(TK_SEMI);
+        return new_node(ND_BREAK, op_token);
+    case TK_CONTINUE:
+        expect(TK_CONTINUE);
+        expect(TK_SEMI);
+        return new_node(ND_CONTINUE, op_token);
     }
     node = parse_expr();
     expect(TK_SEMI);
@@ -717,6 +763,7 @@ void parse_program() {
     ext_declarations = vec_new();
     while(!at_eof()) {
         locals = NULL;
+        labels = NULL;
         scope = 0;
         Node *decl;
         DeclInfo *info = parse_decl();

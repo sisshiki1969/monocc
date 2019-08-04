@@ -134,6 +134,8 @@ Type *type(Node *node) {
     case ND_IF:
     case ND_WHILE:
     case ND_BLOCK:
+    case ND_BREAK:
+    case ND_CONTINUE:
         error("Can not determine a type of statement.");
     case ND_RETURN:
         return NULL;

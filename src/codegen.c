@@ -22,6 +22,9 @@ bool is_expr(NodeKind kind) {
     case ND_IF:
     case ND_WHILE:
     case ND_BLOCK:
+    case ND_FOR:
+    case ND_BREAK:
+    case ND_CONTINUE:
     case ND_RETURN:
     case ND_FDECL:
         return false;
@@ -34,8 +37,39 @@ char *new_label() {
     char *label = (char *)malloc(10);
     if(!label)
         error("Could not allocate memmory.");
-    sprintf(label, ".L%06d", labels++);
+    sprintf(label, ".L%06d", label_count++);
     return label;
+}
+
+/// Emit assembly for label.
+void emit_label(char *label) { printf("%s:\n", label); }
+void emit_jmp(char *label) { printf("\tjmp  %s\n", label); }
+
+void push_label() {
+    char *continue_label = new_label();
+    char *break_label = new_label();
+    Label *label = (Label *)calloc(1, sizeof(Label));
+    label->break_dest = break_label;
+    label->continue_dest = continue_label;
+    label->next = labels;
+    labels = label;
+}
+
+void pop_label() { labels = labels->next; }
+
+char *get_continue(Token *token) {
+    if(!labels)
+        error_at_token(token,
+                       "a continue statement may only be used within a loop.");
+    return labels->continue_dest;
+}
+
+char *get_break(Token *token) {
+    if(!labels)
+        error_at_token(
+            token,
+            "a break statement may only be used within a loop or switch.");
+    return labels->break_dest;
 }
 
 /// Calculate required register size.
@@ -51,7 +85,7 @@ int reg_size(Type *type) {
         error("Internal error in reg_size(): Illegal data size.");
 }
 
-void print_deref_rax(Node *node) {
+void emit_deref_rax(Node *node) {
     switch(reg_size(type(node))) {
     case 0:
         printf("\tmov  rax, [rax]\n");
@@ -99,23 +133,46 @@ void gen_if(Node *node) {
     printf("\tcmp  rax, 0\n");
     printf("\tje   %s\n", else_str);
     gen_stmt(node->rhs);
-    printf("\tjmp  %s\n", end_str);
-    printf("%s:\n", else_str);
+    emit_jmp(end_str);
+    emit_label(else_str);
     gen_stmt(node->xhs);
-    printf("%s:\n", end_str);
+    emit_label(end_str);
 }
 
 void gen_while(Node *node) {
-    char *cond_str = new_label();
-    char *end_str = new_label();
-    printf("%s:\n", cond_str);
+    push_label();
+    char *cond_str = get_continue(node->token);
+    char *end_str = get_break(node->token);
+    emit_label(cond_str);
     gen(node->lhs);
     printf("\tpop  rax\n");
     printf("\tcmp  rax, 0\n");
     printf("\tje   %s\n", end_str);
     gen_stmt(node->rhs);
-    printf("\tjmp  %s\n", cond_str);
-    printf("%s:\n", end_str);
+    emit_jmp(cond_str);
+    emit_label(end_str);
+    pop_label();
+}
+
+void gen_for(Node *node) {
+    push_label();
+    char *loop_label = new_label();
+    char *post_label = get_continue(node->token);
+    char *end_label = get_break(node->token);
+    gen(node->lhs);
+    emit_label(loop_label);
+    gen(node->rhs);
+    printf("\tpop  rax\n");
+    printf("\tcmp  rax, 0\n");
+    printf("\tje   %s\n", end_label);
+    gen_stmt(node->nodes->data[0]);
+    emit_label(post_label);
+    gen(node->xhs);
+    if(node->xhs)
+        printf("\tpop  rax\n");
+    emit_jmp(loop_label);
+    emit_label(end_label);
+    pop_label();
 }
 
 void gen_block(Node *node) {
@@ -177,6 +234,8 @@ void gen_stmt(Node *node) {
 }
 
 void gen(Node *node) {
+    if(!node)
+        return;
     Type *l_ty;
     Type *r_ty;
     char reg_l[4][4] = {"rax", "eax", "ax", "al"};
@@ -188,6 +247,9 @@ void gen(Node *node) {
         return;
     case ND_WHILE:
         gen_while(node);
+        return;
+    case ND_FOR:
+        gen_for(node);
         return;
     case ND_BLOCK:
         gen_block(node);
@@ -212,7 +274,7 @@ void gen(Node *node) {
     case ND_GVAR:
         gen_lval(node);
         printf("\tpop  rax\n");
-        print_deref_rax(node);
+        emit_deref_rax(node);
         printf("\tpush rax\n");
         return;
     case ND_ASSIGN:
@@ -252,8 +314,14 @@ void gen(Node *node) {
                 "Illegal operation. (dereference of non-pointer type)");
         gen(node->lhs);
         printf("\tpop  rax\n");
-        print_deref_rax(node);
+        emit_deref_rax(node);
         printf("\tpush rax\n");
+        return;
+    case ND_BREAK:
+        emit_jmp(get_break(node->token));
+        return;
+    case ND_CONTINUE:
+        emit_jmp(get_continue(node->token));
         return;
     }
     if(is_binary_op(node->kind)) {

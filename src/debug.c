@@ -38,6 +38,8 @@ void print_tokens(Token *token) {
         case TK_ELSE:
         case TK_WHILE:
         case TK_FOR:
+        case TK_BREAK:
+        case TK_CONTINUE:
         case TK_RETURN:
         case TK_INT:
         case TK_CHAR:
@@ -113,6 +115,12 @@ void print_node(Node *node) {
         print_node(node->lhs);
         printf(")");
         return;
+    case ND_BREAK:
+        printf("BREAK ");
+        return;
+    case ND_CONTINUE:
+        printf("CONTINUE ");
+        return;
     }
     if(node->kind == ND_CALL) {
         Token *name = node->lhs->token;
@@ -153,11 +161,24 @@ void print_node(Node *node) {
         return;
     }
     if(node->kind == ND_WHILE) {
-        printf("( WHILE");
+        printf("( WHILE cond:");
         print_node(node->lhs);
-        printf(" ");
+        printf("body: ");
         print_node(node->rhs);
         printf(")");
+        return;
+    }
+    if(node->kind == ND_FOR) {
+        printf("(FOR init: ");
+        print_node(node->lhs);
+        printf("cond: ");
+        print_node(node->rhs);
+        printf(" post: ");
+        print_node(node->xhs);
+        printf(" body ");
+        print_node(node->nodes->data[0]);
+        printf(")");
+
         return;
     }
     if(node->kind == ND_BLOCK) {
@@ -252,8 +273,8 @@ void print_locals() {
     LVar *var = locals;
     fprintf(stdout, "// Local variables\n");
     while(var) {
-        fprintf(stdout, "// %.*s offset:%d ", var->token->len, var->token->str,
-                var->offset);
+        fprintf(stdout, "// %.*s offset:%d scope:%d  ", var->token->len,
+                var->token->str, var->offset, var->scope);
         print_type(stdout, var->type);
         fprintf(stdout, "\n");
         var = var->next;

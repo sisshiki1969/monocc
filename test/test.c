@@ -82,13 +82,24 @@ void for_() {
     int x;
     x = 100;
     assert_expect(__LINE__, 100, x);
-    for(int x; x < 5; x = x + 1) {
+    for(int x; x < 15; x = x + 1) {
+        if(x == 9)
+            break;
+        if(x == x / 2 * 2)
+            continue;
         print(x);
         int x;
         x = 9;
         assert_expect(__LINE__, 9, x);
     }
     assert_expect(__LINE__, 100, x);
+    x = 0;
+    for(;;) {
+        if(x == 6)
+            break;
+        x = x + 1;
+    }
+    assert_expect(__LINE__, 6, x);
 }
 
 int main() {

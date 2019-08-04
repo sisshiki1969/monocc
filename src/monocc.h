@@ -39,6 +39,8 @@ typedef enum {
     TK_ELSE,
     TK_WHILE,
     TK_FOR,
+    TK_BREAK,
+    TK_CONTINUE,
     TK_RETURN,
     TK_SIZEOF,
 
@@ -98,7 +100,10 @@ typedef enum {
 
     ND_IF,
     ND_WHILE,
+    ND_FOR,
     ND_RETURN,
+    ND_BREAK,
+    ND_CONTINUE,
     ND_BLOCK,
     ND_FDECL,
 } NodeKind;
@@ -144,6 +149,16 @@ struct Global {
     Token *token;
     Type *type;
     Node *func_decl;
+};
+
+// Label
+
+typedef struct Label Label;
+
+struct Label {
+    Label *next;
+    char *continue_dest;
+    char *break_dest;
 };
 
 typedef struct {
@@ -234,5 +249,6 @@ Vector *strings;
 LVar *locals;
 Global *globals;
 Global *functions;
-int labels;
+int label_count;
+Label *labels;
 int scope;
