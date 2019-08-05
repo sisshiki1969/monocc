@@ -122,7 +122,8 @@ int reg_size(Type *type) {
     else if(data_size == 1)
         return 3;
     else
-        error("Internal error in reg_size(): Illegal data size.");
+        error("Internal error in reg_size(): Illegal data size (%d bytes).",
+              data_size);
 }
 
 /// Load [RAX] to RAX.(size sensitive)

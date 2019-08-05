@@ -796,6 +796,8 @@ Node *parse_func_definition(DeclInfo *info) {
     Type *param_type = func_type;
     while(peek() != TK_CL_PAREN) {
         DeclInfo *p_info = parse_decl();
+        if(is_array(p_info->type))
+            p_info->type = new_type_ptr_to(p_info->type->ptr_to);
         vec_push(params, new_node_lvar(new_lvar(p_info->token, p_info->type),
                                        p_info->token));
         param_type->params = p_info->type;

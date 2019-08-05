@@ -17,7 +17,7 @@ void alloc4(int **p, int i1, int i2, int i3, int i4) {
     a[3] = i4;
 }
 
-void print_str(char *str) { printf("%s", str); }
+void printf_(char *str) { printf("%s", str); }
 
 int assert_expect(int line, int expected, int actual) {
     if(expected == actual) {
