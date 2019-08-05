@@ -190,7 +190,7 @@ void print_node(Node *node) {
     }
 
     if(node->kind == ND_WHILE) {
-        printf("( WHILE cond:");
+        printf("(WHILE cond:");
         print_node(node->lhs);
         printf("body: ");
         print_node(node->rhs);
@@ -210,7 +210,7 @@ void print_node(Node *node) {
         return;
     }
     if(node->kind == ND_BLOCK) {
-        printf("( BLOCK");
+        printf("(BLOCK");
         if(node->nodes) {
             Vector *vec = node->nodes;
             int len = vec_len(vec);
@@ -237,16 +237,18 @@ void print_node(Node *node) {
         return;
     }
     if(node->kind == ND_FDECL) {
-        printf("(FDECL %.*s (", node->token->len, node->token->str);
+        printf("FDECL %.*s ", node->token->len, node->token->str);
+        print_type(stdout, node->type);
+        printf("\n//    ");
         if(node->nodes) {
             Vector *params = node->nodes;
             int len = vec_len(params);
             for(int i = 0; i < len; i++) {
                 print_node(params->data[i]);
-                printf(":");
+                printf(" ");
             }
         }
-        printf(") ");
+        printf("\n//    ");
         print_node(node->lhs);
         printf(")");
         return;
@@ -299,14 +301,14 @@ void print_type(FILE *stream, Type *type) {
 /// Print local variables in `locals`.
 void print_locals() {
     LVar *var = locals;
-    fprintf(stdout, "// Local variables\n");
     while(var) {
-        fprintf(stdout, "// %.*s offset:%d scope:%d  ", var->token->len,
+        fprintf(stdout, "//    %.*s  offset:%d  scope:%d  ", var->token->len,
                 var->token->str, var->offset, var->scope);
         print_type(stdout, var->type);
         fprintf(stdout, "\n");
         var = var->next;
     }
+    fprintf(stdout, "\n");
 }
 
 void print_globals() {

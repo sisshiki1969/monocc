@@ -201,6 +201,16 @@ int q8() {
 }
 
 int main() {
+    int A;
+    int *B;
+    int C[5];
+    // int D();
+    int **E;
+    // int(*F)[5];
+    // int (*G)();
+    int *H[5];
+    int I[5][5];
+    // int *J();
     assert_expect(__LINE__, 9, +9);
     assert_expect(__LINE__, 4, -3 + 7);
     assert_expect(__LINE__, 21, 5 + 20 - 4);

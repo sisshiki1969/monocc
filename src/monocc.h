@@ -78,6 +78,7 @@ struct Type {
     int array_size;
     /// parameter list for FUNC
     Type *params;
+    Token *token;
 };
 
 // Node
@@ -222,6 +223,7 @@ Node *get_ptr_if_array(Node *node);
 bool is_int(Type *type);
 bool is_ptr(Type *type);
 bool is_array(Type *type);
+bool is_func(Type *type);
 bool is_arythmetic(Type *type);
 bool is_identical_type(Type *l_type, Type *r_type);
 bool is_assignable_type(Type *l_type, Type *r_type);

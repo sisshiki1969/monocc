@@ -59,6 +59,7 @@ bool is_char(Type *type) { return type->ty == CHAR; }
 bool is_void(Type *type) { return type->ty == VOID; }
 bool is_ptr(Type *type) { return type->ty == PTR; }
 bool is_array(Type *type) { return type->ty == ARRAY; }
+bool is_func(Type *type) { return type->ty == FUNC; }
 bool is_arythmetic(Type *type) {
     switch(type->ty) {
     case INT:
@@ -80,7 +81,8 @@ int sizeof_type(Type *type) {
     case ARRAY:
         return type->array_size * sizeof_type(type->ptr_to);
     default:
-        error("Internal error: can not calculate size of unknown type.");
+        error("Internal error: can not calculate size of unknown type '%.*s'.",
+              type->token->len, type->token->str);
     }
 }
 

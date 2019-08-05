@@ -239,13 +239,16 @@ void add_stmt_to_block(Node *block, Node *node) {
 /// nodes: Vector *params
 /// offset: int max_offset
 /// token: Token *name
-Node *new_node_fdecl(Token *name, Vector *params, int max_offset, Node *body) {
+/// type: Type *type
+Node *new_node_fdecl(Token *name, Vector *params, int max_offset, Node *body,
+                     Type *type) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_FDECL;
     node->lhs = body;
     node->nodes = params;
     node->offset = max_offset;
     node->token = name;
+    node->type = type;
     return node;
 }
 
@@ -602,7 +605,7 @@ DeclInfo *new_decl_info(Token *token, Type *type) {
     return info;
 }
 
-DeclInfo *parse_decl() {
+Type *parse_decl() {
     // declaration-specifiers
     Type *type = new_type_from_token(consume());
 
@@ -612,8 +615,8 @@ DeclInfo *parse_decl() {
     }
 
     // direct-declarator
-    Token *ident_token = expect(TK_IDENT);
-    check_duplicate_lvar(ident_token);
+    Token *ident = expect(TK_IDENT);
+    check_duplicate_lvar(ident);
 
     // direct-declarator [ assignment-expression ]
     Type head;
@@ -630,7 +633,25 @@ DeclInfo *parse_decl() {
     }
     type = head.ptr_to;
 
-    return new_decl_info(ident_token, type);
+    if(consume_if(TK_OP_PAREN)) {
+        type = new_type_func(type);
+        Type *param_type = type;
+        while(peek() != TK_CL_PAREN) {
+            Type *ptype = parse_decl();
+            Token *pident = ptype->token;
+            if(is_array(ptype))
+                ptype = new_type_ptr_to(ptype->ptr_to);
+            ptype->token = pident;
+            param_type->params = ptype;
+            param_type = ptype;
+            if(!consume_if(TK_COMMA))
+                break;
+        }
+        expect(TK_CL_PAREN);
+    }
+
+    type->token = ident;
+    return type;
 }
 
 Node *parse_for() {
@@ -645,8 +666,8 @@ Node *parse_for() {
     scope++;
     if(peek() != TK_SEMI) {
         if(is_type_specifier(peek())) {
-            DeclInfo *info = parse_decl();
-            new_lvar(info->token, info->type);
+            Type *type = parse_decl();
+            new_lvar(type->token, type);
             init = NULL;
         } else {
             init = parse_expr();
@@ -758,9 +779,11 @@ Node *parse_stmt() {
 Node *parse_block_item() {
     if(is_type_specifier(peek())) {
         // local var declaration
-        DeclInfo *info = parse_decl();
-
-        LVar *lvar = new_lvar(info->token, info->type);
+        Type *type = parse_decl();
+        if(is_func(type))
+            error_at_token(type->token,
+                           "Functions can be declared only in the top level.");
+        LVar *lvar = new_lvar(type->token, type);
         expect(TK_SEMI);
         return NULL;
     } else {
@@ -788,45 +811,24 @@ Node *parse_block() {
     return new_node_block(vec);
 }
 
-Node *parse_func_definition(DeclInfo *info) {
-    expect(TK_OP_PAREN);
-    Vector *params = vec_new();
-    Type *func_type = new_type_func(info->type);
-    Global *func = new_func(info->token, func_type, NULL);
-    Type *param_type = func_type;
-    while(peek() != TK_CL_PAREN) {
-        DeclInfo *p_info = parse_decl();
-        if(is_array(p_info->type))
-            p_info->type = new_type_ptr_to(p_info->type->ptr_to);
-        vec_push(params, new_node_lvar(new_lvar(p_info->token, p_info->type),
-                                       p_info->token));
-        param_type->params = p_info->type;
-        param_type = p_info->type;
-        if(!consume_if(TK_COMMA))
-            break;
-    }
-    expect(TK_CL_PAREN);
+Node *parse_func_definition(Type *func_type) {
     Node *decl;
-    if(consume_if(TK_SEMI)) {
-        // function declaration
-        decl = NULL; // new_node_fdecl(info->token, params, 0, NULL);
-    } else {
-        // function definition
-        Node *body = parse_block();
-        int max_offset = 0;
-        if(locals)
-            max_offset = locals->offset;
-        decl = new_node_fdecl(info->token, params, max_offset, body);
+    Global *func = new_func(func_type->token, func_type, NULL);
+    // function definition
+    Vector *params = vec_new();
+    Type *cursor = func_type;
+    while(cursor = cursor->params) {
+        vec_push(params,
+                 new_node_lvar(new_lvar(cursor->token, cursor), cursor->token));
     }
+    Node *body = parse_block();
+    int max_offset = 0;
+    if(locals)
+        max_offset = locals->offset;
+    decl =
+        new_node_fdecl(func_type->token, params, max_offset, body, func_type);
     func->func_decl = decl;
     return decl;
-}
-
-void *parse_gvar_declaration(DeclInfo *info) {
-    if(find_gvar(info->token))
-        error_at_token(info->token, "Redefinition of global variable");
-    new_gvar(info->token, info->type);
-    expect(TK_SEMI);
 }
 
 void parse_program() {
@@ -837,20 +839,27 @@ void parse_program() {
         scope = 0;
         switch_level = 0;
         Node *decl;
-        DeclInfo *info = parse_decl();
-        if(peek() == TK_OP_PAREN)
-            decl = parse_func_definition(info);
-        else if(peek() == TK_SEMI) {
-            parse_gvar_declaration(info);
+        Type *type = parse_decl();
+        if(type->ty != FUNC) {
+            // gloval var declaratino
+            if(find_gvar(type->token))
+                error_at_token(type->token, "Redefinition of global variable");
+            new_gvar(type->token, type);
+            expect(TK_SEMI);
             continue;
+        } else if(consume_if(TK_SEMI)) {
+            // function declaration
+            Global *func = new_func(type->token, type, NULL);
+            continue;
+        } else if(peek() == TK_OP_BRACE) {
+            // function definition
+            decl = parse_func_definition(type);
+            printf("// ");
+            print_node(decl);
+            printf("\n");
+            print_locals();
+            vec_push(ext_declarations, decl);
         } else
             error_at_token(token, "Unexpected token.");
-        if(!decl)
-            continue;
-        printf("// ");
-        print_node(decl);
-        printf("\n");
-        print_locals();
-        vec_push(ext_declarations, decl);
     }
 }

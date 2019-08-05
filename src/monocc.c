@@ -35,7 +35,7 @@ void compile() {
 
     parse_program();
     print_globals();
-    print_funcs();
+    // print_funcs();
     print_strings();
 
     printf("\n");
