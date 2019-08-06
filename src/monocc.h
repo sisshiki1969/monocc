@@ -163,7 +163,7 @@ struct Global {
     Global *next;
     Token *token;
     Type *type;
-    Node *func_decl;
+    Node *body;
 };
 
 typedef struct {
@@ -226,6 +226,7 @@ int sizeof_type(Type *type);
 Type *type(Node *node);
 Node *get_ptr_if_array(Node *node);
 
+bool is_char(Type *type);
 bool is_int(Type *type);
 bool is_ptr(Type *type);
 bool is_array(Type *type);

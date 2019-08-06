@@ -379,11 +379,12 @@ Global *find_gvar(Token *token) {
 
 // functions.
 
-Global *new_func(Token *ident, Type *type, Node *func_decl) {
+Global *new_func(Token *ident, Type *type, Node *body) {
     Global *func = calloc(1, sizeof(Global));
     func->next = functions;
     func->token = ident;
     func->type = type;
+    func->body = body;
     functions = func;
     return func;
 }
@@ -468,9 +469,7 @@ Node *parse_postfix_expr() {
             }
             expect(TK_CL_PAREN);
             node = new_node_call(node, vec, node->token);
-            continue;
-        }
-        if(consume_if(TK_OP_BRACKET)) {
+        } else if(consume_if(TK_OP_BRACKET)) {
             Node *index = parse_expr();
             node = new_node_binary(ND_ADD, node, index, token);
             node = new_node_expr(ND_DEREF, node, NULL, token);
@@ -848,7 +847,7 @@ Node *parse_func_definition(Type *func_type) {
         max_offset = locals->offset;
     decl =
         new_node_fdecl(func_type->token, params, max_offset, body, func_type);
-    func->func_decl = decl;
+    func->body = decl;
     return decl;
 }
 
@@ -865,7 +864,11 @@ void parse_program() {
             // gloval var declaration
             if(find_gvar(type->token))
                 error_at_token(type->token, "Redefinition of global variable");
-            new_gvar(type->token, type);
+            Token *op_token = token;
+            Global *gvar = new_gvar(type->token, type);
+            if(consume_if(TK_ASSIGN)) {
+                gvar->body = get_ptr_if_array(parse_assign_expr());
+            }
             expect(TK_SEMI);
             continue;
         } else if(consume_if(TK_SEMI)) {

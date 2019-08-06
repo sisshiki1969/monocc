@@ -27,8 +27,10 @@ int array_local() {
 }
 
 int a[10][8];
-int i;
-int j;
+int i = 1979;
+int j = 2015;
+char s = 270;
+char *str = "Hi, guys. Are you hungry?";
 
 int array_global() {
     i = 0;
@@ -36,9 +38,9 @@ int array_global() {
         j = 0;
         while(j <= 7) {
             a[i][j] = i * 10 + j;
-            j = j + 1;
+            j++;
         }
-        i = i + 1;
+        i++;
     }
     assert_expect(__LINE__, a[0][1], 1);
     assert_expect(__LINE__, a[9][7], 97);
@@ -48,8 +50,10 @@ int array_global() {
 
 int string() {
     char *str = "Hello world!\n";
+    // char str_ary[] = "Hello world, again\n";
     assert_expect(__LINE__, 119, 'w');
     assert_expect(__LINE__, 'w', str[6]);
+    // printf_(str_ary);
 }
 
 void block_scope() {
@@ -187,6 +191,9 @@ int q8() {
 }
 
 int main() {
+    assert_expect(__LINE__, 1979, i);
+    assert_expect(__LINE__, 2015, j);
+    assert_expect(__LINE__, 14, s);
     int A;
     int *B;
     int C[5];

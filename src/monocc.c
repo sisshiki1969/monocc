@@ -39,13 +39,31 @@ void compile() {
     print_strings();
 
     printf("\n");
-    printf(".intel_syntax noprefix\n");
+    printf("\t.intel_syntax noprefix\n");
 
-    printf(".data\n");
+    printf("\t.data\n");
     Global *global = globals;
     while(global) {
         printf("%.*s:\n", global->token->len, global->token->str);
-        printf("\t.zero %d\n", sizeof_type(global->type));
+        if(is_int(global->type)) {
+            int i = 0;
+            if(global->body && global->body->kind == ND_NUM)
+                i = global->body->int_val;
+            printf("\t.long %d\n", i);
+        } else if(is_char(global->type)) {
+            int i = 0;
+            if(global->body && global->body->kind == ND_NUM)
+                i = global->body->int_val % 256;
+            printf("\t.byte %d\n", i);
+        } else if(is_ptr(global->type) && is_char(global->type->ptr_to)) {
+            // print_node(global->body);
+            if(global->body && global->body->kind == ND_ADDR &&
+               global->body->lhs->kind == ND_STR)
+                printf("\t.quad .LS%06d\n", global->body->lhs->int_val);
+            else
+                printf("\t.zero %d\n", sizeof_type(global->type));
+        } else
+            printf("\t.zero %d\n", sizeof_type(global->type));
         global = global->next;
     };
 
@@ -56,9 +74,10 @@ void compile() {
                strings->data[i]->token->str);
         i++;
     }
+    printf("\n");
 
-    printf(".text\n");
-    printf(".global main\n");
+    printf("\t.text\n");
+    printf("\t.global main\n");
     int len = vec_len(ext_declarations);
     for(int i = 0; i < len; i++)
         gen_stmt(ext_declarations->data[i]);
