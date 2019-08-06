@@ -739,8 +739,9 @@ Node *parse_block_item() {
         LVar *lvar = new_lvar(type->token, type);
         Token *op_token = token;
         if(consume_if(TK_ASSIGN)) {
-            node = new_node_expr(ND_ASSIGN, new_node_lvar(lvar, op_token),
-                                 parse_assign_expr(), op_token);
+            node =
+                new_node_expr(ND_ASSIGN, new_node_lvar(lvar, op_token),
+                              get_ptr_if_array(parse_assign_expr()), op_token);
         }
         expect(TK_SEMI);
         return node;

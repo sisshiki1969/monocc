@@ -47,8 +47,7 @@ int array_global() {
 }
 
 int string() {
-    char *str;
-    str = "Hello world!\n";
+    char *str = "Hello world!\n";
     assert_expect(__LINE__, 119, 'w');
     assert_expect(__LINE__, 'w', str[6]);
 }
