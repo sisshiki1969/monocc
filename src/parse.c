@@ -448,6 +448,7 @@ Node *parse_prim_expr() {
 Node *parse_postfix_expr() {
     Node *node = parse_prim_expr();
     while(true) {
+        Token *op_token = token;
         if(consume_if(TK_OP_PAREN)) {
             if(node->kind != ND_IDENT)
                 error_at_node(node, "Currently, callee must be an identifier.");
@@ -474,6 +475,18 @@ Node *parse_postfix_expr() {
             node = new_node_binary(ND_ADD, node, index, token);
             node = new_node_expr(ND_DEREF, node, NULL, token);
             expect(TK_CL_BRACKET);
+        } else if(consume_if(TK_INC)) {
+            Node *rhs = new_node_binary(ND_ADD, node, new_node_num(1, op_token),
+                                        op_token);
+            node = new_node_expr(ND_ASSIGN, node, rhs, op_token);
+            node = new_node_binary(ND_SUB, node, new_node_num(1, op_token),
+                                   op_token);
+        } else if(consume_if(TK_DEC)) {
+            Node *rhs = new_node_binary(ND_SUB, node, new_node_num(1, op_token),
+                                        op_token);
+            node = new_node_expr(ND_ASSIGN, node, rhs, op_token);
+            node = new_node_binary(ND_ADD, node, new_node_num(1, op_token),
+                                   op_token);
         } else
             return node;
     }

@@ -16,7 +16,7 @@ int array_local() {
         j = 0;
         while(j <= 7) {
             a[i][j] = i * 10 + j;
-            j += 1;
+            j++;
         }
         i += 1;
     }
@@ -148,7 +148,7 @@ int print_board(int board[][8]) {
 }
 
 int conflict(int board[][8], int row, int col) {
-    for(int i = 0; i < row; i += 1) {
+    for(int i = 0; i < row; i++) {
         if(board[i][col])
             return 1;
         int j = row - i;
@@ -167,7 +167,7 @@ int solve(int board[][8], int row) {
         print_board(board);
         return 0;
     }
-    for(int i = 0; i < 8; i += 1) {
+    for(int i = 0; i < 8; i++) {
         if(conflict(board, row, i) == 0) {
             board[row][i] = 1;
             solve(board, row + 1);
@@ -179,8 +179,8 @@ int solve(int board[][8], int row) {
 int q8() {
     int board[8][8];
     q8_count = 0;
-    for(int i = 0; i < 8; i += 1)
-        for(int j = 0; j < 8; j += 1)
+    for(int i = 0; i < 8; i++)
+        for(int j = 0; j < 8; j++)
             board[i][j] = 0;
     solve(board, 0);
     return q8_count;
@@ -230,6 +230,12 @@ int main() {
     assert_expect(__LINE__, 40, z *= 5);
     assert_expect(__LINE__, 40, z);
     assert_expect(__LINE__, 4, z /= 10);
+    assert_expect(__LINE__, 4, z);
+
+    // post increment/decrement operators
+    assert_expect(__LINE__, 4, z++);
+    assert_expect(__LINE__, 5, z);
+    assert_expect(__LINE__, 5, z--);
     assert_expect(__LINE__, 4, z);
 
     // initializer of local var

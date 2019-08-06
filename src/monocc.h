@@ -30,6 +30,8 @@ typedef enum {
     TK_ASSIGN_SUB,
     TK_ASSIGN_MUL,
     TK_ASSIGN_DIV,
+    TK_INC,
+    TK_DEC,
     TK_SEMI,
     TK_OP_PAREN,
     TK_CL_PAREN,

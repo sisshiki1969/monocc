@@ -109,6 +109,9 @@ void tokenize() {
             if(*(p + 1) == '=') {
                 cur = new_token(TK_ASSIGN_ADD, cur, p, 2);
                 p += 2;
+            } else if(*(p + 1) == '+') {
+                cur = new_token(TK_INC, cur, p, 2);
+                p += 2;
             } else
                 cur = new_token(TK_ADD, cur, p++, 1);
             continue;
@@ -116,6 +119,9 @@ void tokenize() {
         if(*p == '-') {
             if(*(p + 1) == '=') {
                 cur = new_token(TK_ASSIGN_SUB, cur, p, 2);
+                p += 2;
+            } else if(*(p + 1) == '-') {
+                cur = new_token(TK_DEC, cur, p, 2);
                 p += 2;
             } else
                 cur = new_token(TK_SUB, cur, p++, 1);

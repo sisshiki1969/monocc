@@ -26,6 +26,8 @@ void print_tokens(Token *token) {
         case TK_ASSIGN_SUB:
         case TK_ASSIGN_MUL:
         case TK_ASSIGN_DIV:
+        case TK_INC:
+        case TK_DEC:
         case TK_SEMI:
         case TK_OP_PAREN:
         case TK_CL_PAREN:
