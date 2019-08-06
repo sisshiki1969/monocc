@@ -404,6 +404,8 @@ Node *parse_expr();
 Node *parse_assign_expr();
 Node *parse_block();
 Node *parse_stmt();
+Node *parse_block_item();
+Type *parse_decl();
 
 Node *parse_prim_expr() {
     Token *cur_token = token;
@@ -454,8 +456,12 @@ Node *parse_postfix_expr() {
                 error_at_node(node, "Undefined identifier.");
             node->type = fn_global->type->ptr_to;
             Vector *vec = vec_new();
+            Token *op_token = token;
             while(peek() != TK_CL_PAREN) {
-                vec_push(vec, parse_assign_expr());
+                Node *arg = parse_assign_expr();
+                if(is_array(type(arg)))
+                    arg = new_node_expr(ND_ADDR, arg, NULL, op_token);
+                vec_push(vec, arg);
                 if(!consume_if(TK_COMMA))
                     break;
             }
@@ -577,81 +583,26 @@ Node *parse_eq_expr() {
 
 Node *parse_assign_expr() {
     Node *node = parse_eq_expr();
+    Node *rhs;
     Token *op_token = token;
     if(consume_if(TK_ASSIGN)) {
-        Node *rhs = get_ptr_if_array(parse_assign_expr());
-        node = new_node_expr(ND_ASSIGN, node, rhs, op_token);
-    }
-    return node;
+        rhs = get_ptr_if_array(parse_assign_expr());
+    } else if(consume_if(TK_ASSIGN_ADD)) {
+        rhs = new_node_binary(ND_ADD, node, parse_assign_expr(), op_token);
+    } else if(consume_if(TK_ASSIGN_SUB)) {
+        rhs = new_node_binary(ND_SUB, node, parse_assign_expr(), op_token);
+    } else if(consume_if(TK_ASSIGN_MUL)) {
+        rhs = new_node_binary(ND_MUL, node, parse_assign_expr(), op_token);
+    } else if(consume_if(TK_ASSIGN_DIV)) {
+        rhs = new_node_binary(ND_DIV, node, parse_assign_expr(), op_token);
+    } else
+        return node;
+    return new_node_expr(ND_ASSIGN, node, rhs, op_token);
 }
 
 Node *parse_expr() {
     Node *node = parse_assign_expr();
     return node;
-}
-
-/// Information of declaration.
-struct DeclInfo {
-    Token *token;
-    Type *type;
-};
-
-typedef struct DeclInfo DeclInfo;
-
-DeclInfo *new_decl_info(Token *token, Type *type) {
-    DeclInfo *info = calloc(1, sizeof(DeclInfo));
-    info->token = token;
-    info->type = type;
-    return info;
-}
-
-Type *parse_decl() {
-    // declaration-specifiers
-    Type *type = new_type_from_token(consume());
-
-    // declarator
-    while(consume_if(TK_MUL)) {
-        type = new_type_ptr_to(type);
-    }
-
-    // direct-declarator
-    Token *ident = expect(TK_IDENT);
-    check_duplicate_lvar(ident);
-
-    // direct-declarator [ assignment-expression ]
-    Type head;
-    head.ptr_to = type;
-    Type *cursor = &head;
-    while(consume_if(TK_OP_BRACKET)) {
-        int size = 1;
-        if(peek() != TK_CL_BRACKET)
-            // this should be assignment-expression
-            size = expect(TK_NUM)->int_val;
-        cursor->ptr_to = new_type_array(type, size);
-        cursor = cursor->ptr_to;
-        expect(TK_CL_BRACKET);
-    }
-    type = head.ptr_to;
-
-    if(consume_if(TK_OP_PAREN)) {
-        type = new_type_func(type);
-        Type *param_type = type;
-        while(peek() != TK_CL_PAREN) {
-            Type *ptype = parse_decl();
-            Token *pident = ptype->token;
-            if(is_array(ptype))
-                ptype = new_type_ptr_to(ptype->ptr_to);
-            ptype->token = pident;
-            param_type->params = ptype;
-            param_type = ptype;
-            if(!consume_if(TK_COMMA))
-                break;
-        }
-        expect(TK_CL_PAREN);
-    }
-
-    type->token = ident;
-    return type;
 }
 
 Node *parse_for() {
@@ -664,16 +615,17 @@ Node *parse_for() {
     expect(TK_OP_PAREN);
     LVar *save_locals = locals;
     scope++;
-    if(peek() != TK_SEMI) {
+    if(!consume_if(TK_SEMI)) {
         if(is_type_specifier(peek())) {
-            Type *type = parse_decl();
-            new_lvar(type->token, type);
-            init = NULL;
+            // Type *type = parse_decl();
+            // new_lvar(type->token, type);
+            init = parse_block_item();
         } else {
             init = parse_expr();
+            expect(TK_SEMI);
         }
     }
-    expect(TK_SEMI);
+
     if(peek() != TK_SEMI) {
         cond = parse_expr();
     } else {
@@ -780,12 +732,18 @@ Node *parse_block_item() {
     if(is_type_specifier(peek())) {
         // local var declaration
         Type *type = parse_decl();
+        Node *node = NULL;
         if(is_func(type))
             error_at_token(type->token,
                            "Functions can be declared only in the top level.");
         LVar *lvar = new_lvar(type->token, type);
+        Token *op_token = token;
+        if(consume_if(TK_ASSIGN)) {
+            node = new_node_expr(ND_ASSIGN, new_node_lvar(lvar, op_token),
+                                 parse_assign_expr(), op_token);
+        }
         expect(TK_SEMI);
-        return NULL;
+        return node;
     } else {
         return parse_stmt();
     }
@@ -809,6 +767,55 @@ Node *parse_block() {
     }
     scope--;
     return new_node_block(vec);
+}
+
+Type *parse_decl() {
+    // declaration-specifiers
+    Type *type = new_type_from_token(consume());
+
+    // declarator
+    while(consume_if(TK_MUL)) {
+        type = new_type_ptr_to(type);
+    }
+
+    // direct-declarator
+    Token *ident = expect(TK_IDENT);
+    check_duplicate_lvar(ident);
+
+    // direct-declarator [ assignment-expression ]
+    Type head;
+    head.ptr_to = type;
+    Type *cursor = &head;
+    while(consume_if(TK_OP_BRACKET)) {
+        int size = 1;
+        if(peek() != TK_CL_BRACKET)
+            // this should be assignment-expression
+            size = expect(TK_NUM)->int_val;
+        cursor->ptr_to = new_type_array(type, size);
+        cursor = cursor->ptr_to;
+        expect(TK_CL_BRACKET);
+    }
+    type = head.ptr_to;
+
+    if(consume_if(TK_OP_PAREN)) {
+        type = new_type_func(type);
+        Type *param_type = type;
+        while(peek() != TK_CL_PAREN) {
+            Type *ptype = parse_decl();
+            Token *pident = ptype->token;
+            if(is_array(ptype))
+                ptype = new_type_ptr_to(ptype->ptr_to);
+            ptype->token = pident;
+            param_type->params = ptype;
+            param_type = ptype;
+            if(!consume_if(TK_COMMA))
+                break;
+        }
+        expect(TK_CL_PAREN);
+    }
+
+    type->token = ident;
+    return type;
 }
 
 Node *parse_func_definition(Type *func_type) {
@@ -841,7 +848,7 @@ void parse_program() {
         Node *decl;
         Type *type = parse_decl();
         if(type->ty != FUNC) {
-            // gloval var declaratino
+            // gloval var declaration
             if(find_gvar(type->token))
                 error_at_token(type->token, "Redefinition of global variable");
             new_gvar(type->token, type);

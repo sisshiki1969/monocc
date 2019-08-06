@@ -10,16 +10,15 @@ int fibo(int x) {
 
 int array_local() {
     int a[10][8];
-    int i;
-    int j;
-    i = 0;
+    int i = 0;
+    int j = 0;
     while(i <= 9) {
         j = 0;
         while(j <= 7) {
             a[i][j] = i * 10 + j;
-            j = j + 1;
+            j += 1;
         }
-        i = i + 1;
+        i += 1;
     }
     assert_expect(__LINE__, 1, a[0][1]);
     assert_expect(__LINE__, 97, a[9][7]);
@@ -57,18 +56,14 @@ int string() {
 void block_scope() {
     i = 1;
     assert_expect(__LINE__, 1, i);
-    int i;
-    i = 5;
+    int i = 5;
     assert_expect(__LINE__, 5, i);
     {
-        int i;
-        i = 2;
+        int i = 2;
         {
-            int i;
-            i = 3;
+            int i = 3;
             {
-                int i;
-                i = 4;
+                int i = 4;
                 assert_expect(__LINE__, 4, i);
             }
             assert_expect(__LINE__, 3, i);
@@ -79,17 +74,14 @@ void block_scope() {
 }
 
 void for_() {
-    int x;
-    x = 100;
+    int x = 100;
     assert_expect(__LINE__, 100, x);
-    for(int x; x < 15; x = x + 1) {
-        if(x == 9)
+    for(int x = 10; x < 100; x += 1) {
+        if(x == 15)
             break;
-        if(x == x / 2 * 2)
-            continue;
-        print(x);
-        int x;
-        x = 9;
+        if(x == x / 3 * 3)
+            assert_expect(__LINE__, 12, x);
+        int x = 9;
         assert_expect(__LINE__, 9, x);
     }
     assert_expect(__LINE__, 100, x);
@@ -157,12 +149,10 @@ int print_board(int board[][8]) {
 }
 
 int conflict(int board[][8], int row, int col) {
-    int i;
-    for(i = 0; i < row; i = i + 1) {
+    for(int i = 0; i < row; i += 1) {
         if(board[i][col])
             return 1;
-        int j;
-        j = row - i;
+        int j = row - i;
         if(0 < col - j + 1)
             if(board[i][col - j])
                 return 1;
@@ -178,8 +168,7 @@ int solve(int board[][8], int row) {
         print_board(board);
         return 0;
     }
-    int i;
-    for(i = 0; i < 8; i = i + 1) {
+    for(int i = 0; i < 8; i += 1) {
         if(conflict(board, row, i) == 0) {
             board[row][i] = 1;
             solve(board, row + 1);
@@ -190,13 +179,11 @@ int solve(int board[][8], int row) {
 
 int q8() {
     int board[8][8];
-    int i;
-    int j;
     q8_count = 0;
-    for(i = 0; i < 8; i = i + 1)
-        for(j = 0; j < 8; j = j + 1)
+    for(int i = 0; i < 8; i += 1)
+        for(int j = 0; j < 8; j += 1)
             board[i][j] = 0;
-    solve(&board, 0);
+    solve(board, 0);
     return q8_count;
 }
 
@@ -234,8 +221,25 @@ int main() {
     assert_expect(__LINE__, 0, 4 < 4 - 1);
     assert_expect(__LINE__, 0, 1 - 4 > 4);
 
-    int i;
-    i = 77;
+    // assignment operators
+    int z;
+    z = 10;
+    assert_expect(__LINE__, 15, z += 5);
+    assert_expect(__LINE__, 15, z);
+    assert_expect(__LINE__, 8, z -= 7);
+    assert_expect(__LINE__, 8, z);
+    assert_expect(__LINE__, 40, z *= 5);
+    assert_expect(__LINE__, 40, z);
+    assert_expect(__LINE__, 4, z /= 10);
+    assert_expect(__LINE__, 4, z);
+
+    // initializer of local var
+    // z = 4
+    int init = 100 / z;
+    assert_expect(__LINE__, 25, init);
+
+    // if statement
+    int i = 77;
     if(i == 77)
         i = 55;
     else

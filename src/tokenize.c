@@ -106,19 +106,35 @@ void tokenize() {
             continue;
         }
         if(*p == '+') {
-            cur = new_token(TK_ADD, cur, p++, 1);
+            if(*(p + 1) == '=') {
+                cur = new_token(TK_ASSIGN_ADD, cur, p, 2);
+                p += 2;
+            } else
+                cur = new_token(TK_ADD, cur, p++, 1);
             continue;
         }
         if(*p == '-') {
-            cur = new_token(TK_SUB, cur, p++, 1);
+            if(*(p + 1) == '=') {
+                cur = new_token(TK_ASSIGN_SUB, cur, p, 2);
+                p += 2;
+            } else
+                cur = new_token(TK_SUB, cur, p++, 1);
             continue;
         }
         if(*p == '*') {
-            cur = new_token(TK_MUL, cur, p++, 1);
+            if(*(p + 1) == '=') {
+                cur = new_token(TK_ASSIGN_MUL, cur, p, 2);
+                p += 2;
+            } else
+                cur = new_token(TK_MUL, cur, p++, 1);
             continue;
         }
         if(*p == '/') {
-            cur = new_token(TK_DIV, cur, p++, 1);
+            if(*(p + 1) == '=') {
+                cur = new_token(TK_ASSIGN_DIV, cur, p, 2);
+                p += 2;
+            } else
+                cur = new_token(TK_DIV, cur, p++, 1);
             continue;
         }
         if(*p == ',') {
