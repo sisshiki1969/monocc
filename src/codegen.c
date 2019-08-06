@@ -470,7 +470,19 @@ void gen(Node *node) {
     case ND_ASSIGN:
         l_ty = type(node->lhs);
         r_ty = type(node->rhs);
-        if(!is_assignable_type(l_ty, r_ty)) {
+        if(is_array_to_char(l_ty) && is_array_to_char(r_ty)) {
+            if(node->lhs->kind != ND_LVAR || node->rhs->kind != ND_STR)
+                error_at_node(node, "Invalid assignment.");
+            int len = node->rhs->token->len;
+            int offset = node->lhs->lvar->offset;
+            char *p = node->rhs->token->str;
+            for(i = 0; i < len; i++) {
+                printf("\tmov  BYTE PTR [rbp - %d], %d\n", offset - i, *p++);
+            }
+            printf("\tmov  BYTE PTR [rbp - %d], %d\n", offset - i, '\0');
+            printf("\tpush rdi\n");
+            return;
+        } else if(!is_assignable_type(l_ty, r_ty)) {
             fprintf(stderr, "Left: ");
             print_type(stderr, l_ty);
             fprintf(stderr, "\nRight: ");

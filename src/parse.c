@@ -323,6 +323,8 @@ LVar *new_lvar(Token *token, Type *type) {
     lvar->token = token;
     int offset;
     int size = sizeof_type(type);
+    if(size == 0)
+        error_at_token(token, "Inncomplete type is not allowed.");
     if(locals) {
         offset = locals->offset + size;
     } else {
@@ -744,16 +746,31 @@ Node *parse_block_item() {
     if(is_type_specifier(peek())) {
         // local var declaration
         Type *type = parse_decl();
+
+        if(!type->token)
+            error_at_token(token, "Expected an identifier.");
+
         Node *node = NULL;
         if(is_func(type))
             error_at_token(type->token,
                            "Functions can be declared only in the top level.");
-        LVar *lvar = new_lvar(type->token, type);
         Token *op_token = token;
         if(consume_if(TK_ASSIGN)) {
-            node =
-                new_node_expr(ND_ASSIGN, new_node_lvar(lvar, op_token),
-                              get_ptr_if_array(parse_assign_expr()), op_token);
+            node = parse_assign_expr();
+            if(is_array_to_char(type) && node->kind == ND_STR) {
+                type->array_size = node->token->len + 1;
+                node = new_node_expr(
+                    ND_ASSIGN,
+                    new_node_lvar(new_lvar(type->token, type), op_token), node,
+                    op_token);
+            } else {
+                node = new_node_expr(
+                    ND_ASSIGN,
+                    new_node_lvar(new_lvar(type->token, type), op_token),
+                    get_ptr_if_array(node), op_token);
+            }
+        } else {
+            new_lvar(type->token, type);
         }
         expect(TK_SEMI);
         return node;
@@ -782,25 +799,29 @@ Node *parse_block() {
     return new_node_block(vec);
 }
 
-Type *parse_decl() {
-    // declaration-specifiers
-    Type *type = new_type_from_token(consume());
-
+Type *parse_declaretor(Type *type) {
     // declarator
     while(consume_if(TK_MUL)) {
         type = new_type_ptr_to(type);
     }
 
+    Type anchor;
+    Type *outer = NULL;
+    Token *ident = NULL;
     // direct-declarator
-    Token *ident = expect(TK_IDENT);
-    check_duplicate_lvar(ident);
-
+    if(peek() == TK_IDENT) {
+        ident = expect(TK_IDENT);
+        check_duplicate_lvar(ident);
+    } else if(consume_if(TK_OP_PAREN)) {
+        outer = parse_declaretor(&anchor);
+        expect(TK_CL_PAREN);
+    }
     // direct-declarator [ assignment-expression ]
     Type head;
     head.ptr_to = type;
     Type *cursor = &head;
     while(consume_if(TK_OP_BRACKET)) {
-        int size = 1;
+        int size = 0;
         if(peek() != TK_CL_BRACKET)
             // this should be assignment-expression
             size = expect(TK_NUM)->int_val;
@@ -827,7 +848,23 @@ Type *parse_decl() {
         expect(TK_CL_PAREN);
     }
 
-    type->token = ident;
+    if(outer) {
+        Type *cursor = outer;
+        while(cursor->ptr_to != &anchor)
+            cursor = cursor->ptr_to;
+        cursor->ptr_to = type;
+        type = outer;
+    } else
+        type->token = ident;
+
+    return type;
+}
+
+Type *parse_decl() {
+    // declaration-specifiers
+    Type *type = new_type_from_token(consume());
+    type = parse_declaretor(type);
+
     return type;
 }
 
@@ -860,6 +897,10 @@ void parse_program() {
         switch_level = 0;
         Node *decl;
         Type *type = parse_decl();
+
+        if(!type->token)
+            error_at_token(token, "Expected an identifier.");
+
         if(type->ty != FUNC) {
             // gloval var declaration
             if(find_gvar(type->token))
@@ -867,7 +908,18 @@ void parse_program() {
             Token *op_token = token;
             Global *gvar = new_gvar(type->token, type);
             if(consume_if(TK_ASSIGN)) {
-                gvar->body = get_ptr_if_array(parse_assign_expr());
+                gvar->body = parse_assign_expr();
+            }
+            if(is_array_to_char(gvar->type)) {
+                if(!gvar->body) {
+                    if(gvar->type->array_size == 0)
+                        error_at_token(gvar->token,
+                                       "Incomplete type is not allowed.");
+                } else if(gvar->body->kind == ND_STR) {
+                    gvar->type->array_size = gvar->body->token->len + 1;
+                    // gvar->body = gvar->body->lhs;
+                } else
+                    error_at_node(gvar->body, "Unsupported initializer.");
             }
             expect(TK_SEMI);
             continue;

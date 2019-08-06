@@ -60,6 +60,12 @@ bool is_void(Type *type) { return type->ty == VOID; }
 bool is_ptr(Type *type) { return type->ty == PTR; }
 bool is_array(Type *type) { return type->ty == ARRAY; }
 bool is_func(Type *type) { return type->ty == FUNC; }
+bool is_ptr_to_char(Type *type) {
+    return is_ptr(type) && is_char(type->ptr_to);
+}
+bool is_array_to_char(Type *type) {
+    return is_array(type) && is_char(type->ptr_to);
+}
 bool is_arythmetic(Type *type) {
     switch(type->ty) {
     case INT:
@@ -71,8 +77,9 @@ bool is_arythmetic(Type *type) {
 
 int sizeof_type(Type *type) {
     switch(type->ty) {
-    case CHAR:
     case VOID:
+        return 0;
+    case CHAR:
         return 1;
     case INT:
         return 4;

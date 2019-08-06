@@ -2,6 +2,22 @@ void assert_expect(int line, int expected, int actual);
 void print(int a);
 void printf_(char *str);
 
+int A;       // int
+int *B;      // * int
+int C[5];    // [] int
+int D();     // func() int
+int **E;     // * * int
+int (*F)[5]; // * [] int
+int (*G)();  // * func() int
+int *H[5];   // [] * int
+int I[5][5]; // [] [] int
+int *J();    // func() * int
+int ***K;    // * * * int
+int (**L)[]; // * * [] int
+int (**M)(); // * * func() int
+int *(*N)[]; // * [] * int
+void (*signal(int, void (*)(int)))(int);
+
 int fibo(int x) {
     if(x < 2)
         return 1;
@@ -31,6 +47,7 @@ int i = 1979;
 int j = 2015;
 char s = 270;
 char *str = "Hi, guys. Are you hungry?";
+char str_ary[] = "Hey, girls. Are you angry?";
 
 int array_global() {
     i = 0;
@@ -50,10 +67,11 @@ int array_global() {
 
 int string() {
     char *str = "Hello world!\n";
-    // char str_ary[] = "Hello world, again\n";
+    printf_(str);
+    char str_ary[] = "Hello world, again\n";
+    printf_(str_ary);
     assert_expect(__LINE__, 119, 'w');
     assert_expect(__LINE__, 'w', str[6]);
-    // printf_(str_ary);
 }
 
 void block_scope() {
@@ -135,20 +153,18 @@ int switch2_(char s) {
 
 int q8_count;
 
-int print_board(int board[][8]) {
-    // int i;
-    // int j;
-    // for(i = 0; i < 8; i = i + 1) {
-    //    for(j = 0; j < 8; j = j + 1) {
-    //        if(board[i][j])
-    //            printf_("Q ");
-    //        else
-    //            printf_(". ");
-    //    }
-    //    printf_("\n");
-    //}
-    // printf_("\n\n");
+void print_board(int board[][8]) {
     q8_count = q8_count + 1;
+    return;
+    for(int i = 0; i < 8; i++) {
+        for(int j = 0; j < 8; j++) {
+            if(board[i][j])
+                printf_("Q ");
+            printf_(". ");
+        }
+        printf_("\n");
+    }
+    printf_("\n\n");
 }
 
 int conflict(int board[][8], int row, int col) {
@@ -191,19 +207,14 @@ int q8() {
 }
 
 int main() {
+    printf_(str_ary);
+    printf_("\n");
+    printf_(str);
+    printf_("\n");
     assert_expect(__LINE__, 1979, i);
     assert_expect(__LINE__, 2015, j);
     assert_expect(__LINE__, 14, s);
-    int A;
-    int *B;
-    int C[5];
-    // int D();
-    int **E;
-    // int(*F)[5];
-    // int (*G)();
-    int *H[5];
-    int I[5][5];
-    // int *J();
+
     assert_expect(__LINE__, 9, +9);
     assert_expect(__LINE__, 4, -3 + 7);
     assert_expect(__LINE__, 21, 5 + 20 - 4);

@@ -35,7 +35,7 @@ void compile() {
 
     parse_program();
     print_globals();
-    // print_funcs();
+    print_funcs();
     print_strings();
 
     printf("\n");
@@ -43,25 +43,49 @@ void compile() {
 
     printf("\t.data\n");
     Global *global = globals;
+
     while(global) {
         printf("%.*s:\n", global->token->len, global->token->str);
         if(is_int(global->type)) {
-            int i = 0;
-            if(global->body && global->body->kind == ND_NUM)
+            int i;
+            if(!global->body)
+                i = 0;
+            else if(global->body->kind == ND_NUM)
                 i = global->body->int_val;
+            else
+                error_at_node(
+                    global->body,
+                    "Calculation in an initializer is not supported yet.");
             printf("\t.long %d\n", i);
         } else if(is_char(global->type)) {
-            int i = 0;
-            if(global->body && global->body->kind == ND_NUM)
+            int i;
+            if(!global->body)
+                i = 0;
+            else if(global->body->kind == ND_NUM)
                 i = global->body->int_val % 256;
+            else
+                error_at_node(
+                    global->body,
+                    "Calculation in an initializer is not supported yet.");
             printf("\t.byte %d\n", i);
-        } else if(is_ptr(global->type) && is_char(global->type->ptr_to)) {
+        } else if(is_ptr_to_char(global->type)) {
             // print_node(global->body);
-            if(global->body && global->body->kind == ND_ADDR &&
-               global->body->lhs->kind == ND_STR)
-                printf("\t.quad .LS%06d\n", global->body->lhs->int_val);
+            if(global->body && global->body->kind == ND_STR)
+                printf("\t.quad .LS%06d\n", global->body->int_val);
             else
                 printf("\t.zero %d\n", sizeof_type(global->type));
+        } else if(is_array_to_char(global->type)) {
+            if(!global->body) {
+                if(global->type->array_size == 0)
+                    error_at_token(global->token,
+                                   "Incomplete type is not allowed.");
+                else
+                    printf("\t.zero %d\n", sizeof_type(global->type));
+            } else if(global->body->kind == ND_STR) {
+                printf("\t.string \"%.*s\"\n", global->body->token->len,
+                       global->body->token->str);
+            } else
+                error_at_token(global->token, "Unsupported initializer.");
         } else
             printf("\t.zero %d\n", sizeof_type(global->type));
         global = global->next;
