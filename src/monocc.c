@@ -74,7 +74,7 @@ void compile() {
                 printf("\t.quad .LS%06d\n", global->body->int_val);
             else
                 printf("\t.zero %d\n", sizeof_type(global->type));
-        } else if(is_array_to_char(global->type)) {
+        } else if(is_array_of_char(global->type)) {
             if(!global->body) {
                 if(global->type->array_size == 0)
                     error_at_token(global->token,

@@ -25,9 +25,11 @@ Node *new_node_num(int val, Token *token) {
 
 /// string literal
 /// kind: ND_STR
-/// int_val: int length
+/// int_val: int StringID
 /// token: Token *token
 /// type: char *
+/// label: char *string
+/// offset: number of char
 Node *new_node_str(Token *token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_STR;
@@ -35,6 +37,55 @@ Node *new_node_str(Token *token) {
     node->type = new_type_array(new_type_char(), token->len);
     node->int_val = vec_len(strings);
     vec_push(strings, node);
+
+    node->label = (char *)calloc(1, token->len + 1);
+    char *src = token->str;
+    char *dest = node->label;
+    for(int i = 0; i < token->len; i++) {
+        if(*src != '\\') {
+            *dest++ = *src++;
+        } else {
+            i++;
+            src++;
+            switch(*src++) {
+            case '0':
+                *dest++ = '\0';
+                break;
+            case 'a':
+                *dest++ = '\a';
+                break;
+            case 'b':
+                *dest++ = '\b';
+                break;
+            case 'f':
+                *dest++ = '\f';
+                break;
+            case 'n':
+                *dest++ = '\n';
+                break;
+            case 'r':
+                *dest++ = '\r';
+                break;
+            case 't':
+                *dest++ = '\t';
+                break;
+            case '\\':
+                *dest++ = '\\';
+                break;
+            case '\'':
+                *dest++ = '\'';
+                break;
+            case '\"':
+                *dest++ = '\"';
+                break;
+            default:
+                error_at_token(token, "Unsupported escape sequence.");
+            }
+        }
+    }
+    *dest = '\0';
+    node->offset = (int)(dest - node->label) + 1;
+
     return node;
 }
 
@@ -757,8 +808,8 @@ Node *parse_block_item() {
         Token *op_token = token;
         if(consume_if(TK_ASSIGN)) {
             node = parse_assign_expr();
-            if(is_array_to_char(type) && node->kind == ND_STR) {
-                type->array_size = node->token->len + 1;
+            if(is_array_of_char(type) && node->kind == ND_STR) {
+                type->array_size = node->offset;
                 node = new_node_expr(
                     ND_ASSIGN,
                     new_node_lvar(new_lvar(type->token, type), op_token), node,
@@ -910,13 +961,13 @@ void parse_program() {
             if(consume_if(TK_ASSIGN)) {
                 gvar->body = parse_assign_expr();
             }
-            if(is_array_to_char(gvar->type)) {
+            if(is_array_of_char(gvar->type)) {
                 if(!gvar->body) {
                     if(gvar->type->array_size == 0)
                         error_at_token(gvar->token,
                                        "Incomplete type is not allowed.");
                 } else if(gvar->body->kind == ND_STR) {
-                    gvar->type->array_size = gvar->body->token->len + 1;
+                    gvar->type->array_size = gvar->body->offset;
                     // gvar->body = gvar->body->lhs;
                 } else
                     error_at_node(gvar->body, "Unsupported initializer.");

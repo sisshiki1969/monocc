@@ -63,7 +63,7 @@ bool is_func(Type *type) { return type->ty == FUNC; }
 bool is_ptr_to_char(Type *type) {
     return is_ptr(type) && is_char(type->ptr_to);
 }
-bool is_array_to_char(Type *type) {
+bool is_array_of_char(Type *type) {
     return is_array(type) && is_char(type->ptr_to);
 }
 bool is_arythmetic(Type *type) {

@@ -46,8 +46,8 @@ int a[10][8];
 int i = 1979;
 int j = 2015;
 char s = 270;
-char *str = "Hi, guys. Are you hungry?";
-char str_ary[] = "Hey, girls. Are you angry?";
+char *str = "Hi, guys.\tAre you hungry?";
+char str_ary[] = "Hey, girls.\nAre you angry?";
 
 int array_global() {
     i = 0;
@@ -67,8 +67,10 @@ int array_global() {
 
 int string() {
     char *str = "Hello world!\n";
+    print(sizeof(str));
     printf_(str);
-    char str_ary[] = "Hello world, again\n";
+    char str_ary[] = "\tHello\nworld,\tagain\n";
+    print(sizeof(str_ary));
     printf_(str_ary);
     assert_expect(__LINE__, 119, 'w');
     assert_expect(__LINE__, 'w', str[6]);
@@ -288,7 +290,7 @@ int main() {
     assert_expect(__LINE__, 15, switch2_('z'));
 
     assert_expect(__LINE__, 92, q8());
-
+    printf_("\n");
     printf_("passed tests.\n");
     return 0;
 }

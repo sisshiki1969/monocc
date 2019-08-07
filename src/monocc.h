@@ -232,7 +232,7 @@ bool is_ptr(Type *type);
 bool is_array(Type *type);
 bool is_func(Type *type);
 bool is_ptr_to_char(Type *type);
-bool is_array_to_char(Type *type);
+bool is_array_of_char(Type *type);
 bool is_arythmetic(Type *type);
 bool is_identical_type(Type *l_type, Type *r_type);
 bool is_assignable_type(Type *l_type, Type *r_type);

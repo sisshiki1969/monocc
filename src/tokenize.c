@@ -228,14 +228,34 @@ void tokenize() {
         }
         if(*p == '"') {
             p++;
-            char *start = p;
-            while(*p != '"' && *p) {
-                p++;
+            char *src = p;
+            while(*src && *src != '"') {
+                if(*src != '\\') {
+                    src++;
+                } else {
+                    src++;
+                    switch(*src) {
+                    case '0':
+                    case 'a':
+                    case 'b':
+                    case 'f':
+                    case 'n':
+                    case 'r':
+                    case 't':
+                    case '\\':
+                    case '\'':
+                    case '\"':
+                        src++;
+                        break;
+                    default:
+                        error_at_char(src - 1, "Unsupported escape sequence.");
+                    }
+                }
             }
-            if(!*p)
-                error_at_char(p - 1, "Missing closing quote.");
-            cur = new_token(TK_STR, cur, start, (int)(p - start));
-            p++;
+            if(!*src)
+                error_at_char(src - 1, "Missing closing quote.");
+            cur = new_token(TK_STR, cur, p, (int)(src - p));
+            p = src + 1;
             continue;
         }
         if(*p == '\'') {
