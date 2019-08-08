@@ -38,6 +38,8 @@ void print_tokens(Token *token) {
         case TK_COMMA:
         case TK_COLON:
         case TK_SIZEOF:
+        case TK_DOT:
+        case TK_ARROW:
             printf("[%.*s]", token->len, token->str);
             break;
         // Reserved words
@@ -125,6 +127,12 @@ void print_node(Node *node) {
         printf("(DEREF ");
         print_node(node->lhs);
         printf(")");
+        return;
+    case ND_MEMBER:
+        printf("(MEMBER ");
+        print_node(node->lhs);
+        printf(" %.*s %d)", node->token->len, node->token->str,
+               node->type->offset);
         return;
     case ND_BREAK:
         printf("BREAK ");
@@ -312,6 +320,11 @@ void print_type(FILE *stream, Type *type) {
                 fprintf(stream, ", ");
             first = false;
             print_type(stream, member);
+            if(member->token)
+                fprintf(stream, "<%.*s>", member->token->len,
+                        member->token->str);
+            else
+                fprintf(stream, "<>");
             member = member->next;
         }
         fprintf(stream, "} ");
@@ -323,8 +336,8 @@ void print_type(FILE *stream, Type *type) {
 void print_locals() {
     LVar *var = locals;
     while(var) {
-        fprintf(stdout, "//    %.*s  offset:%d  scope:%d  ", var->token->len,
-                var->token->str, var->offset, var->scope);
+        fprintf(stdout, "//    %.*s  offset:%d  ", var->token->len,
+                var->token->str, var->offset);
         print_type(stdout, var->type);
         fprintf(stdout, "\n");
         var = var->next;

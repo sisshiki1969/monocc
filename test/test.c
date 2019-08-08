@@ -67,11 +67,11 @@ int array_global() {
 
 int string() {
     char *str = "Hello world!\n";
-    print(sizeof(str));
     printf_(str);
     char str_ary[] = "\tHello\nworld,\tagain\n";
-    print(sizeof(str_ary));
     printf_(str_ary);
+    assert_expect(__LINE__, 10, str_ary[19]);
+
     assert_expect(__LINE__, 119, 'w');
     assert_expect(__LINE__, 'w', str[6]);
 }
@@ -151,6 +151,34 @@ int switch2_(char s) {
         i = 15;
     }
     return i;
+}
+
+void struct_() {
+    struct Node {
+        int size;
+        char ch;
+        int ary[17];
+    };
+
+    struct Node node;
+    struct Node *node_ptr = &node;
+    struct Node node_new;
+    node.size = 10;
+    node.ch = 5;
+    node_new.size = 195;
+    node_new.ch = 39;
+    node_new.ary[1] = 184;
+    assert_expect(__LINE__, 10, node.size);
+    assert_expect(__LINE__, 5, node.ch);
+    node.size = 110;
+    node.ch = 79;
+    assert_expect(__LINE__, 110, (*node_ptr).size);
+    assert_expect(__LINE__, 79, (*node_ptr).ch);
+    assert_expect(__LINE__, 110, node_ptr->size);
+    assert_expect(__LINE__, 79, node_ptr->ch);
+    assert_expect(__LINE__, 195, node_new.size);
+    assert_expect(__LINE__, 39, node_new.ch);
+    assert_expect(__LINE__, 184, node_new.ary[1]);
 }
 
 int q8_count;
@@ -291,14 +319,7 @@ int main() {
 
     assert_expect(__LINE__, 92, q8());
 
-    struct Node {
-        int size;
-        char ch;
-    };
-
-    struct Node node;
-    struct Node *node_ptr;
-    struct Node node_new;
+    struct_();
 
     printf_("passed tests.\n");
     return 0;

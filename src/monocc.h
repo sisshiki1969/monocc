@@ -41,6 +41,8 @@ typedef enum {
     TK_CL_BRACKET,
     TK_COMMA,
     TK_COLON,
+    TK_DOT,
+    TK_ARROW,
 
     TK_IF,
     TK_ELSE,
@@ -87,6 +89,7 @@ struct Type {
     Type *params;
     /// member list for STRUCT
     Type *member;
+    int offset;
     Type *next;
     Token *token;
 };
@@ -112,6 +115,7 @@ typedef enum {
     ND_LVAR,
     ND_GVAR,
     ND_CALL,
+    ND_MEMBER,
 
     ND_IF,
     ND_WHILE,
@@ -135,8 +139,8 @@ struct LVar {
     Token *token;
     Type *type;
     int offset;
-    int out_of_scope;
-    int scope;
+    LVar *scope;
+    bool scope_head;
 };
 
 typedef struct Node Node;
@@ -273,6 +277,7 @@ Token *token;
 Vector *ext_declarations;
 Vector *strings;
 LVar *locals;
+LVar *scope;
 TagName *tagnames;
 Global *globals;
 Global *functions;

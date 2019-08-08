@@ -4,8 +4,6 @@
 
 /// the level of switch-statement.
 int switch_level;
-/// scope level.
-int scope;
 
 // Methods for Node
 
@@ -145,7 +143,7 @@ Node *new_node_binary(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
 }
 
 /// Generate Node from lhs and rhs.
-/// for DEREF, ADDR, ASSIGN
+/// for DEREF, ADDR, ASSIGN, MEMBER
 Node *new_node_expr(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = kind;
@@ -153,6 +151,16 @@ Node *new_node_expr(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     node->rhs = rhs;
     node->token = op_token;
     node->type = type(node);
+    return node;
+}
+
+/// member
+Node *new_node_member(Node *lhs, Token *ident, Type *type) {
+    Node *node = calloc(1, sizeof(Node));
+    node->kind = ND_MEMBER;
+    node->lhs = lhs;
+    node->token = ident;
+    node->type = type;
     return node;
 }
 
@@ -343,6 +351,17 @@ int consume_number() {
     return num;
 }
 
+/// If current token is an identifier, consume and return token.
+/// Otherwise, raise error.
+Token *consume_ident() {
+    if(token->kind != TK_IDENT) {
+        error_at_token(token, "Expected identifier.");
+    }
+    Token *ident = token;
+    token = token->next;
+    return ident;
+}
+
 /// If current token is `kind`, consume and return it.
 /// Otherwise, raise error.
 Token *expect(TokenKind kind) {
@@ -352,6 +371,13 @@ Token *expect(TokenKind kind) {
     Token *ret = token;
     token = token->next;
     return ret;
+}
+
+bool cmp_token(Token *t1, Token *t2) {
+    if(t1->len == t2->len && memcmp(t1->str, t2->str, t1->len) == 0) {
+        return true;
+    }
+    return false;
 }
 
 /// Examine whether the Token is type-specifier.
@@ -371,7 +397,6 @@ bool is_type_specifier(TokenKind kind) {
 /// Generate LVar from token and put it to the local var list.
 LVar *new_lvar(Token *token, Type *type) {
     LVar *lvar = calloc(1, sizeof(LVar));
-    lvar->next = locals;
     lvar->token = token;
     int offset;
     int size = sizeof_type(type);
@@ -384,30 +409,32 @@ LVar *new_lvar(Token *token, Type *type) {
     }
     lvar->offset = offset;
     lvar->type = type;
-    lvar->out_of_scope = 0;
-    lvar->scope = scope;
+    lvar->next = locals;
     locals = lvar;
+    lvar->scope = scope;
+    scope = lvar;
+
     return lvar;
 }
 
 LVar *find_lvar(Token *token) {
-    for(LVar *var = locals; var; var = var->next) {
-        if(!var->out_of_scope && var->token->len == token->len &&
-           memcmp(var->token->str, token->str, token->len) == 0) {
+    for(LVar *var = scope; var; var = var->scope) {
+        if(cmp_token(var->token, token)) {
             return var;
         }
     }
     return NULL;
 }
 
-void check_duplicate_lvar(Token *token) {
-    for(LVar *var = locals; var; var = var->next) {
-        if(var->scope != scope || var->out_of_scope)
-            continue;
-        if(var->token->len == token->len &&
-           memcmp(var->token->str, token->str, token->len) == 0)
-            error_at_token(token, "Redefinition of variable.");
+bool find_lvar_in_scope(Token *token) {
+    for(LVar *var = scope; var; var = var->scope) {
+        if(var->scope_head)
+            return false;
+        if(cmp_token(var->token, token)) {
+            return true;
+        }
     }
+    return false;
 }
 
 // Global variables.
@@ -471,6 +498,19 @@ TagName *find_tagname(Token *token) {
            memcmp(tag->ident->str, token->str, token->len) == 0) {
             return tag;
         }
+    }
+    return NULL;
+}
+
+Type *get_member_type(Node *node, Token *ident) {
+    Type *ty = type(node);
+    if(!is_struct(ty))
+        error_at_node(node, "The expression must have a struct or union type.");
+    ty = ty->member;
+    while(ty) {
+        if(cmp_token(ty->token, ident))
+            return ty;
+        ty = ty->next;
     }
     return NULL;
 }
@@ -562,6 +602,23 @@ Node *parse_postfix_expr() {
             node = new_node_expr(ND_ASSIGN, node, rhs, op_token);
             node = new_node_binary(ND_ADD, node, new_node_num(1, op_token),
                                    op_token);
+        } else if(consume_if(TK_DOT)) {
+            Token *member = consume_ident();
+            Type *ty = get_member_type(node, member);
+            if(!ty)
+                error_at_token(member,
+                               "The member does not exists in the struct.");
+            node = new_node_member(node, member, ty);
+        } else if(consume_if(TK_ARROW)) {
+            Token *member = consume_ident();
+            if(!is_ptr(type(node)))
+                error_at_node(node, "Must be a pointer.");
+            node = new_node_binary(ND_DEREF, node, NULL, op_token);
+            Type *ty = get_member_type(node, member);
+            if(!ty)
+                error_at_token(member,
+                               "The member does not exists in the struct.");
+            node = new_node_member(node, member, ty);
         } else
             return node;
     }
@@ -701,8 +758,10 @@ Node *parse_for() {
     Node *body;
     expect(TK_FOR);
     expect(TK_OP_PAREN);
-    LVar *save_locals = locals;
-    scope++;
+    if(scope)
+        scope->scope_head = true;
+    LVar *save_scope = scope;
+
     if(!consume_if(TK_SEMI)) {
         if(is_type_specifier(peek())) {
             // Type *type = parse_decl();
@@ -725,15 +784,10 @@ Node *parse_for() {
     else
         post = NULL;
     expect(TK_CL_PAREN);
-    scope++;
+
     body = parse_stmt();
-    scope--;
-    LVar *cursor = locals;
-    while(cursor != save_locals) {
-        cursor->out_of_scope = 1;
-        cursor = cursor->next;
-    }
-    scope--;
+
+    scope = save_scope;
     return new_node_for(init, cond, post, body, op_token);
 }
 
@@ -859,20 +913,18 @@ Node *parse_block_item() {
 Node *parse_block() {
     expect(TK_OP_BRACE);
     Vector *vec = vec_new();
-    LVar *save_locals = locals;
-    scope++;
+    if(scope)
+        scope->scope_head = true;
+    LVar *save_scope = scope;
+
     while(peek() != TK_CL_BRACE) {
         Node *node = parse_block_item();
         if(node)
             vec_push(vec, node);
     }
     expect(TK_CL_BRACE);
-    LVar *cursor = locals;
-    while(cursor != save_locals) {
-        cursor->out_of_scope = 1;
-        cursor = cursor->next;
-    }
-    scope--;
+    scope = save_scope;
+
     return new_node_block(vec);
 }
 
@@ -888,7 +940,8 @@ Type *parse_declaretor(Type *type) {
     // direct-declarator
     if(peek() == TK_IDENT) {
         ident = expect(TK_IDENT);
-        check_duplicate_lvar(ident);
+        if(find_lvar_in_scope(ident))
+            error_at_token(ident, "Duplicate definition of local variable.");
     } else if(consume_if(TK_OP_PAREN)) {
         outer = parse_declaretor(&anchor);
         expect(TK_CL_PAREN);
@@ -946,20 +999,22 @@ Type *parse_decl() {
     if(is_struct(type)) {
         TagName *tag = NULL;
         Token *ident = NULL;
-        if(peek() == TK_IDENT) {
+        if(peek() == TK_IDENT)
             ident = consume();
-        }
+
         if(peek() == TK_OP_BRACE) {
             // struct definition
-            tag = find_tagname(ident);
-            if(tag)
+            if(tag = find_tagname(ident))
                 error_at_token(ident, "Duplicate definition of a tag name.");
             // struct-specifier
             consume(TK_OP_BRACE);
             Type head;
             Type *cursor = &head;
+            int offset = 0;
             while(!consume_if(TK_CL_BRACE)) {
                 Type *member = parse_decl();
+                member->offset = offset;
+                offset += 8;
                 cursor->next = member;
                 cursor = member;
                 expect(TK_SEMI);
@@ -1006,8 +1061,7 @@ void parse_program() {
     ext_declarations = vec_new();
     while(!at_eof()) {
         locals = NULL;
-        // labels = NULL;
-        scope = 0;
+        scope = NULL;
         switch_level = 0;
         Node *decl;
         Type *type = parse_decl();

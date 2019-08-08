@@ -117,6 +117,7 @@ Span *get_node_span(Node *node) {
         break;
     case ND_ADDR:
     case ND_DEREF:
+    case ND_MEMBER:
         span = new_span(node->token);
         merge_span(span, get_node_span(node->lhs));
         break;

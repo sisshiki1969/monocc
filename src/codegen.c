@@ -165,6 +165,11 @@ void gen_lval(Node *node) {
         printf("\tlea  rax, .LS%06d[rip]\n", node->int_val);
         printf("\tpush rax\n");
         return;
+    } else if(node->kind == ND_MEMBER) {
+        gen_lval(node->lhs);
+        printf("\tpop  rax\n");
+        printf("\tadd  rax, %d\n", node->type->offset);
+        printf("\tpush rax\n");
     } else {
         error_at_node(node, "Expected l-value.");
     }
@@ -462,6 +467,12 @@ void gen(Node *node) {
         return;
     case ND_LVAR:
     case ND_GVAR:
+        gen_lval(node);
+        printf("\tpop  rax\n");
+        emit_deref_rax(node);
+        printf("\tpush rax\n");
+        return;
+    case ND_MEMBER:
         gen_lval(node);
         printf("\tpop  rax\n");
         emit_deref_rax(node);

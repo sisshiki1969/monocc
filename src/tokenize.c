@@ -125,6 +125,9 @@ void tokenize() {
             } else if(*(p + 1) == '-') {
                 cur = new_token(TK_DEC, cur, p, 2);
                 p += 2;
+            } else if(*(p + 1) == '>') {
+                cur = new_token(TK_ARROW, cur, p, 2);
+                p += 2;
             } else
                 cur = new_token(TK_SUB, cur, p++, 1);
             continue;
@@ -226,6 +229,10 @@ void tokenize() {
         }
         if(*p == '&') {
             cur = new_token(TK_ADDR, cur, p++, 1);
+            continue;
+        }
+        if(*p == '.') {
+            cur = new_token(TK_DOT, cur, p++, 1);
             continue;
         }
         if(*p == '"') {
