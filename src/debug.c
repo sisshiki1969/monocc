@@ -298,7 +298,7 @@ void print_type(FILE *stream, Type *type) {
                 fprintf(stream, ", ");
             first = false;
             print_type(stream, param);
-            param = param->params;
+            param = param->next;
         }
         fprintf(stream, ") ");
         print_type(stream, type->ptr_to);

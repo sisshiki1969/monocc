@@ -910,18 +910,21 @@ Type *parse_declaretor(Type *type) {
 
     if(consume_if(TK_OP_PAREN)) {
         type = new_type_func(type);
-        Type *param_type = type;
+        Type head;
+        head.next = NULL;
+        Type *param_type = &head;
         while(peek() != TK_CL_PAREN) {
             Type *ptype = parse_decl();
             Token *pident = ptype->token;
             if(is_array(ptype))
                 ptype = new_type_ptr_to(ptype->ptr_to);
             ptype->token = pident;
-            param_type->params = ptype;
+            param_type->next = ptype;
             param_type = ptype;
             if(!consume_if(TK_COMMA))
                 break;
         }
+        type->params = head.next;
         expect(TK_CL_PAREN);
     }
 
@@ -983,10 +986,11 @@ Node *parse_func_definition(Type *func_type) {
     Global *func = new_func(func_type->token, func_type, NULL);
     // function definition
     Vector *params = vec_new();
-    Type *cursor = func_type;
-    while(cursor = cursor->params) {
+    Type *cursor = func_type->params;
+    while(cursor) {
         vec_push(params,
                  new_node_lvar(new_lvar(cursor->token, cursor), cursor->token));
+        cursor = cursor->next;
     }
     Node *body = parse_block();
     int max_offset = 0;
