@@ -321,8 +321,8 @@ void print_type(FILE *stream, Type *type) {
             first = false;
             print_type(stream, member);
             if(member->token)
-                fprintf(stream, "<%.*s>", member->token->len,
-                        member->token->str);
+                fprintf(stream, "<%.*s:%d>", member->token->len,
+                        member->token->str, member->offset);
             else
                 fprintf(stream, "<>");
             member = member->next;

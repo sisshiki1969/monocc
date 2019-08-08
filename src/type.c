@@ -84,14 +84,50 @@ bool is_arythmetic(Type *type) {
     return false;
 }
 
+int align_to(int n, int align) { return (n + align - 1) & ~(align - 1); }
+
+int alignof_struct(Type *type) {
+    Type *cursor = type->member;
+    int align = 0;
+    while(cursor) {
+        int a = alignof_type(cursor);
+        if(a > align)
+            align = a;
+        cursor = cursor->next;
+    }
+    return align;
+}
+
+int alignof_type(Type *type) {
+    switch(type->ty) {
+    case VOID:
+        return 0;
+    case CHAR:
+        return 1;
+    case INT:
+        return 4;
+    case PTR:
+        return 8;
+    case ARRAY:
+        return alignof_type(type->ptr_to);
+    case STRUCT:
+        return alignof_struct(type);
+    default:
+        error("Internal error: can not calculate align of unknown type "
+              "'%.*s'.",
+              type->token->len, type->token->str);
+    }
+}
+
 int sizeof_struct(Type *type) {
     Type *cursor = type->member;
     int size = 0;
     while(cursor) {
-        size += 8; // sizeof_type(cursor);
+        size = align_to(size, alignof_type(cursor));
+        size += sizeof_type(cursor); // sizeof_type(cursor);
         cursor = cursor->next;
     }
-    return size;
+    return align_to(size, alignof_struct(type));
 }
 
 int sizeof_type(Type *type) {

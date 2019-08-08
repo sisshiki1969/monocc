@@ -155,12 +155,19 @@ Node *new_node_expr(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
 }
 
 /// member
-Node *new_node_member(Node *lhs, Token *ident, Type *type) {
+Type *get_member_type(Type *type, Token *ident);
+Node *new_node_member(Node *lhs, Token *ident) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_MEMBER;
     node->lhs = lhs;
     node->token = ident;
-    node->type = type;
+    Type *ty = type(lhs);
+    if(!is_struct(ty))
+        error_at_node(lhs, "The expression must have a struct or union type.");
+    ty = get_member_type(ty, ident);
+    if(!ty)
+        error_at_token(ident, "The member does not exists in the struct.");
+    node->type = ty;
     return node;
 }
 
@@ -450,8 +457,7 @@ Global *new_gvar(Token *ident, Type *type) {
 
 Global *find_gvar(Token *token) {
     for(Global *var = globals; var; var = var->next) {
-        if(var->token->len == token->len &&
-           memcmp(var->token->str, token->str, token->len) == 0) {
+        if(cmp_token(var->token, token)) {
             return var;
         }
     }
@@ -472,8 +478,7 @@ Global *new_func(Token *ident, Type *type, Node *body) {
 
 Global *find_func(Token *token) {
     for(Global *func = functions; func; func = func->next) {
-        if(func->token->len == token->len &&
-           memcmp(func->token->str, token->str, token->len) == 0) {
+        if(cmp_token(func->token, token)) {
             return func;
         }
     }
@@ -494,19 +499,15 @@ TagName *find_tagname(Token *token) {
     if(!token)
         return NULL;
     for(TagName *tag = tagnames; tag; tag = tag->next) {
-        if(tag->ident->len == token->len &&
-           memcmp(tag->ident->str, token->str, token->len) == 0) {
+        if(cmp_token(tag->ident, token)) {
             return tag;
         }
     }
     return NULL;
 }
 
-Type *get_member_type(Node *node, Token *ident) {
-    Type *ty = type(node);
-    if(!is_struct(ty))
-        error_at_node(node, "The expression must have a struct or union type.");
-    ty = ty->member;
+Type *get_member_type(Type *type, Token *ident) {
+    Type *ty = type->member;
     while(ty) {
         if(cmp_token(ty->token, ident))
             return ty;
@@ -603,22 +604,12 @@ Node *parse_postfix_expr() {
             node = new_node_binary(ND_ADD, node, new_node_num(1, op_token),
                                    op_token);
         } else if(consume_if(TK_DOT)) {
-            Token *member = consume_ident();
-            Type *ty = get_member_type(node, member);
-            if(!ty)
-                error_at_token(member,
-                               "The member does not exists in the struct.");
-            node = new_node_member(node, member, ty);
+            node = new_node_member(node, consume_ident());
         } else if(consume_if(TK_ARROW)) {
-            Token *member = consume_ident();
             if(!is_ptr(type(node)))
                 error_at_node(node, "Must be a pointer.");
             node = new_node_binary(ND_DEREF, node, NULL, op_token);
-            Type *ty = get_member_type(node, member);
-            if(!ty)
-                error_at_token(member,
-                               "The member does not exists in the struct.");
-            node = new_node_member(node, member, ty);
+            node = new_node_member(node, consume_ident());
         } else
             return node;
     }
@@ -1009,12 +1000,25 @@ Type *parse_decl() {
             // struct-specifier
             consume(TK_OP_BRACE);
             Type head;
+            head.next = NULL;
             Type *cursor = &head;
             int offset = 0;
             while(!consume_if(TK_CL_BRACE)) {
                 Type *member = parse_decl();
+                // check duplicate member definition
+                Type *ty = head.next;
+                while(ty) {
+                    if(cmp_token(ty->token, member->token))
+                        error_at_token(member->token,
+                                       "Duplicate member '%.*s'.",
+                                       member->token->len, member->token->str);
+                    ty = ty->next;
+                }
+
+                int align = alignof_type(member);
+                offset = align_to(offset, align);
                 member->offset = offset;
-                offset += 8;
+                offset += sizeof_type(member);
                 cursor->next = member;
                 cursor = member;
                 expect(TK_SEMI);

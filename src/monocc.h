@@ -258,6 +258,9 @@ bool is_arythmetic(Type *type);
 bool is_identical_type(Type *l_type, Type *r_type);
 bool is_assignable_type(Type *l_type, Type *r_type);
 
+int alignof_type(Type *type);
+int align_to(int n, int align);
+
 // Methods for Vector
 
 Vector *vec_new();

@@ -154,20 +154,48 @@ int switch2_(char s) {
 }
 
 void struct_() {
-    struct Node {
-        int size;
-        char ch;
-        int ary[17];
+    struct Vec {
+        int x;
+        int y;
     };
 
-    struct Node node;
-    struct Node *node_ptr = &node;
-    struct Node node_new;
+    struct Leaf {
+        struct Vec ary[17];
+        int size;
+        char ch;
+    };
+
+    struct Tree {
+        struct Leaf *left;
+        struct Leaf *right;
+    };
+
+    struct S2 {
+        int x;
+        char y;
+    };
+
+    struct S1 {
+        char a;
+        struct S2 b;
+        int c;
+        char d;
+        int *e;
+    };
+    struct S1 s1;
+    struct S2 s2;
+    assert_expect(__LINE__, 32, sizeof(s1));
+    assert_expect(__LINE__, 8, sizeof(s2));
+
+    struct Leaf node;
+    struct Leaf *node_ptr = &node;
+    struct Leaf node_new;
     node.size = 10;
     node.ch = 5;
     node_new.size = 195;
     node_new.ch = 39;
-    node_new.ary[1] = 184;
+    node_new.ary[0].x = 184;
+    node_new.ary[16].y = 984;
     assert_expect(__LINE__, 10, node.size);
     assert_expect(__LINE__, 5, node.ch);
     node.size = 110;
@@ -178,7 +206,12 @@ void struct_() {
     assert_expect(__LINE__, 79, node_ptr->ch);
     assert_expect(__LINE__, 195, node_new.size);
     assert_expect(__LINE__, 39, node_new.ch);
-    assert_expect(__LINE__, 184, node_new.ary[1]);
+    assert_expect(__LINE__, 184, node_new.ary[0].x);
+    assert_expect(__LINE__, 984, node_new.ary[16].y);
+    struct Tree tree;
+    tree.right = &node_new;
+    tree.left = &node;
+    assert_expect(__LINE__, 195, tree.right->size);
 }
 
 int q8_count;
