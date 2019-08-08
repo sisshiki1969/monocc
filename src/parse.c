@@ -29,7 +29,7 @@ Node *new_node_num(int val, Token *token) {
 /// token: Token *token
 /// type: char *
 /// label: char *string
-/// offset: number of char
+/// offset: number of chars in *label
 Node *new_node_str(Token *token) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_STR;
@@ -360,6 +360,7 @@ bool is_type_specifier(TokenKind kind) {
     case TK_INT:
     case TK_CHAR:
     case TK_VOID:
+    case TK_STRUCT:
         return true;
     }
     return false;
@@ -447,6 +448,28 @@ Global *find_func(Token *token) {
         if(func->token->len == token->len &&
            memcmp(func->token->str, token->str, token->len) == 0) {
             return func;
+        }
+    }
+    return NULL;
+}
+
+// tag-names.
+
+TagName *new_tag(Token *ident, Type *type) {
+    TagName *tag = calloc(1, sizeof(TagName));
+    tag->next = tagnames;
+    tag->ident = ident;
+    tag->type = type;
+    tagnames = tag;
+}
+
+TagName *find_tagname(Token *token) {
+    if(!token)
+        return NULL;
+    for(TagName *tag = tagnames; tag; tag = tag->next) {
+        if(tag->ident->len == token->len &&
+           memcmp(tag->ident->str, token->str, token->len) == 0) {
+            return tag;
         }
     }
     return NULL;
@@ -798,9 +821,12 @@ Node *parse_block_item() {
         // local var declaration
         Type *type = parse_decl();
 
-        if(!type->token)
-            error_at_token(token, "Expected an identifier.");
-
+        if(!type->token) {
+            if(!is_struct(type))
+                error_at_token(token, "Expected an identifier.");
+            else
+                return NULL;
+        }
         Node *node = NULL;
         if(is_func(type))
             error_at_token(type->token,
@@ -914,6 +940,39 @@ Type *parse_declaretor(Type *type) {
 Type *parse_decl() {
     // declaration-specifiers
     Type *type = new_type_from_token(consume());
+    if(is_struct(type)) {
+        TagName *tag = NULL;
+        Token *ident = NULL;
+        if(peek() == TK_IDENT) {
+            ident = consume();
+        }
+        if(peek() == TK_OP_BRACE) {
+            // struct definition
+            tag = find_tagname(ident);
+            if(tag)
+                error_at_token(ident, "Duplicate definition of a tag name.");
+            // struct-specifier
+            consume(TK_OP_BRACE);
+            Type head;
+            Type *cursor = &head;
+            while(!consume_if(TK_CL_BRACE)) {
+                Type *member = parse_decl();
+                cursor->next = member;
+                cursor = member;
+                expect(TK_SEMI);
+            }
+            type->member = head.next;
+            new_tag(ident, type);
+            return parse_declaretor(type);
+        }
+        if(!ident)
+            error_at_token(token,
+                           "Expected either of a tag name or a definition.");
+        tag = find_tagname(ident);
+        if(!tag)
+            error_at_token(ident, "Tag name is not defined.");
+        type = tag->type;
+    }
     type = parse_declaretor(type);
 
     return type;

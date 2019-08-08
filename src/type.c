@@ -42,6 +42,12 @@ Type *new_type_func(Type *return_type) {
     return type;
 }
 
+Type *new_type_struct() {
+    Type *type = calloc(1, sizeof(Type));
+    type->ty = STRUCT;
+    return type;
+}
+
 Type *new_type_from_token(Token *token) {
     switch(token->kind) {
     case TK_INT:
@@ -50,6 +56,8 @@ Type *new_type_from_token(Token *token) {
         return new_type_char();
     case TK_VOID:
         return new_type_void();
+    case TK_STRUCT:
+        return new_type_struct();
     }
     error_at_token(token, "Unimplemented type.");
 }
@@ -60,6 +68,7 @@ bool is_void(Type *type) { return type->ty == VOID; }
 bool is_ptr(Type *type) { return type->ty == PTR; }
 bool is_array(Type *type) { return type->ty == ARRAY; }
 bool is_func(Type *type) { return type->ty == FUNC; }
+bool is_struct(Type *type) { return type->ty == STRUCT; }
 bool is_ptr_to_char(Type *type) {
     return is_ptr(type) && is_char(type->ptr_to);
 }
@@ -75,6 +84,16 @@ bool is_arythmetic(Type *type) {
     return false;
 }
 
+int sizeof_struct(Type *type) {
+    Type *cursor = type->member;
+    int size = 0;
+    while(cursor) {
+        size += 8; // sizeof_type(cursor);
+        cursor = cursor->next;
+    }
+    return size;
+}
+
 int sizeof_type(Type *type) {
     switch(type->ty) {
     case VOID:
@@ -87,8 +106,11 @@ int sizeof_type(Type *type) {
         return 8;
     case ARRAY:
         return type->array_size * sizeof_type(type->ptr_to);
+    case STRUCT:
+        return sizeof_struct(type);
     default:
-        error("Internal error: can not calculate size of unknown type '%.*s'.",
+        error("Internal error: can not calculate size of unknown type "
+              "'%.*s'.",
               type->token->len, type->token->str);
     }
 }

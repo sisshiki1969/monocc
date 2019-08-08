@@ -290,7 +290,16 @@ int main() {
     assert_expect(__LINE__, 15, switch2_('z'));
 
     assert_expect(__LINE__, 92, q8());
-    printf_("\n");
+
+    struct Node {
+        int size;
+        char ch;
+    };
+
+    struct Node node;
+    struct Node *node_ptr;
+    struct Node node_new;
+
     printf_("passed tests.\n");
     return 0;
 }

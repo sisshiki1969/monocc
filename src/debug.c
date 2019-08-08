@@ -54,6 +54,7 @@ void print_tokens(Token *token) {
         case TK_INT:
         case TK_CHAR:
         case TK_VOID:
+        case TK_STRUCT:
         case TK_MACRO:
             printf("<%.*s>", token->len, token->str);
             break;
@@ -301,7 +302,21 @@ void print_type(FILE *stream, Type *type) {
         }
         fprintf(stream, ") ");
         print_type(stream, type->ptr_to);
-    }
+    } else if(type->ty == STRUCT) {
+        fprintf(stream, "struct ");
+        Type *member = type->member;
+        fprintf(stream, "{ ");
+        bool first = true;
+        while(member) {
+            if(!first)
+                fprintf(stream, ", ");
+            first = false;
+            print_type(stream, member);
+            member = member->next;
+        }
+        fprintf(stream, "} ");
+    } else
+        error("print_type(): Unknown Type.");
 }
 
 /// Print local variables in `locals`.
@@ -346,5 +361,19 @@ void print_strings() {
         fprintf(stdout, "// \"%.*s\"\n", strings->data[i]->token->len,
                 strings->data[i]->token->str);
         i++;
+    }
+}
+
+void print_structs() {
+    TagName *tag = tagnames;
+    fprintf(stdout, "// Structs\n");
+    while(tag) {
+        if(tag->ident)
+            fprintf(stdout, "// %.*s ", tag->ident->len, tag->ident->str);
+        else
+            fprintf(stdout, "// anonymus ");
+        print_type(stdout, tag->type);
+        fprintf(stdout, "\n");
+        tag = tag->next;
     }
 }

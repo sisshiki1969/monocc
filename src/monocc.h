@@ -57,6 +57,7 @@ typedef enum {
     TK_INT,
     TK_CHAR,
     TK_VOID,
+    TK_STRUCT,
 
     TK_EOF,
 
@@ -78,12 +79,15 @@ struct Token {
 typedef struct Type Type;
 
 struct Type {
-    enum { VOID, INT, CHAR, PTR, ARRAY, FUNC } ty;
+    enum { VOID, INT, CHAR, PTR, ARRAY, FUNC, STRUCT } ty;
     Type *ptr_to;
     /// array size for ARRAY
     int array_size;
     /// parameter list for FUNC
     Type *params;
+    /// member list for STRUCT
+    Type *member;
+    Type *next;
     Token *token;
 };
 
@@ -166,6 +170,16 @@ struct Global {
     Node *body;
 };
 
+// Tag name
+
+typedef struct TagName TagName;
+
+struct TagName {
+    TagName *next;
+    Token *ident;
+    Type *type;
+};
+
 typedef struct {
     int start;
     int end;
@@ -209,6 +223,7 @@ void print_locals();
 void print_globals();
 void print_strings();
 void print_funcs();
+void print_structs();
 void print_type(FILE *stream, Type *type);
 
 void test_vec();
@@ -221,6 +236,7 @@ Type *new_type_char();
 Type *new_type_ptr_to(Type *ptr_to);
 Type *new_type_array(Type *ptr_to, int size);
 Type *new_type_func(Type *return_type);
+Type *new_type_struct();
 Type *new_type_from_token(Token *token);
 int sizeof_type(Type *type);
 Type *type(Node *node);
@@ -231,6 +247,7 @@ bool is_int(Type *type);
 bool is_ptr(Type *type);
 bool is_array(Type *type);
 bool is_func(Type *type);
+bool is_struct(Type *type);
 bool is_ptr_to_char(Type *type);
 bool is_array_of_char(Type *type);
 bool is_arythmetic(Type *type);
@@ -256,5 +273,6 @@ Token *token;
 Vector *ext_declarations;
 Vector *strings;
 LVar *locals;
+TagName *tagnames;
 Global *globals;
 Global *functions;

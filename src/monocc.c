@@ -37,6 +37,7 @@ void compile() {
     print_globals();
     print_funcs();
     print_strings();
+    print_structs();
 
     printf("\n");
     printf("\t.intel_syntax noprefix\n");
