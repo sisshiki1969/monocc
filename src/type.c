@@ -152,15 +152,44 @@ int sizeof_type(Type *type) {
 }
 
 bool is_identical_type(Type *l_type, Type *r_type) {
-    while(l_type) {
-        if(l_type->ty != r_type->ty)
-            return false;
-        if(l_type->ty != PTR && l_type->ty != ARRAY)
+    if(l_type->ty != r_type->ty)
+        return false;
+    if(is_arythmetic(l_type))
+        return true;
+    if(is_array(l_type))
+        return is_identical_type(l_type->ptr_to, r_type->ptr_to);
+    if(is_struct(l_type)) {
+        Type *l_memty = l_type->member;
+        Type *r_memty = r_type->member;
+        while(l_memty) {
+            if(!is_identical_type(l_memty, r_memty))
+                return false;
+            l_memty = l_memty->next;
+            r_memty = r_memty->next;
+        }
+        if(!r_memty)
             return true;
-        l_type = l_type->ptr_to;
-        r_type = r_type->ptr_to;
+        else
+            return false;
     }
-    error("Internal error: Invalid type structure.");
+    if(is_func(l_type)) {
+        return is_identical_type(l_type->ptr_to, r_type->ptr_to);
+    }
+    return false;
+}
+
+bool is_compatible_type(Type *l_type, Type *r_type) {
+    if(is_arythmetic(l_type) && is_arythmetic(r_type))
+        return true;
+    if(is_arythmetic(l_type) && !is_arythmetic(r_type))
+        return false;
+    if(!is_arythmetic(l_type) && is_arythmetic(r_type))
+        return false;
+    if(is_ptr(l_type) && is_ptr(r_type))
+        return is_identical_type(l_type->ptr_to, r_type->ptr_to);
+    if(is_func(l_type) && is_func(r_type))
+        return is_identical_type(l_type, r_type);
+    return false;
 }
 
 bool is_assignable_type(Type *l_type, Type *r_type) {
@@ -189,6 +218,14 @@ bool is_comparable_type(Type *l_type, Type *r_type) {
         return true;
     else
         return false;
+}
+
+void error_types(Type *l_ty, Type *r_ty) {
+    fprintf(stderr, "\nLeft: ");
+    print_type(stderr, l_ty);
+    fprintf(stderr, "\nRight: ");
+    print_type(stderr, r_ty);
+    fprintf(stderr, "\n");
 }
 
 Type *type(Node *node) {

@@ -576,14 +576,25 @@ Node *parse_postfix_expr() {
             node->type = fn_global->type->ptr_to;
             Vector *vec = vec_new();
             Token *op_token = token;
+            Type *param_ty = fn_global->type->params;
             while(peek() != TK_CL_PAREN) {
+                if(!param_ty)
+                    error_at_token(token, "Too many arguments is func call.");
                 Node *arg = parse_assign_expr();
                 if(is_array(type(arg)))
-                    arg = new_node_expr(ND_ADDR, arg, NULL, op_token);
+                    arg = new_node_expr(ND_ADDR, arg, NULL, arg->token);
+                if(!is_compatible_type(param_ty, type(arg))) {
+                    error_types(param_ty, type(arg));
+                    error_at_node(arg, "The type of an argument is mismatch "
+                                       "with func parameter.");
+                }
                 vec_push(vec, arg);
+                param_ty = param_ty->next;
                 if(!consume_if(TK_COMMA))
                     break;
             }
+            if(param_ty)
+                error_at_token(token, "Too few arguments is func call.");
             expect(TK_CL_PAREN);
             node = new_node_call(node, vec, node->token);
         } else if(consume_if(TK_OP_BRACKET)) {

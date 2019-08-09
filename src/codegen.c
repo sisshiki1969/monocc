@@ -493,11 +493,7 @@ void gen(Node *node) {
             printf("\tpush rdi\n");
             return;
         } else if(!is_assignable_type(l_ty, r_ty)) {
-            fprintf(stderr, "Left: ");
-            print_type(stderr, l_ty);
-            fprintf(stderr, "\nRight: ");
-            print_type(stderr, r_ty);
-            fprintf(stderr, "\n");
+            error_types(l_ty, r_ty);
             error_at_node(node->lhs, "Type mismatch in assignment operation.");
         }
         gen_lval(node->lhs);

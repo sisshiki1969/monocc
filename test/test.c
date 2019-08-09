@@ -216,8 +216,13 @@ void struct_() {
 
 int q8_count;
 
+struct Pos {
+    int row;
+    int col;
+} p;
+
 void print_board(int board[][8]) {
-    q8_count = q8_count + 1;
+    q8_count++;
     return;
     for(int i = 0; i < 8; i++) {
         for(int j = 0; j < 8; j++) {
@@ -230,28 +235,32 @@ void print_board(int board[][8]) {
     printf_("\n\n");
 }
 
-int conflict(int board[][8], int row, int col) {
-    for(int i = 0; i < row; i++) {
-        if(board[i][col])
+int conflict(int board[][8], struct Pos *p) {
+    for(int i = 0; i < p->row; i++) {
+        if(board[i][p->col])
             return 1;
-        int j = row - i;
-        if(0 < col - j + 1)
-            if(board[i][col - j])
+        int j = p->row - i;
+        if(0 < p->col - j + 1)
+            if(board[i][p->col - j])
                 return 1;
-        if(col + j < 8)
-            if(board[i][col + j])
+        if(p->col + j < 8)
+            if(board[i][p->col + j])
                 return 1;
     }
     return 0;
 }
 
-int solve(int board[][8], int row) {
+void solve(int board[][8], int row) {
     if(row == 8) {
         print_board(board);
-        return 0;
+        return;
     }
     for(int i = 0; i < 8; i++) {
-        if(conflict(board, row, i) == 0) {
+        struct Pos p;
+        p.row = row;
+        p.col = i;
+        if(conflict(board, &p) == 0) {
+            // if(conflict(board, row, i) == 0) {
             board[row][i] = 1;
             solve(board, row + 1);
             board[row][i] = 0;

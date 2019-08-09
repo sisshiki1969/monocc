@@ -229,6 +229,7 @@ void print_strings();
 void print_funcs();
 void print_structs();
 void print_type(FILE *stream, Type *type);
+void error_types(Type *l_ty, Type *r_ty);
 
 void test_vec();
 void test_expression();
@@ -256,6 +257,7 @@ bool is_ptr_to_char(Type *type);
 bool is_array_of_char(Type *type);
 bool is_arythmetic(Type *type);
 bool is_identical_type(Type *l_type, Type *r_type);
+bool is_compatible_type(Type *l_type, Type *r_type);
 bool is_assignable_type(Type *l_type, Type *r_type);
 
 int alignof_type(Type *type);
