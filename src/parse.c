@@ -489,6 +489,7 @@ Global *find_func(Token *token) {
 
 TagName *new_tag(Token *ident, Type *type) {
     TagName *tag = calloc(1, sizeof(TagName));
+    type->tag_name = ident;
     tag->next = tagnames;
     tag->ident = ident;
     tag->type = type;
@@ -509,7 +510,7 @@ TagName *find_tagname(Token *token) {
 Type *get_member_type(Type *type, Token *ident) {
     Type *ty = type->member;
     while(ty) {
-        if(cmp_token(ty->token, ident))
+        if(cmp_token(ty->var_name, ident))
             return ty;
         ty = ty->next;
     }
@@ -754,7 +755,7 @@ Node *parse_expr() {
 
 Node *parse_for() {
     Token *op_token = token;
-    Node *init;
+    Node *init = NULL;
     Node *cond;
     Node *post;
     Node *body;
@@ -877,7 +878,7 @@ Node *parse_block_item() {
         // local var declaration
         Type *type = parse_decl();
 
-        if(!type->token) {
+        if(!type->var_name) {
             if(!is_struct(type))
                 error_at_token(token, "Expected an identifier.");
             else
@@ -885,7 +886,7 @@ Node *parse_block_item() {
         }
         Node *node = NULL;
         if(is_func(type))
-            error_at_token(type->token,
+            error_at_token(type->var_name,
                            "Functions can be declared only in the top level.");
         Token *op_token = token;
         if(consume_if(TK_ASSIGN)) {
@@ -894,16 +895,16 @@ Node *parse_block_item() {
                 type->array_size = node->offset;
                 node = new_node_expr(
                     ND_ASSIGN,
-                    new_node_lvar(new_lvar(type->token, type), op_token), node,
-                    op_token);
+                    new_node_lvar(new_lvar(type->var_name, type), op_token),
+                    node, op_token);
             } else {
                 node = new_node_expr(
                     ND_ASSIGN,
-                    new_node_lvar(new_lvar(type->token, type), op_token),
+                    new_node_lvar(new_lvar(type->var_name, type), op_token),
                     get_ptr_if_array(node), op_token);
             }
         } else {
-            new_lvar(type->token, type);
+            new_lvar(type->var_name, type);
         }
         expect(TK_SEMI);
         return node;
@@ -970,10 +971,10 @@ Type *parse_declaretor(Type *type) {
         Type *param_type = &head;
         while(peek() != TK_CL_PAREN) {
             Type *ptype = parse_decl();
-            Token *pident = ptype->token;
+            Token *pident = ptype->var_name;
             if(is_array(ptype))
                 ptype = new_type_ptr_to(ptype->ptr_to);
-            ptype->token = pident;
+            ptype->var_name = pident;
             param_type->next = ptype;
             param_type = ptype;
             if(!consume_if(TK_COMMA))
@@ -990,7 +991,7 @@ Type *parse_declaretor(Type *type) {
         cursor->ptr_to = type;
         type = outer;
     } else
-        type->token = ident;
+        type->var_name = ident;
 
     return type;
 }
@@ -999,14 +1000,16 @@ Type *parse_decl() {
     // declaration-specifiers
     Type *type = new_type_from_token(consume());
     if(is_struct(type)) {
+        // struct-or-union-specifier
         TagName *tag = NULL;
+        // ident: Token of tag-name
         Token *ident = NULL;
         if(peek() == TK_IDENT)
             ident = consume();
-
         if(peek() == TK_OP_BRACE) {
-            // struct definition
-            if(tag = find_tagname(ident))
+            // struct-declaration-list
+            tag = find_tagname(ident);
+            if(tag)
                 error_at_token(ident, "Duplicate definition of a tag name.");
             // struct-specifier
             consume(TK_OP_BRACE);
@@ -1015,14 +1018,15 @@ Type *parse_decl() {
             Type *cursor = &head;
             int offset = 0;
             while(!consume_if(TK_CL_BRACE)) {
+                // struct-declaration
                 Type *member = parse_decl();
                 // check duplicate member definition
                 Type *ty = head.next;
                 while(ty) {
-                    if(cmp_token(ty->token, member->token))
-                        error_at_token(member->token,
-                                       "Duplicate member '%.*s'.",
-                                       member->token->len, member->token->str);
+                    if(cmp_token(ty->var_name, member->var_name))
+                        error_at_token(
+                            member->var_name, "Duplicate member '%.*s'.",
+                            member->var_name->len, member->var_name->str);
                     ty = ty->next;
                 }
 
@@ -1035,7 +1039,8 @@ Type *parse_decl() {
                 expect(TK_SEMI);
             }
             type->member = head.next;
-            new_tag(ident, type);
+            if(ident)
+                new_tag(ident, type);
             return parse_declaretor(type);
         }
         if(!ident)
@@ -1053,21 +1058,21 @@ Type *parse_decl() {
 
 Node *parse_func_definition(Type *func_type) {
     Node *decl;
-    Global *func = new_func(func_type->token, func_type, NULL);
+    Global *func = new_func(func_type->var_name, func_type, NULL);
     // function definition
     Vector *params = vec_new();
     Type *cursor = func_type->params;
     while(cursor) {
-        vec_push(params,
-                 new_node_lvar(new_lvar(cursor->token, cursor), cursor->token));
+        vec_push(params, new_node_lvar(new_lvar(cursor->var_name, cursor),
+                                       cursor->var_name));
         cursor = cursor->next;
     }
     Node *body = parse_block();
     int max_offset = 0;
     if(locals)
         max_offset = locals->offset;
-    decl =
-        new_node_fdecl(func_type->token, params, max_offset, body, func_type);
+    decl = new_node_fdecl(func_type->var_name, params, max_offset, body,
+                          func_type);
     func->body = decl;
     return decl;
 }
@@ -1081,15 +1086,21 @@ void parse_program() {
         Node *decl;
         Type *type = parse_decl();
 
-        if(!type->token)
-            error_at_token(token, "Expected an identifier.");
+        if(!type->var_name) {
+            if(is_struct(type)) {
+                expect(TK_SEMI);
+                continue;
+            } else
+                error_at_token(token, "Expected an identifier.");
+        }
 
         if(type->ty != FUNC) {
             // gloval var declaration
-            if(find_gvar(type->token))
-                error_at_token(type->token, "Redefinition of global variable");
+            if(find_gvar(type->var_name))
+                error_at_token(type->var_name,
+                               "Redefinition of global variable");
             Token *op_token = token;
-            Global *gvar = new_gvar(type->token, type);
+            Global *gvar = new_gvar(type->var_name, type);
             if(consume_if(TK_ASSIGN)) {
                 gvar->body = parse_assign_expr();
             }
@@ -1108,7 +1119,7 @@ void parse_program() {
             continue;
         } else if(consume_if(TK_SEMI)) {
             // function declaration
-            Global *func = new_func(type->token, type, NULL);
+            Global *func = new_func(type->var_name, type, NULL);
             continue;
         } else if(peek() == TK_OP_BRACE) {
             // function definition

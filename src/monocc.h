@@ -91,7 +91,8 @@ struct Type {
     Type *member;
     int offset;
     Type *next;
-    Token *token;
+    Token *var_name;
+    Token *tag_name;
 };
 
 // Node
@@ -221,6 +222,7 @@ void parse_program();
 // for debug and test.
 
 void assert_expect(int line, int expected, int actual);
+void print_token(Token *token);
 void print_nodes();
 void print_node(Node *node);
 void print_locals();
@@ -228,7 +230,7 @@ void print_globals();
 void print_strings();
 void print_funcs();
 void print_structs();
-void print_type(FILE *stream, Type *type);
+void print_type(FILE *stream, Type *type, bool recursive_flag);
 void error_types(Type *l_ty, Type *r_ty);
 
 void test_vec();

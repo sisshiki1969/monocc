@@ -1,77 +1,80 @@
 #include "monocc.h"
 
 /// Print tokens.
+void print_token(Token *token) {
+    switch(token->kind) {
+    case TK_NUM:
+    case TK_IDENT:
+    case TK_ADD:
+    case TK_SUB:
+    case TK_MUL:
+    case TK_DIV:
+    case TK_ADDR:
+    case TK_EQ:
+    case TK_NEQ:
+    case TK_GT:
+    case TK_GE:
+    case TK_LT:
+    case TK_LE:
+    case TK_ASSIGN:
+    case TK_ASSIGN_ADD:
+    case TK_ASSIGN_SUB:
+    case TK_ASSIGN_MUL:
+    case TK_ASSIGN_DIV:
+    case TK_INC:
+    case TK_DEC:
+    case TK_OP_PAREN:
+    case TK_CL_PAREN:
+    case TK_OP_BRACE:
+    case TK_CL_BRACE:
+    case TK_OP_BRACKET:
+    case TK_CL_BRACKET:
+    case TK_COMMA:
+    case TK_COLON:
+    case TK_SIZEOF:
+    case TK_DOT:
+    case TK_ARROW:
+    case TK_SEMI:
+        printf("[%.*s]", token->len, token->str);
+        break;
+    // Reserved words
+    case TK_IF:
+    case TK_ELSE:
+    case TK_WHILE:
+    case TK_FOR:
+    case TK_SWITCH:
+    case TK_CASE:
+    case TK_DEFAULT:
+    case TK_BREAK:
+    case TK_CONTINUE:
+    case TK_RETURN:
+    case TK_INT:
+    case TK_CHAR:
+    case TK_VOID:
+    case TK_STRUCT:
+    case TK_MACRO:
+        printf("<%.*s>", token->len, token->str);
+        break;
+    case TK_EOF:
+        printf("<EOF>");
+        break;
+    case TK_STR:
+        printf("\"%.*s\"", token->len, token->str);
+        break;
+    default:
+        error_at_token(token, "print_tokens(): Unknown TokenKind.");
+        break;
+    }
+}
+
+/// Print tokens.
 void print_tokens(Token *token) {
     printf("// ");
-    int i = 0;
     while(token) {
-        if(i % 15 == 14)
+        print_token(token);
+        if(token->kind == TK_SEMI)
             printf("\n// ");
-        switch(token->kind) {
-        case TK_NUM:
-        case TK_IDENT:
-        case TK_ADD:
-        case TK_SUB:
-        case TK_MUL:
-        case TK_DIV:
-        case TK_ADDR:
-        case TK_EQ:
-        case TK_NEQ:
-        case TK_GT:
-        case TK_GE:
-        case TK_LT:
-        case TK_LE:
-        case TK_ASSIGN:
-        case TK_ASSIGN_ADD:
-        case TK_ASSIGN_SUB:
-        case TK_ASSIGN_MUL:
-        case TK_ASSIGN_DIV:
-        case TK_INC:
-        case TK_DEC:
-        case TK_SEMI:
-        case TK_OP_PAREN:
-        case TK_CL_PAREN:
-        case TK_OP_BRACE:
-        case TK_CL_BRACE:
-        case TK_OP_BRACKET:
-        case TK_CL_BRACKET:
-        case TK_COMMA:
-        case TK_COLON:
-        case TK_SIZEOF:
-        case TK_DOT:
-        case TK_ARROW:
-            printf("[%.*s]", token->len, token->str);
-            break;
-        // Reserved words
-        case TK_IF:
-        case TK_ELSE:
-        case TK_WHILE:
-        case TK_FOR:
-        case TK_SWITCH:
-        case TK_CASE:
-        case TK_DEFAULT:
-        case TK_BREAK:
-        case TK_CONTINUE:
-        case TK_RETURN:
-        case TK_INT:
-        case TK_CHAR:
-        case TK_VOID:
-        case TK_STRUCT:
-        case TK_MACRO:
-            printf("<%.*s>", token->len, token->str);
-            break;
-        case TK_EOF:
-            printf("<EOF>");
-            break;
-        case TK_STR:
-            printf("\"%.*s\"", token->len, token->str);
-            break;
-        default:
-            error_at_token(token, "print_tokens(): Unknown TokenKind.");
-            break;
-        }
         token = token->next;
-        i++;
     }
     printf("\n");
 }
@@ -253,7 +256,7 @@ void print_node(Node *node) {
     }
     if(node->kind == ND_FDECL) {
         printf("FDECL %.*s ", node->token->len, node->token->str);
-        print_type(stdout, node->type);
+        print_type(stdout, node->type, false);
         printf("\n//    ");
         if(node->nodes) {
             Vector *params = node->nodes;
@@ -283,7 +286,7 @@ void print_nodes() {
 }
 
 /// Print Type to stream.
-void print_type(FILE *stream, Type *type) {
+void print_type(FILE *stream, Type *type, bool recursive_flag) {
     if(type->ty == INT) {
         fprintf(stream, "int ");
     } else if(type->ty == CHAR) {
@@ -292,10 +295,10 @@ void print_type(FILE *stream, Type *type) {
         fprintf(stream, "void ");
     } else if(type->ty == PTR) {
         fprintf(stream, "* ");
-        print_type(stream, type->ptr_to);
+        print_type(stream, type->ptr_to, false);
     } else if(type->ty == ARRAY) {
         fprintf(stream, "[%d] ", type->array_size);
-        print_type(stream, type->ptr_to);
+        print_type(stream, type->ptr_to, false);
     } else if(type->ty == FUNC) {
         fprintf(stream, "func ");
         Type *param = type->params;
@@ -305,13 +308,19 @@ void print_type(FILE *stream, Type *type) {
             if(!first)
                 fprintf(stream, ", ");
             first = false;
-            print_type(stream, param);
+            print_type(stream, param, false);
             param = param->next;
         }
         fprintf(stream, ") ");
-        print_type(stream, type->ptr_to);
+        print_type(stream, type->ptr_to, false);
     } else if(type->ty == STRUCT) {
         fprintf(stream, "struct ");
+        if(type->tag_name) {
+            fprintf(stream, "<%.*s> ", type->tag_name->len,
+                    type->tag_name->str);
+            if(!recursive_flag)
+                return;
+        }
         Type *member = type->member;
         fprintf(stream, "{ ");
         bool first = true;
@@ -319,12 +328,17 @@ void print_type(FILE *stream, Type *type) {
             if(!first)
                 fprintf(stream, ", ");
             first = false;
-            print_type(stream, member);
-            if(member->token)
-                fprintf(stream, "<%.*s:%d>", member->token->len,
-                        member->token->str, member->offset);
-            else
-                fprintf(stream, "<>");
+            if(is_struct(member) && member->tag_name) {
+                fprintf(stream, "struct %.*s ", member->tag_name->len,
+                        member->tag_name->str);
+            } else {
+                print_type(stream, member, false);
+                if(member->var_name)
+                    fprintf(stream, "<%.*s:%d>", member->var_name->len,
+                            member->var_name->str, member->offset);
+                else
+                    fprintf(stream, "<>");
+            }
             member = member->next;
         }
         fprintf(stream, "} ");
@@ -338,7 +352,7 @@ void print_locals() {
     while(var) {
         fprintf(stdout, "//    %.*s  offset:%d  ", var->token->len,
                 var->token->str, var->offset);
-        print_type(stdout, var->type);
+        print_type(stdout, var->type, false);
         fprintf(stdout, "\n");
         var = var->next;
     }
@@ -350,7 +364,7 @@ void print_globals() {
     fprintf(stdout, "// Globals\n");
     while(global) {
         fprintf(stdout, "// %.*s ", global->token->len, global->token->str);
-        print_type(stdout, global->type);
+        print_type(stdout, global->type, false);
         fprintf(stdout, "\n");
         global = global->next;
     }
@@ -361,7 +375,7 @@ void print_funcs() {
     fprintf(stdout, "// Functions\n");
     while(func) {
         fprintf(stdout, "// %.*s ", func->token->len, func->token->str);
-        print_type(stdout, func->type);
+        print_type(stdout, func->type, false);
         fprintf(stdout, "\n");
         func = func->next;
     }
@@ -385,7 +399,7 @@ void print_structs() {
             fprintf(stdout, "// %.*s ", tag->ident->len, tag->ident->str);
         else
             fprintf(stdout, "// anonymus ");
-        print_type(stdout, tag->type);
+        print_type(stdout, tag->type, true);
         fprintf(stdout, "\n");
         tag = tag->next;
     }

@@ -153,14 +153,17 @@ int switch2_(char s) {
     return i;
 }
 
-void struct_() {
-    struct Vec {
-        int x;
-        int y;
-    };
+struct Pos {
+    int row;
+    int col;
+};
 
+void struct_() {
     struct Leaf {
-        struct Vec ary[17];
+        struct Vec {
+            int row;
+            int col;
+        } ary[17];
         int size;
         char ch;
     };
@@ -194,8 +197,8 @@ void struct_() {
     node.ch = 5;
     node_new.size = 195;
     node_new.ch = 39;
-    node_new.ary[0].x = 184;
-    node_new.ary[16].y = 984;
+    node_new.ary[0].row = 184;
+    node_new.ary[16].col = 984;
     assert_expect(__LINE__, 10, node.size);
     assert_expect(__LINE__, 5, node.ch);
     node.size = 110;
@@ -206,8 +209,8 @@ void struct_() {
     assert_expect(__LINE__, 79, node_ptr->ch);
     assert_expect(__LINE__, 195, node_new.size);
     assert_expect(__LINE__, 39, node_new.ch);
-    assert_expect(__LINE__, 184, node_new.ary[0].x);
-    assert_expect(__LINE__, 984, node_new.ary[16].y);
+    assert_expect(__LINE__, 184, node_new.ary[0].row);
+    assert_expect(__LINE__, 984, node_new.ary[16].col);
     struct Tree tree;
     tree.right = &node_new;
     tree.left = &node;
@@ -215,11 +218,6 @@ void struct_() {
 }
 
 int q8_count;
-
-struct Pos {
-    int row;
-    int col;
-} p;
 
 void print_board(int board[][8]) {
     q8_count++;

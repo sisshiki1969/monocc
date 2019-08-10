@@ -59,6 +59,7 @@ Type *new_type_from_token(Token *token) {
     case TK_STRUCT:
         return new_type_struct();
     }
+    print_token(token);
     error_at_token(token, "Unimplemented type.");
 }
 
@@ -115,7 +116,7 @@ int alignof_type(Type *type) {
     default:
         error("Internal error: can not calculate align of unknown type "
               "'%.*s'.",
-              type->token->len, type->token->str);
+              type->var_name->len, type->var_name->str);
     }
 }
 
@@ -147,7 +148,7 @@ int sizeof_type(Type *type) {
     default:
         error("Internal error: can not calculate size of unknown type "
               "'%.*s'.",
-              type->token->len, type->token->str);
+              type->var_name->len, type->var_name->str);
     }
 }
 
@@ -222,9 +223,9 @@ bool is_comparable_type(Type *l_type, Type *r_type) {
 
 void error_types(Type *l_ty, Type *r_ty) {
     fprintf(stderr, "\nLeft: ");
-    print_type(stderr, l_ty);
+    print_type(stderr, l_ty, false);
     fprintf(stderr, "\nRight: ");
-    print_type(stderr, r_ty);
+    print_type(stderr, r_ty, false);
     fprintf(stderr, "\n");
 }
 
