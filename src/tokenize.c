@@ -102,6 +102,8 @@ void tokenize() {
                 cur = new_token(TK_SIZEOF, cur, org_p, len);
             } else if(is_reserved(org_p, len, "struct")) {
                 cur = new_token(TK_STRUCT, cur, org_p, len);
+            } else if(is_reserved(org_p, len, "typedef")) {
+                cur = new_token(TK_TYPEDEF, cur, org_p, len);
             } else {
                 cur = new_token(TK_IDENT, cur, org_p, len);
             }

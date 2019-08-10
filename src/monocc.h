@@ -66,6 +66,8 @@ typedef enum {
     TK_VOID,
     TK_STRUCT,
 
+    TK_TYPEDEF,
+
     TK_EOF,
 
     TK_MACRO,
@@ -195,6 +197,18 @@ struct TagName {
     Type *type;
 };
 
+TagName *find_tag(Token *token);
+
+typedef struct Typedef Typedef;
+
+struct Typedef {
+    Typedef *next;
+    Type *type;
+    Token *ident;
+};
+
+Type *find_typedef(Token *ident);
+
 typedef struct {
     int start;
     int end;
@@ -240,8 +254,9 @@ void print_globals();
 void print_strings();
 void print_funcs();
 void print_structs();
-void print_type(FILE *stream, Type *type, bool recursive_flag);
+void print_type(FILE *stream, Type *type);
 void error_types(Type *l_ty, Type *r_ty);
+void print_typedefs();
 
 void test_vec();
 void test_expression();
@@ -296,5 +311,10 @@ Vector *strings;
 LVar *locals;
 LVar *scope;
 TagName *tagnames;
+Typedef *tdef_names;
 Global *globals;
 Global *functions;
+
+struct List {
+    struct List *next;
+};

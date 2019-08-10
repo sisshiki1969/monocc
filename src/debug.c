@@ -57,6 +57,7 @@ void print_token(Token *token) {
     case TK_CHAR:
     case TK_VOID:
     case TK_STRUCT:
+    case TK_TYPEDEF:
     case TK_MACRO:
         printf("<%.*s>", token->len, token->str);
         break;
@@ -254,7 +255,7 @@ void print_node(Node *node) {
     }
     if(node->kind == ND_FDECL) {
         printf("FDECL %.*s ", node->token->len, node->token->str);
-        print_type(stdout, node->type, false);
+        print_type(stdout, node->type);
         printf("\n//    ");
         if(node->nodes) {
             Vector *params = node->nodes;
@@ -284,7 +285,7 @@ void print_nodes() {
 }
 
 /// Print Type to stream.
-void print_type(FILE *stream, Type *type, bool recursive_flag) {
+void print_type(FILE *stream, Type *type) {
     if(type->ty == INT) {
         fprintf(stream, "int ");
     } else if(type->ty == CHAR) {
@@ -293,10 +294,10 @@ void print_type(FILE *stream, Type *type, bool recursive_flag) {
         fprintf(stream, "void ");
     } else if(type->ty == PTR) {
         fprintf(stream, "* ");
-        print_type(stream, type->ptr_to, false);
+        print_type(stream, type->ptr_to);
     } else if(type->ty == ARRAY) {
         fprintf(stream, "[%d] ", type->array_size);
-        print_type(stream, type->ptr_to, false);
+        print_type(stream, type->ptr_to);
     } else if(type->ty == FUNC) {
         fprintf(stream, "func ");
         Type *param = type->params;
@@ -306,20 +307,19 @@ void print_type(FILE *stream, Type *type, bool recursive_flag) {
             if(!first)
                 fprintf(stream, ", ");
             first = false;
-            print_type(stream, param, false);
+            print_type(stream, param);
             param = param->next;
         }
         fprintf(stream, ") ");
-        print_type(stream, type->ptr_to, false);
+        print_type(stream, type->ptr_to);
     } else if(type->ty == STRUCT) {
         fprintf(stream, "struct ");
         if(type->tag_name) {
             fprintf(stream, "<%.*s> ", type->tag_name->len,
                     type->tag_name->str);
-            if(!recursive_flag)
-                return;
         }
         Type *member = type->member;
+        /*
         fprintf(stream, "{ ");
         bool first = true;
         while(member) {
@@ -330,7 +330,7 @@ void print_type(FILE *stream, Type *type, bool recursive_flag) {
                 fprintf(stream, "struct %.*s ", member->tag_name->len,
                         member->tag_name->str);
             } else {
-                print_type(stream, member, false);
+                print_type(stream, member);
                 if(member->var_name)
                     fprintf(stream, "<%.*s:%d>", member->var_name->len,
                             member->var_name->str, member->offset);
@@ -339,7 +339,7 @@ void print_type(FILE *stream, Type *type, bool recursive_flag) {
             }
             member = member->next;
         }
-        fprintf(stream, "} ");
+        fprintf(stream, "} ");*/
     } else
         error("print_type(): Unknown Type.");
 }
@@ -350,7 +350,7 @@ void print_locals() {
     while(var) {
         fprintf(stdout, "//    %.*s  offset:%d  ", var->token->len,
                 var->token->str, var->offset);
-        print_type(stdout, var->type, false);
+        print_type(stdout, var->type);
         fprintf(stdout, "\n");
         var = var->next;
     }
@@ -362,7 +362,7 @@ void print_globals() {
     fprintf(stdout, "// Globals\n");
     while(global) {
         fprintf(stdout, "// %.*s ", global->token->len, global->token->str);
-        print_type(stdout, global->type, false);
+        print_type(stdout, global->type);
         fprintf(stdout, "\n");
         global = global->next;
     }
@@ -373,7 +373,7 @@ void print_funcs() {
     fprintf(stdout, "// Functions\n");
     while(func) {
         fprintf(stdout, "// %.*s ", func->token->len, func->token->str);
-        print_type(stdout, func->type, false);
+        print_type(stdout, func->type);
         fprintf(stdout, "\n");
         func = func->next;
     }
@@ -397,8 +397,33 @@ void print_structs() {
             fprintf(stdout, "// %.*s ", tag->ident->len, tag->ident->str);
         else
             fprintf(stdout, "// anonymus ");
-        print_type(stdout, tag->type, true);
-        fprintf(stdout, "\n");
+        fprintf(stdout, "struct { ");
+        Type *member = tag->type->member;
+        bool first = true;
+        while(member) {
+            if(!first)
+                fprintf(stdout, ", ");
+            first = false;
+            print_type(stdout, member);
+            if(member->var_name)
+                fprintf(stdout, "<%.*s:%d>", member->var_name->len,
+                        member->var_name->str, member->offset);
+            else
+                fprintf(stdout, "<>");
+            member = member->next;
+        }
+        fprintf(stdout, "}\n");
         tag = tag->next;
+    }
+}
+
+void print_typedefs() {
+    fprintf(stdout, "// Typedef\n");
+    Typedef *tdef = tdef_names;
+    while(tdef) {
+        fprintf(stdout, "// %.*s ", tdef->ident->len, tdef->ident->str);
+        print_type(stdout, tdef->type);
+        fprintf(stdout, "\n");
+        tdef = tdef->next;
     }
 }

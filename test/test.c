@@ -153,11 +153,46 @@ int switch2_(char s) {
     return i;
 }
 
+typedef struct List List;
+
+struct List {
+    List *next;
+    int payloads;
+} list1;
+
+struct {
+    int payload;
+} def;
+
 struct Pos {
     int row;
     int col;
 } pos;
+
 struct Pos *ptr_to_pos;
+
+void list_() {
+    List *cursor = &list1;
+    List list2;
+    List list3;
+    List list4;
+    list1.payloads = 1;
+    list2.payloads = 2;
+    list3.payloads = 3;
+    list4.payloads = 4;
+    list1.next = &list2;
+    list2.next = &list3;
+    list3.next = &list4;
+    list4.next = 0;
+    assert_expect(__LINE__, 1, cursor->payloads);
+    cursor = cursor->next;
+    assert_expect(__LINE__, 2, cursor->payloads);
+    cursor = cursor->next;
+    assert_expect(__LINE__, 3, cursor->payloads);
+    cursor = cursor->next;
+    assert_expect(__LINE__, 4, cursor->payloads);
+    // assert_expect(__LINE__, 0, cursor->next);
+}
 
 void struct_() {
     struct Leaf {
@@ -167,7 +202,7 @@ void struct_() {
         } ary[17];
         int size;
         char ch;
-    };
+    } leaf;
 
     struct Tree {
         struct Leaf *left;
@@ -374,6 +409,7 @@ int main() {
     string();
     block_scope();
     for_();
+    list_();
 
     assert_expect(__LINE__, 11, switch_(1));
     assert_expect(__LINE__, 13, switch_(2));

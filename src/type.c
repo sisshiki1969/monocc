@@ -121,7 +121,14 @@ int alignof_type(Type *type) {
 }
 
 int sizeof_struct(Type *type) {
-    Type *cursor = type->member;
+    Type *cursor;
+    TagName *tag = find_tag(type->tag_name);
+    if(!tag) {
+        if(!type->member)
+            error("anonymous struct with no members.");
+        cursor = type->member;
+    } else
+        cursor = tag->type->member;
     int size = 0;
     while(cursor) {
         size = align_to(size, alignof_type(cursor));
@@ -173,6 +180,9 @@ bool is_identical_type(Type *l_type, Type *r_type) {
         else
             return false;
     }
+    if(is_ptr(l_type)) {
+        return is_identical_type(l_type->ptr_to, r_type->ptr_to);
+    }
     if(is_func(l_type)) {
         return is_identical_type(l_type->ptr_to, r_type->ptr_to);
     }
@@ -201,6 +211,8 @@ bool is_assignable_type(Type *l_type, Type *r_type) {
         return false;
     if(is_arythmetic(l_type) && is_arythmetic(r_type))
         return true;
+    if(is_ptr(l_type) && is_arythmetic(r_type))
+        return true;
     while(l_type) {
         if(l_type->ty != r_type->ty)
             return false;
@@ -223,9 +235,9 @@ bool is_comparable_type(Type *l_type, Type *r_type) {
 
 void error_types(Type *l_ty, Type *r_ty) {
     fprintf(stderr, "\nLeft: ");
-    print_type(stderr, l_ty, false);
+    print_type(stderr, l_ty);
     fprintf(stderr, "\nRight: ");
-    print_type(stderr, r_ty, false);
+    print_type(stderr, r_ty);
     fprintf(stderr, "\n");
 }
 

@@ -40,7 +40,7 @@ void compile() {
     print_funcs();
     print_strings();
     print_structs();
-
+    print_typedefs();
     printf("\n");
     printf("\t.intel_syntax noprefix\n");
 
