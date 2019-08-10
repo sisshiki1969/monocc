@@ -230,6 +230,8 @@ void error_types(Type *l_ty, Type *r_ty) {
 }
 
 Type *type(Node *node) {
+    if(!node)
+        return NULL;
     if(node->type)
         return node->type;
     Type *l_ty;
@@ -309,6 +311,9 @@ Type *type(Node *node) {
     case ND_NEQ:
     case ND_GE:
     case ND_GT:
+    case ND_LAND:
+    case ND_LOR:
+    case ND_NOT:
         if(!is_comparable_type(l_ty, r_ty))
             error_at_node(node, "Illegal operation. (Type mismatch)");
         node->type = new_type_int();

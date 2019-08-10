@@ -18,7 +18,6 @@ typedef enum {
     TK_SUB,
     TK_MUL,
     TK_DIV,
-    TK_ADDR,
     TK_EQ,
     TK_NEQ,
     TK_GE,
@@ -32,6 +31,12 @@ typedef enum {
     TK_ASSIGN_DIV,
     TK_INC,
     TK_DEC,
+    TK_LAND,
+    TK_LOR,
+    TK_AND,
+    TK_OR,
+    TK_NOT,
+
     TK_SEMI,
     TK_OP_PAREN,
     TK_CL_PAREN,
@@ -110,6 +115,11 @@ typedef enum {
     ND_NEQ,
     ND_GE,
     ND_GT,
+
+    ND_LAND,
+    ND_LOR,
+    ND_NOT,
+
     ND_ASSIGN,
     ND_ADDR,
     ND_DEREF,

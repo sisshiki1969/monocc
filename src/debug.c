@@ -9,7 +9,7 @@ void print_token(Token *token) {
     case TK_SUB:
     case TK_MUL:
     case TK_DIV:
-    case TK_ADDR:
+    case TK_AND:
     case TK_EQ:
     case TK_NEQ:
     case TK_GT:
@@ -23,6 +23,11 @@ void print_token(Token *token) {
     case TK_ASSIGN_DIV:
     case TK_INC:
     case TK_DEC:
+    case TK_LAND:
+    case TK_LOR:
+    case TK_OR:
+    case TK_NOT:
+
     case TK_OP_PAREN:
     case TK_CL_PAREN:
     case TK_OP_BRACE:
@@ -88,28 +93,16 @@ void print_node(Node *node) {
     if(is_binary_op(node->kind)) {
         switch(node->kind) {
         case ND_ADD:
-            printf("(+ ");
-            break;
         case ND_SUB:
-            printf("(- ");
-            break;
         case ND_MUL:
-            printf("(* ");
-            break;
         case ND_DIV:
-            printf("(/ ");
-            break;
         case ND_EQ:
-            printf("(== ");
-            break;
         case ND_NEQ:
-            printf("(!= ");
-            break;
         case ND_GE:
-            printf("(>= ");
-            break;
         case ND_GT:
-            printf("(> ");
+        case ND_LAND:
+        case ND_LOR:
+            printf("(%.*s ", node->token->len, node->token->str);
             break;
         default:
             error("Unknown binary node.");
@@ -121,6 +114,11 @@ void print_node(Node *node) {
         return;
     }
     switch(node->kind) {
+    case ND_NOT:
+        printf("(! ");
+        print_node(node->lhs);
+        printf(")");
+        return;
     case ND_ADDR:
         printf("(ADDR ");
         print_node(node->lhs);

@@ -30,6 +30,8 @@ bool is_binary_op(NodeKind kind) {
     case ND_NEQ:
     case ND_GE:
     case ND_GT:
+    case ND_LAND:
+    case ND_LOR:
         return true;
     }
     return false;
@@ -274,7 +276,7 @@ void gen_fdecl(Node *node) {
 
     printf("\tpush rbp\n");
     printf("\tmov  rbp, rsp\n");
-    int offset = (node->offset + 15) / 16 * 16;
+    int offset = (node->offset & (-16)) + 16;
     printf("\tsub  rsp, %d\n", offset);
 
     int len = vec_len(node->nodes);
@@ -299,28 +301,148 @@ void gen_stmt(Node *node) {
     }
 }
 
+char reg_l[4][4] = {"rax", "eax", "ax", "al"};
+char reg_r[4][4] = {"rdi", "edi", "di", "dil"};
+
+void gen_land(Node *node) {
+    Type *l_ty = type(node->lhs);
+    Type *r_ty = type(node->rhs);
+    int reg_mode;
+    char *false_label = new_label();
+    char *exit_label = new_label();
+    gen(node->lhs);
+
+    if(is_int(l_ty)) {
+        reg_mode = 1;
+    } else if(is_ptr(l_ty)) {
+        reg_mode = 0;
+    } else
+        error_at_node(node, "Illegal operation. (Type mismatch)");
+
+    printf("\tpop  rax\n");
+    printf("\tcmp  %s, 0\n", reg_l[reg_mode]);
+    printf("\tje   %s\n", false_label);
+
+    gen(node->rhs);
+
+    if(is_int(r_ty)) {
+        reg_mode = 1;
+    } else if(is_ptr(r_ty)) {
+        reg_mode = 0;
+    } else
+        error_at_node(node, "Illegal operation. (Type mismatch)");
+
+    printf("\tpop  rax\n");
+    printf("\tcmp  %s, 0\n", reg_l[reg_mode]);
+    printf("\tje   %s\n", false_label);
+
+    printf("\tmov  rax, 1\n");
+    emit_jmp(exit_label);
+
+    emit_label(false_label);
+    printf("\tmov  rax, 0\n");
+    emit_label(exit_label);
+}
+
+void gen_lor(Node *node) {
+    Type *l_ty = type(node->lhs);
+    Type *r_ty = type(node->rhs);
+    int reg_mode;
+    char *true_label = new_label();
+    char *exit_label = new_label();
+    gen(node->lhs);
+
+    if(is_int(l_ty)) {
+        reg_mode = 1;
+    } else if(is_ptr(l_ty)) {
+        reg_mode = 0;
+    } else
+        error_at_node(node, "Illegal operation. (Type mismatch)");
+
+    printf("\tpop  rax\n");
+    printf("\tcmp  %s, 0\n", reg_l[reg_mode]);
+    printf("\tjne  %s\n", true_label);
+
+    gen(node->rhs);
+
+    if(is_int(r_ty)) {
+        reg_mode = 1;
+    } else if(is_ptr(r_ty)) {
+        reg_mode = 0;
+    } else
+        error_at_node(node, "Illegal operation. (Type mismatch)");
+
+    printf("\tpop  rax\n");
+    printf("\tcmp  %s, 0\n", reg_l[reg_mode]);
+    printf("\tjne  %s\n", true_label);
+
+    printf("\tmov  rax, 0\n");
+    emit_jmp(exit_label);
+
+    emit_label(true_label);
+    printf("\tmov  rax, 1\n");
+    emit_label(exit_label);
+}
+
+void gen_lnot(Node *node) {
+    Type *l_ty = type(node->lhs);
+    int reg_mode;
+    char *false_label = new_label();
+    char *exit_label = new_label();
+    gen(node->lhs);
+
+    if(is_int(l_ty)) {
+        reg_mode = 1;
+    } else if(is_ptr(l_ty)) {
+        reg_mode = 0;
+    } else
+        error_at_node(node, "Illegal operation. (Type mismatch)");
+
+    printf("\tpop  rax\n");
+    printf("\tcmp  %s, 0\n", reg_l[reg_mode]);
+    printf("\tjne  %s\n", false_label);
+
+    printf("\tmov  rax, 1\n");
+    emit_jmp(exit_label);
+
+    emit_label(false_label);
+    printf("\tmov  rax, 0\n");
+    emit_label(exit_label);
+}
+
 void gen(Node *node) {
     if(!node)
         return;
+    printf("// Line %d ", get_line(node->token->str));
+    print_node(node);
+    printf("\n");
     Node *parent;
     char *label;
     int i;
     Type *l_ty;
     Type *r_ty;
-    char reg_l[4][4] = {"rax", "eax", "ax", "al"};
-    char reg_r[4][4] = {"rdi", "edi", "di", "dil"};
 
     if(is_binary_op(node->kind)) {
+        l_ty = type(node->lhs);
+        r_ty = type(node->rhs);
+        int reg_mode;
+        if(node->kind == ND_LAND) {
+            gen_land(node);
+            printf("\tpush  rax\n");
+            return;
+        }
+        if(node->kind == ND_LOR) {
+            gen_lor(node);
+            printf("\tpush  rax\n");
+            return;
+        }
         gen(node->lhs);
         gen(node->rhs);
-        Type *l_ty = type(node->lhs);
-        Type *r_ty = type(node->rhs);
 
         printf("\tpop  rdi\n");
         printf("\tpop  rax\n");
         char *cmp_op;
 
-        int reg_mode;
         switch(node->kind) {
         case ND_ADD:
             if(is_arythmetic(l_ty) && is_arythmetic(r_ty)) {
@@ -460,6 +582,12 @@ void gen(Node *node) {
         vec_push(parent->nodes, node->lhs);
         return;
 
+    case ND_BREAK:
+        emit_jmp(get_break(node->token));
+        return;
+    case ND_CONTINUE:
+        emit_jmp(get_continue(node->token));
+        return;
     // expression
     case ND_NUM:
         printf("\tpush %d\n", node->int_val);
@@ -525,13 +653,10 @@ void gen(Node *node) {
         emit_deref_rax(node);
         printf("\tpush rax\n");
         return;
-    case ND_BREAK:
-        emit_jmp(get_break(node->token));
-        return;
-    case ND_CONTINUE:
-        emit_jmp(get_continue(node->token));
+    case ND_NOT:
+        gen_lnot(node);
+        printf("\tpush rax\n");
         return;
     }
-
     error_at_token(node->token, "gen(): Unimplemented NodeKind.");
 }

@@ -24,15 +24,17 @@ char *read_file(char *path) {
         buf[size++] = '\n';
     buf[size] = '\0';
     fclose(fp);
+    fprintf(stderr, "monocc: file read\n");
     return buf;
 }
 
 void compile() {
+    fprintf(stderr, "monocc: tokenize\n");
     tokenize();
     print_tokens(token);
 
     strings = vec_new();
-
+    fprintf(stderr, "monocc: parse\n");
     parse_program();
     print_globals();
     print_funcs();
@@ -45,6 +47,7 @@ void compile() {
     printf("\t.data\n");
     Global *global = globals;
 
+    fprintf(stderr, "monocc: emit globals...\n");
     while(global) {
         printf("%.*s:\n", global->token->len, global->token->str);
         if(is_int(global->type)) {
@@ -91,6 +94,7 @@ void compile() {
             printf("\t.zero %d\n", sizeof_type(global->type));
         global = global->next;
     };
+    fprintf(stderr, "monocc: emitted globals\n");
 
     int i = 0;
     while(i < vec_len(strings)) {
@@ -106,9 +110,11 @@ void compile() {
     int len = vec_len(ext_declarations);
     for(int i = 0; i < len; i++)
         gen_stmt(ext_declarations->data[i]);
+    fprintf(stderr, "monocc: compile complete\n");
 }
 
 int main(int argc, char **argv) {
+    fprintf(stderr, "monocc: parse command\n");
     if(argc == 2 && strcmp(argv[1], "-test") == 0) {
         test_vec();
         return 0;

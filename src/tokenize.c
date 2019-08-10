@@ -192,7 +192,8 @@ void tokenize() {
                 p++;
                 continue;
             } else {
-                error_at_char(p, "Unexpected character.");
+                cur = new_token(TK_NOT, cur, p - 1, 1);
+                continue;
             }
         }
         if(*p == ';') {
@@ -228,7 +229,21 @@ void tokenize() {
             continue;
         }
         if(*p == '&') {
-            cur = new_token(TK_ADDR, cur, p++, 1);
+            if(*(p + 1) == '&') {
+                cur = new_token(TK_LAND, cur, p, 2);
+                p += 2;
+                continue;
+            }
+            cur = new_token(TK_AND, cur, p++, 1);
+            continue;
+        }
+        if(*p == '|') {
+            if(*(p + 1) == '|') {
+                cur = new_token(TK_LOR, cur, p, 2);
+                p += 2;
+                continue;
+            }
+            cur = new_token(TK_OR, cur, p++, 1);
             continue;
         }
         if(*p == '.') {

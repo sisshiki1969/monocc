@@ -192,11 +192,11 @@ void struct_() {
     pos.col = 9;
     pos.row = 45;
 
-    // assert_expect(__LINE__, 9, pos.col);
-    // assert_expect(__LINE__, 45, pos.row);
+    assert_expect(__LINE__, 9, pos.col);
+    assert_expect(__LINE__, 45, pos.row);
 
-    // assert_expect(__LINE__, 4, sizeof(pos.col));
-    // assert_expect(__LINE__, 4, sizeof(pos.row));
+    assert_expect(__LINE__, 4, sizeof(pos.col));
+    assert_expect(__LINE__, 4, sizeof(pos.row));
 
     struct Leaf node;
     struct Leaf *node_ptr = &node;
@@ -315,6 +315,28 @@ int main() {
     assert_expect(__LINE__, 1, 1 + 4 > 4);
     assert_expect(__LINE__, 0, 4 < 4 - 1);
     assert_expect(__LINE__, 0, 1 - 4 > 4);
+    int a = 0;
+    assert_expect(__LINE__, 0, 0 && a++);
+    assert_expect(__LINE__, 0, a);
+    assert_expect(__LINE__, 0, 1 && a++);
+    assert_expect(__LINE__, 1, a);
+    assert_expect(__LINE__, 1, 1 && a++);
+    assert_expect(__LINE__, 2, a);
+    assert_expect(__LINE__, 1, 0 || a++);
+    assert_expect(__LINE__, 3, a);
+    assert_expect(__LINE__, 1, 1 || a++);
+    assert_expect(__LINE__, 3, a);
+    a = 0;
+    assert_expect(__LINE__, 0, 0 || a++);
+    assert_expect(__LINE__, 1, a);
+    a = 0;
+    assert_expect(__LINE__, 0, 0 || 1 && a++);
+    assert_expect(__LINE__, 1, a);
+    assert_expect(__LINE__, 1, 1 && 1 || a++);
+    assert_expect(__LINE__, 1, a);
+    assert_expect(__LINE__, 1, !0);
+    assert_expect(__LINE__, 0, !1);
+    assert_expect(__LINE__, 0, !!!1);
 
     // assignment operators
     int z;

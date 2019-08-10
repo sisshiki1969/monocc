@@ -138,7 +138,7 @@ Node *new_node_binary(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     node->lhs = get_ptr_if_array(lhs);
     node->rhs = get_ptr_if_array(rhs);
     node->token = op_token;
-    node->type = type(node);
+    // node->type = type(node);
     return node;
 }
 
@@ -150,7 +150,7 @@ Node *new_node_expr(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
     node->lhs = lhs;
     node->rhs = rhs;
     node->token = op_token;
-    node->type = type(node);
+    // node->type = type(node);
     return node;
 }
 
@@ -644,13 +644,18 @@ Node *parse_unary_expr() {
     } else if(consume_if(TK_SUB)) {
         return new_node_binary(ND_SUB, new_node_num(0, token),
                                parse_unary_expr(), op_token);
-    } else if(consume_if(TK_ADDR)) {
+    } else if(consume_if(TK_AND)) {
         return new_node_expr(ND_ADDR, parse_unary_expr(), NULL, op_token);
     } else if(consume_if(TK_MUL)) {
         Node *node = parse_unary_expr();
         return new_node_binary(ND_DEREF, node, NULL, op_token);
     } else if(consume_if(TK_SIZEOF)) {
         return new_node_num(sizeof_type(type(parse_unary_expr())), op_token);
+    } else if(consume_if(TK_NOT)) {
+        Node *node = new_node(ND_NOT, op_token);
+        node->lhs = parse_unary_expr();
+        node->type = new_type_int();
+        return node;
     } else {
         return parse_postfix_expr();
     }
@@ -715,7 +720,6 @@ Node *parse_rel_expr() {
 
 Node *parse_eq_expr() {
     Node *node = parse_rel_expr();
-
     for(;;) {
         Token *op_token = token;
         if(consume_if(TK_EQ)) {
@@ -729,8 +733,31 @@ Node *parse_eq_expr() {
     }
 }
 
-Node *parse_assign_expr() {
+Node *parse_land_expr() {
     Node *node = parse_eq_expr();
+    for(;;) {
+        Token *op_token = token;
+        if(consume_if(TK_LAND)) {
+            node = new_node_binary(ND_LAND, node, parse_eq_expr(), op_token);
+            continue;
+        }
+        return node;
+    }
+}
+
+Node *parse_lor_expr() {
+    Node *node = parse_land_expr();
+    for(;;) {
+        Token *op_token = token;
+        if(consume_if(TK_LOR)) {
+            node = new_node_binary(ND_LOR, node, parse_land_expr(), op_token);
+            continue;
+        }
+        return node;
+    }
+}
+Node *parse_assign_expr() {
+    Node *node = parse_lor_expr();
     Node *rhs;
     Token *op_token = token;
     if(consume_if(TK_ASSIGN)) {
