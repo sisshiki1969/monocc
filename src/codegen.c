@@ -127,6 +127,7 @@ int reg_size(Type *type) {
 }
 
 /// Load [RAX] to RAX.(size sensitive)
+/// using reg: none.
 void emit_deref_rax(Node *node) {
     switch(reg_size(type(node))) {
     case 0:
@@ -144,32 +145,30 @@ void emit_deref_rax(Node *node) {
 }
 
 /// Push address of local var.
+/// using reg: none.
 void emit_lvar_addr(LVar *lvar) {
     printf("\tmov  rax, rbp\n");
     printf("\tsub  rax, %d\n", lvar->offset);
-    printf("\tpush rax\n");
 }
 
 /// Generate address of a local variable.
-void gen_lval(Node *node) {
+/// using reg: none.
+void gen_lval_to_rax(Node *node) {
     if(node->kind == ND_LVAR) {
         emit_lvar_addr(node->lvar);
         return;
     } else if(node->kind == ND_GVAR) {
         printf("\tlea  rax, %.*s[rip]\n", node->token->len, node->token->str);
-        printf("\tpush rax\n");
         return;
     } else if(node->kind == ND_DEREF) {
         gen(node->lhs);
+        printf("\tpop rax\n");
     } else if(node->kind == ND_STR) {
         printf("\tlea  rax, .LS%06d[rip]\n", node->int_val);
-        printf("\tpush rax\n");
         return;
     } else if(node->kind == ND_MEMBER) {
-        gen_lval(node->lhs);
-        printf("\tpop  rax\n");
+        gen_lval_to_rax(node->lhs);
         printf("\tadd  rax, %d\n", node->type->offset);
-        printf("\tpush rax\n");
     } else {
         error_at_node(node, "Expected l-value.");
     }
@@ -413,6 +412,7 @@ void gen(Node *node) {
         push_loop_switch(node);
         // evaluate const-expr and save as a local var.
         emit_lvar_addr(node->lvar);
+        printf("\tpush rax\n");
         gen(node->lhs);
         printf("\tpop  rdi\n");
         printf("\tpop  rax\n");
@@ -445,7 +445,6 @@ void gen(Node *node) {
         parent = get_inner_switch();
         gen(node->lhs);
         emit_lvar_addr(parent->lvar);
-        printf("\tpop  rax\n");
         printf("\tmov  eax, [rax]\n");
         printf("\tpop  rdi\n");
         printf("\tcmp  eax, edi\n");
@@ -467,14 +466,12 @@ void gen(Node *node) {
         return;
     case ND_LVAR:
     case ND_GVAR:
-        gen_lval(node);
-        printf("\tpop  rax\n");
+        gen_lval_to_rax(node);
         emit_deref_rax(node);
         printf("\tpush rax\n");
         return;
     case ND_MEMBER:
-        gen_lval(node);
-        printf("\tpop  rax\n");
+        gen_lval_to_rax(node);
         emit_deref_rax(node);
         printf("\tpush rax\n");
         return;
@@ -496,7 +493,8 @@ void gen(Node *node) {
             error_types(l_ty, r_ty);
             error_at_node(node->lhs, "Type mismatch in assignment operation.");
         }
-        gen_lval(node->lhs);
+        gen_lval_to_rax(node->lhs);
+        printf("\tpush rax\n");
         gen(node->rhs);
         printf("\tpop  rdi\n");
         printf("\tpop  rax\n");
@@ -510,10 +508,12 @@ void gen(Node *node) {
         gen_fdecl(node);
         return;
     case ND_ADDR:
-        gen_lval(node->lhs);
+        gen_lval_to_rax(node->lhs);
+        printf("\tpush rax\n");
         return;
     case ND_STR:
-        gen_lval(node);
+        gen_lval_to_rax(node);
+        printf("\tpush rax\n");
         return;
     case ND_DEREF:
         if(!is_ptr(type(node->lhs)))

@@ -46,7 +46,7 @@ int a[10][8];
 int i = 1979;
 int j = 2015;
 char s = 270;
-char *str = "Hi, guys.\tAre you hungry?";
+char *str = "Hi, guys.\tAre you hungry";
 char str_ary[] = "Hey, girls.\nAre you angry?";
 
 int array_global() {
@@ -156,7 +156,8 @@ int switch2_(char s) {
 struct Pos {
     int row;
     int col;
-};
+} pos;
+struct Pos *ptr_to_pos;
 
 void struct_() {
     struct Leaf {
@@ -176,7 +177,7 @@ void struct_() {
     struct S2 {
         int x;
         char y;
-    };
+    } s2;
 
     struct S1 {
         char a;
@@ -184,11 +185,18 @@ void struct_() {
         int c;
         char d;
         int *e;
-    };
-    struct S1 s1;
-    struct S2 s2;
+    } s1;
     assert_expect(__LINE__, 32, sizeof(s1));
     assert_expect(__LINE__, 8, sizeof(s2));
+
+    pos.col = 9;
+    pos.row = 45;
+
+    // assert_expect(__LINE__, 9, pos.col);
+    // assert_expect(__LINE__, 45, pos.row);
+
+    // assert_expect(__LINE__, 4, sizeof(pos.col));
+    // assert_expect(__LINE__, 4, sizeof(pos.row));
 
     struct Leaf node;
     struct Leaf *node_ptr = &node;
