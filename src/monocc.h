@@ -9,7 +9,6 @@
 // Token
 
 typedef enum {
-    TK_RESERVED,
     TK_IDENT,
     TK_NUM,
     TK_STR,
@@ -18,19 +17,23 @@ typedef enum {
     TK_SUB,
     TK_MUL,
     TK_DIV,
+
     TK_EQ,
     TK_NEQ,
-    TK_GE,
     TK_GT,
-    TK_LE,
+    TK_GE,
     TK_LT,
+    TK_LE,
+
     TK_ASSIGN,
     TK_ASSIGN_ADD,
     TK_ASSIGN_SUB,
     TK_ASSIGN_MUL,
     TK_ASSIGN_DIV,
+
     TK_INC,
     TK_DEC,
+
     TK_LAND,
     TK_LOR,
     TK_AND,
@@ -63,8 +66,11 @@ typedef enum {
 
     TK_INT,
     TK_CHAR,
+    TK_BOOL,
     TK_VOID,
     TK_STRUCT,
+    TK_ENUM,
+    TK_UNION,
 
     TK_TYPEDEF,
 
@@ -88,7 +94,7 @@ struct Token {
 typedef struct Type Type;
 
 struct Type {
-    enum { VOID, INT, CHAR, PTR, ARRAY, FUNC, STRUCT } ty;
+    enum { VOID, INT, CHAR, BOOL, PTR, ARRAY, FUNC, STRUCT } ty;
     Type *ptr_to;
     /// array size for ARRAY
     int array_size;
@@ -264,12 +270,13 @@ void test_expression();
 // Methods for Type
 
 Type *new_type_int();
+Type *new_type_bool();
+Type *new_type_void();
 Type *new_type_char();
 Type *new_type_ptr_to(Type *ptr_to);
 Type *new_type_array(Type *ptr_to, int size);
 Type *new_type_func(Type *return_type);
 Type *new_type_struct();
-Type *new_type_from_token(Token *token);
 int sizeof_type(Type *type);
 Type *type(Node *node);
 Node *get_ptr_if_array(Node *node);

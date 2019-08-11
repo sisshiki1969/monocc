@@ -3,31 +3,37 @@
 /// Print tokens.
 void print_token(Token *token) {
     switch(token->kind) {
-    case TK_NUM:
     case TK_IDENT:
+    case TK_NUM:
+
     case TK_ADD:
     case TK_SUB:
     case TK_MUL:
     case TK_DIV:
-    case TK_AND:
+
     case TK_EQ:
     case TK_NEQ:
     case TK_GT:
     case TK_GE:
     case TK_LT:
     case TK_LE:
+
     case TK_ASSIGN:
     case TK_ASSIGN_ADD:
     case TK_ASSIGN_SUB:
     case TK_ASSIGN_MUL:
     case TK_ASSIGN_DIV:
+
     case TK_INC:
     case TK_DEC:
+
     case TK_LAND:
     case TK_LOR:
+    case TK_AND:
     case TK_OR:
     case TK_NOT:
 
+    case TK_SEMI:
     case TK_OP_PAREN:
     case TK_CL_PAREN:
     case TK_OP_BRACE:
@@ -36,10 +42,8 @@ void print_token(Token *token) {
     case TK_CL_BRACKET:
     case TK_COMMA:
     case TK_COLON:
-    case TK_SIZEOF:
     case TK_DOT:
     case TK_ARROW:
-    case TK_SEMI:
         printf("[%.*s]", token->len, token->str);
         break;
     // Reserved words
@@ -53,10 +57,16 @@ void print_token(Token *token) {
     case TK_BREAK:
     case TK_CONTINUE:
     case TK_RETURN:
+    case TK_SIZEOF:
+
     case TK_INT:
     case TK_CHAR:
+    case TK_BOOL:
     case TK_VOID:
     case TK_STRUCT:
+    case TK_ENUM:
+    case TK_UNION:
+
     case TK_TYPEDEF:
     case TK_MACRO:
         printf("<%.*s>", token->len, token->str);
@@ -284,12 +294,16 @@ void print_nodes() {
     }
 }
 
+void print_struct_member(Type *member);
+
 /// Print Type to stream.
 void print_type(FILE *stream, Type *type) {
     if(type->ty == INT) {
         fprintf(stream, "int ");
     } else if(type->ty == CHAR) {
         fprintf(stream, "char ");
+    } else if(type->ty == BOOL) {
+        fprintf(stream, "bool ");
     } else if(type->ty == VOID) {
         fprintf(stream, "void ");
     } else if(type->ty == PTR) {
@@ -317,31 +331,30 @@ void print_type(FILE *stream, Type *type) {
         if(type->tag_name) {
             fprintf(stream, "<%.*s> ", type->tag_name->len,
                     type->tag_name->str);
+        } else {
+            fprintf(stream, "<> { ");
+            print_struct_member(type->member);
+            fprintf(stream, "}");
         }
         Type *member = type->member;
-        /*
-        fprintf(stream, "{ ");
-        bool first = true;
-        while(member) {
-            if(!first)
-                fprintf(stream, ", ");
-            first = false;
-            if(is_struct(member) && member->tag_name) {
-                fprintf(stream, "struct %.*s ", member->tag_name->len,
-                        member->tag_name->str);
-            } else {
-                print_type(stream, member);
-                if(member->var_name)
-                    fprintf(stream, "<%.*s:%d>", member->var_name->len,
-                            member->var_name->str, member->offset);
-                else
-                    fprintf(stream, "<>");
-            }
-            member = member->next;
-        }
-        fprintf(stream, "} ");*/
     } else
         error("print_type(): Unknown Type.");
+}
+
+void print_struct_member(Type *member) {
+    bool first = true;
+    while(member) {
+        if(!first)
+            fprintf(stdout, ", ");
+        first = false;
+        print_type(stdout, member);
+        if(member->var_name)
+            fprintf(stdout, "<%.*s:%d>", member->var_name->len,
+                    member->var_name->str, member->offset);
+        else
+            fprintf(stdout, "<>");
+        member = member->next;
+    }
 }
 
 /// Print local variables in `locals`.
@@ -398,20 +411,7 @@ void print_structs() {
         else
             fprintf(stdout, "// anonymus ");
         fprintf(stdout, "struct { ");
-        Type *member = tag->type->member;
-        bool first = true;
-        while(member) {
-            if(!first)
-                fprintf(stdout, ", ");
-            first = false;
-            print_type(stdout, member);
-            if(member->var_name)
-                fprintf(stdout, "<%.*s:%d>", member->var_name->len,
-                        member->var_name->str, member->offset);
-            else
-                fprintf(stdout, "<>");
-            member = member->next;
-        }
+        print_struct_member(tag->type->member);
         fprintf(stdout, "}\n");
         tag = tag->next;
     }

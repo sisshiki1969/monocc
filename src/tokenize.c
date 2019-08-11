@@ -96,12 +96,18 @@ void tokenize() {
                 cur = new_token(TK_INT, cur, org_p, len);
             } else if(is_reserved(org_p, len, "char")) {
                 cur = new_token(TK_CHAR, cur, org_p, len);
+            } else if(is_reserved(org_p, len, "bool")) {
+                cur = new_token(TK_BOOL, cur, org_p, len);
             } else if(is_reserved(org_p, len, "void")) {
                 cur = new_token(TK_VOID, cur, org_p, len);
             } else if(is_reserved(org_p, len, "sizeof")) {
                 cur = new_token(TK_SIZEOF, cur, org_p, len);
             } else if(is_reserved(org_p, len, "struct")) {
                 cur = new_token(TK_STRUCT, cur, org_p, len);
+            } else if(is_reserved(org_p, len, "enum")) {
+                cur = new_token(TK_ENUM, cur, org_p, len);
+            } else if(is_reserved(org_p, len, "union")) {
+                cur = new_token(TK_UNION, cur, org_p, len);
             } else if(is_reserved(org_p, len, "typedef")) {
                 cur = new_token(TK_TYPEDEF, cur, org_p, len);
             } else {

@@ -607,6 +607,7 @@ void gen(Node *node) {
         l_ty = type(node->lhs);
         r_ty = type(node->rhs);
         if(is_array_of_char(l_ty) && is_array_of_char(r_ty)) {
+            // initialization of char[] by string
             if(node->lhs->kind != ND_LVAR || node->rhs->kind != ND_STR)
                 error_at_node(node, "Invalid assignment.");
             int offset = node->lhs->lvar->offset;

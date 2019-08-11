@@ -1,6 +1,7 @@
 void assert_expect(int line, int expected, int actual);
 void print(int a);
 void printf_(char *str);
+void *calloc_(int size);
 
 int A;       // int
 int *B;      // * int
@@ -164,37 +165,41 @@ struct {
     int payload;
 } def;
 
-struct Pos {
+typedef struct Pos {
     int row;
     int col;
-} pos;
+} Pos;
 
-struct Pos *ptr_to_pos;
+Pos pos;
+Pos *ptr_to_pos;
 
 void list_() {
-    List *cursor = &list1;
-    List list2;
-    List list3;
-    List list4;
-    list1.payloads = 1;
-    list2.payloads = 2;
-    list3.payloads = 3;
-    list4.payloads = 4;
-    list1.next = &list2;
-    list2.next = &list3;
-    list3.next = &list4;
-    list4.next = 0;
-    assert_expect(__LINE__, 1, cursor->payloads);
+    int size = sizeof(List);
+    List *cursor = 0;
+    for(int i = 0; i < 6; i++) {
+        List *new = calloc_(size);
+        new->payloads = i;
+        new->next = cursor;
+        cursor = new;
+    }
+    assert_expect(__LINE__, 5, cursor->payloads);
     cursor = cursor->next;
-    assert_expect(__LINE__, 2, cursor->payloads);
+    assert_expect(__LINE__, 4, cursor->payloads);
     cursor = cursor->next;
     assert_expect(__LINE__, 3, cursor->payloads);
     cursor = cursor->next;
-    assert_expect(__LINE__, 4, cursor->payloads);
+    assert_expect(__LINE__, 2, cursor->payloads);
+    cursor = cursor->next;
+    assert_expect(__LINE__, 1, cursor->payloads);
+    cursor = cursor->next;
+    assert_expect(__LINE__, 0, cursor->payloads);
     // assert_expect(__LINE__, 0, cursor->next);
+    def.payload = 777;
+    assert_expect(__LINE__, 777, def.payload);
 }
 
 void struct_() {
+    typedef struct Leaf Leaf;
     struct Leaf {
         struct Vec {
             int row;
@@ -205,8 +210,8 @@ void struct_() {
     } leaf;
 
     struct Tree {
-        struct Leaf *left;
-        struct Leaf *right;
+        Leaf *left;
+        Leaf *right;
     };
 
     struct S2 {
@@ -221,8 +226,9 @@ void struct_() {
         char d;
         int *e;
     } s1;
-    assert_expect(__LINE__, 32, sizeof(s1));
-    assert_expect(__LINE__, 8, sizeof(s2));
+
+    assert_expect(__LINE__, 32, sizeof(struct S1));
+    assert_expect(__LINE__, 8, sizeof(struct S2));
 
     pos.col = 9;
     pos.row = 45;
@@ -426,6 +432,8 @@ int main() {
     assert_expect(__LINE__, 92, q8());
 
     struct_();
+
+    bool t_or_f = 0;
 
     printf_("passed tests.\n");
     return 0;

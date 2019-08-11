@@ -28,3 +28,5 @@ int assert_expect(int line, int expected, int actual) {
             actual);
     exit(1);
 }
+
+void *calloc_(int size) { return calloc(1, size); }

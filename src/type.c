@@ -14,6 +14,12 @@ Type *new_type_char() {
     return type;
 }
 
+Type *new_type_bool() {
+    Type *type = calloc(1, sizeof(Type));
+    type->ty = BOOL;
+    return type;
+}
+
 Type *new_type_void() {
     Type *type = calloc(1, sizeof(Type));
     type->ty = VOID;
@@ -48,23 +54,9 @@ Type *new_type_struct() {
     return type;
 }
 
-Type *new_type_from_token(Token *token) {
-    switch(token->kind) {
-    case TK_INT:
-        return new_type_int();
-    case TK_CHAR:
-        return new_type_char();
-    case TK_VOID:
-        return new_type_void();
-    case TK_STRUCT:
-        return new_type_struct();
-    }
-    print_token(token);
-    error_at_token(token, "Unimplemented type.");
-}
-
 bool is_int(Type *type) { return type->ty == INT; }
 bool is_char(Type *type) { return type->ty == CHAR; }
+bool is_bool(Type *type) { return type->ty == BOOL; }
 bool is_void(Type *type) { return type->ty == VOID; }
 bool is_ptr(Type *type) { return type->ty == PTR; }
 bool is_array(Type *type) { return type->ty == ARRAY; }
@@ -80,6 +72,7 @@ bool is_arythmetic(Type *type) {
     switch(type->ty) {
     case INT:
     case CHAR:
+    case BOOL:
         return true;
     }
     return false;
@@ -143,6 +136,7 @@ int sizeof_type(Type *type) {
     case VOID:
         return 0;
     case CHAR:
+    case BOOL:
         return 1;
     case INT:
         return 4;
@@ -213,6 +207,8 @@ bool is_assignable_type(Type *l_type, Type *r_type) {
         return true;
     if(is_ptr(l_type) && is_arythmetic(r_type))
         return true;
+    if(is_ptr(l_type) && is_ptr(r_type) && is_void(r_type->ptr_to))
+        return true;
     while(l_type) {
         if(l_type->ty != r_type->ty)
             return false;
@@ -225,9 +221,8 @@ bool is_assignable_type(Type *l_type, Type *r_type) {
 }
 
 bool is_comparable_type(Type *l_type, Type *r_type) {
-    if(is_int(l_type) && is_int(r_type))
-        return true;
-    else if(is_ptr(l_type) && is_ptr(r_type))
+    if((is_arythmetic(l_type) || is_ptr(l_type)) &&
+       (is_arythmetic(r_type) || is_ptr(r_type)))
         return true;
     else
         return false;
