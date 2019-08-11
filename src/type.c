@@ -54,6 +54,19 @@ Type *new_type_struct() {
     return type;
 }
 
+Type *new_type_enum() {
+    Type *type = calloc(1, sizeof(Type));
+    type->ty = ENUM;
+    return type;
+}
+
+Type *new_type_enum_el(int i) {
+    Type *type = calloc(1, sizeof(Type));
+    type->ty = ENUM_EL;
+    type->offset = i;
+    return type;
+}
+
 bool is_int(Type *type) { return type->ty == INT; }
 bool is_char(Type *type) { return type->ty == CHAR; }
 bool is_bool(Type *type) { return type->ty == BOOL; }
@@ -62,6 +75,8 @@ bool is_ptr(Type *type) { return type->ty == PTR; }
 bool is_array(Type *type) { return type->ty == ARRAY; }
 bool is_func(Type *type) { return type->ty == FUNC; }
 bool is_struct(Type *type) { return type->ty == STRUCT; }
+bool is_enum(Type *type) { return type->ty == ENUM; }
+bool is_enum_el(Type *type) { return type->ty == ENUM_EL; }
 bool is_ptr_to_char(Type *type) {
     return is_ptr(type) && is_char(type->ptr_to);
 }
@@ -97,8 +112,11 @@ int alignof_type(Type *type) {
     case VOID:
         return 0;
     case CHAR:
+    case BOOL:
         return 1;
     case INT:
+    case ENUM_EL:
+    case ENUM:
         return 4;
     case PTR:
         return 8;
@@ -139,6 +157,8 @@ int sizeof_type(Type *type) {
     case BOOL:
         return 1;
     case INT:
+    case ENUM_EL:
+    case ENUM:
         return 4;
     case PTR:
         return 8;

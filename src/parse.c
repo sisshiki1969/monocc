@@ -395,6 +395,7 @@ bool is_type_specifier(Token *token) {
     case TK_BOOL:
     case TK_VOID:
     case TK_STRUCT:
+    case TK_ENUM:
         return true;
     }
     if(find_typedef(token))
@@ -590,12 +591,15 @@ Node *parse_prim_expr() {
         Global *gvar = find_gvar(cur_token);
         if(gvar)
             return new_node_gvar(gvar, cur_token);
+        TagName *tag = find_tag(cur_token);
+        if(tag && is_enum_el(tag->type)) {
+            return new_node_num(tag->type->offset, cur_token);
+        }
         if(peek() == TK_OP_PAREN) {
             if(find_func(cur_token))
                 return new_node_ident(cur_token);
         }
-        error_at_token(cur_token, "Identifier %.*s is not defined.",
-                       cur_token->len, cur_token->str);
+        error_at_token(cur_token, "Identifier is not defined.");
     }
     if(consume_if(TK_MACRO)) {
         return new_node_num(get_line(cur_token->str), cur_token);
@@ -1077,6 +1081,31 @@ Type *parse_declaretor(Type *type) {
     return type;
 }
 
+Type *parse_enum_specifier() {
+    Type *type = new_type_enum();
+    if(peek() == TK_IDENT)
+        type->tag_name = consume_ident();
+    Type head;
+    head.next = NULL;
+    Type *cursor = &head;
+    if(consume_if(TK_OP_BRACE)) {
+        int i = 0;
+        while(peek() != TK_CL_BRACE) {
+            Type *new = new_type_enum_el(i++);
+            new->tag_name = consume_ident();
+            cursor->next = new;
+            cursor = new;
+            new_tag(new->tag_name, new);
+            if(!consume_if(TK_COMMA))
+                break;
+        }
+        expect(TK_CL_BRACE);
+    }
+    type->member = head.next;
+    new_tag(type->tag_name, type);
+    return type;
+}
+
 Type *parse_struct_specifier(bool allow_undefined_tag) {
     Type *type = new_type_struct();
     // struct-or-union-specifier
@@ -1105,9 +1134,7 @@ Type *parse_struct_specifier(bool allow_undefined_tag) {
             Type *ty = head.next;
             while(ty) {
                 if(cmp_token(ty->var_name, member->var_name))
-                    error_at_token(member->var_name, "Duplicate member '%.*s'.",
-                                   member->var_name->len,
-                                   member->var_name->str);
+                    error_at_token(member->var_name, "Duplicate member.");
                 ty = ty->next;
             }
 
@@ -1154,6 +1181,8 @@ Type *parse_type_specifier(bool allow_undefined_tag) {
         return new_type_void();
     case TK_STRUCT:
         return parse_struct_specifier(allow_undefined_tag);
+    case TK_ENUM:
+        return parse_enum_specifier();
     case TK_IDENT:
         // typedef-name
         ty = find_typedef(token);
@@ -1212,7 +1241,7 @@ void parse_program() {
         Type *type = parse_decl(false);
 
         if(!type->var_name) {
-            if(is_struct(type)) {
+            if(is_struct(type) || is_enum(type)) {
                 // struct { ... };
                 expect(TK_SEMI);
                 continue;

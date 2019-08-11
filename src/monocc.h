@@ -94,7 +94,7 @@ struct Token {
 typedef struct Type Type;
 
 struct Type {
-    enum { VOID, INT, CHAR, BOOL, PTR, ARRAY, FUNC, STRUCT } ty;
+    enum { VOID, INT, CHAR, BOOL, PTR, ARRAY, FUNC, STRUCT, ENUM, ENUM_EL } ty;
     Type *ptr_to;
     /// array size for ARRAY
     int array_size;
@@ -277,6 +277,8 @@ Type *new_type_ptr_to(Type *ptr_to);
 Type *new_type_array(Type *ptr_to, int size);
 Type *new_type_func(Type *return_type);
 Type *new_type_struct();
+Type *new_type_enum();
+Type *new_type_enum_el(int i);
 int sizeof_type(Type *type);
 Type *type(Node *node);
 Node *get_ptr_if_array(Node *node);
@@ -287,6 +289,8 @@ bool is_ptr(Type *type);
 bool is_array(Type *type);
 bool is_func(Type *type);
 bool is_struct(Type *type);
+bool is_enum(Type *type);
+bool is_enum_el(Type *type);
 bool is_ptr_to_char(Type *type);
 bool is_array_of_char(Type *type);
 bool is_arythmetic(Type *type);

@@ -44,8 +44,8 @@ void error_at_char(char *err_char, char *fmt, ...) {
 }
 
 void error_at_token(Token *token, char *fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
+    // va_list ap;
+    // va_start(ap, fmt);
 
     char *p = source_text;
     char *line_end;
@@ -65,7 +65,7 @@ void error_at_token(Token *token, char *fmt, ...) {
     fprintf(stderr, "%.*s\n", (int)(line_end - p), p);
     fprintf(stderr, "%*s%.*s\n", pos, "", token->len,
             "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-    vfprintf(stderr, fmt, ap);
+    fprintf(stderr, fmt);
     fprintf(stderr, "\n");
     exit(1);
 }

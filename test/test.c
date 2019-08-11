@@ -173,6 +173,13 @@ typedef struct Pos {
 Pos pos;
 Pos *ptr_to_pos;
 
+enum Number {
+    ZERO,
+    ONE,
+    TWO,
+    THREE,
+} number;
+
 void list_() {
     int size = sizeof(List);
     List *cursor = 0;
@@ -434,6 +441,11 @@ int main() {
     struct_();
 
     bool t_or_f = 0;
+
+    assert_expect(__LINE__, 0, ZERO);
+    assert_expect(__LINE__, 1, ONE);
+    assert_expect(__LINE__, 2, TWO);
+    assert_expect(__LINE__, 3, THREE);
 
     printf_("passed tests.\n");
     return 0;

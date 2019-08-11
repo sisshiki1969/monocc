@@ -337,6 +337,18 @@ void print_type(FILE *stream, Type *type) {
             fprintf(stream, "}");
         }
         Type *member = type->member;
+    } else if(type->ty == ENUM) {
+        fprintf(stream, "enum ");
+        if(type->tag_name) {
+            fprintf(stream, "<%.*s> ", type->tag_name->len,
+                    type->tag_name->str);
+        }
+    } else if(type->ty == ENUM_EL) {
+        fprintf(stream, "enum_el ");
+        if(type->tag_name) {
+            fprintf(stream, "<%.*s:%d> ", type->tag_name->len,
+                    type->tag_name->str, type->offset);
+        }
     } else
         error("print_type(): Unknown Type.");
 }
@@ -353,6 +365,17 @@ void print_struct_member(Type *member) {
                     member->var_name->str, member->offset);
         else
             fprintf(stdout, "<>");
+        member = member->next;
+    }
+}
+
+void print_enum_member(Type *member) {
+    bool first = true;
+    while(member) {
+        if(!first)
+            fprintf(stdout, ", ");
+        first = false;
+        print_type(stdout, member);
         member = member->next;
     }
 }
@@ -404,21 +427,29 @@ void print_strings() {
 
 void print_structs() {
     TagName *tag = tagnames;
-    fprintf(stdout, "// Structs\n");
+    fprintf(stdout, "\n// Tagnames\n");
     while(tag) {
         if(tag->ident)
             fprintf(stdout, "// %.*s ", tag->ident->len, tag->ident->str);
         else
             fprintf(stdout, "// anonymus ");
-        fprintf(stdout, "struct { ");
-        print_struct_member(tag->type->member);
-        fprintf(stdout, "}\n");
+        if(is_struct(tag->type)) {
+            fprintf(stdout, "struct { ");
+            print_struct_member(tag->type->member);
+            fprintf(stdout, "}\n");
+        } else if(is_enum(tag->type)) {
+            fprintf(stdout, "enum { ");
+            print_enum_member(tag->type->member);
+            fprintf(stdout, "}\n");
+        } else if(is_enum_el(tag->type)) {
+            fprintf(stdout, "enum_el { %d }\n", tag->type->offset);
+        }
         tag = tag->next;
     }
 }
 
 void print_typedefs() {
-    fprintf(stdout, "// Typedef\n");
+    fprintf(stdout, "\n// Typedef\n");
     Typedef *tdef = tdef_names;
     while(tdef) {
         fprintf(stdout, "// %.*s ", tdef->ident->len, tdef->ident->str);
