@@ -30,7 +30,7 @@ char *read_file(char *path) {
 
 void compile() {
     fprintf(stderr, "monocc: tokenize\n");
-    tokenize();
+    tokenize(source_text, true);
     print_tokens(token);
 
     strings = vec_new();
@@ -114,7 +114,7 @@ void compile() {
 }
 
 int main(int argc, char **argv) {
-    fprintf(stderr, "monocc: parse command\n");
+    fprintf(stderr, "%s\n", argv[0]);
     if(argc == 2 && strcmp(argv[1], "-test") == 0) {
         test_vec();
         return 0;

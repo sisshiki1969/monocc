@@ -155,7 +155,7 @@ Node *new_node_expr(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
 }
 
 /// member
-Type *get_member_type(Type *type, Token *ident);
+MemberInfo *get_member_type(Type *type, Token *ident);
 Node *new_node_member(Node *lhs, Token *ident) {
     Node *node = calloc(1, sizeof(Node));
     node->kind = ND_MEMBER;
@@ -164,10 +164,11 @@ Node *new_node_member(Node *lhs, Token *ident) {
     Type *ty = type(lhs);
     if(!is_struct(ty))
         error_at_node(lhs, "The expression must have a struct or union type.");
-    ty = get_member_type(ty, ident);
-    if(!ty)
+    MemberInfo *mem = get_member_type(ty, ident);
+    if(!mem)
         error_at_token(ident, "The member does not exists in the struct.");
-    node->type = ty;
+    node->offset = mem->offset;
+    node->type = mem->type;
     return node;
 }
 
@@ -321,7 +322,7 @@ Node *new_node_fdecl(Token *name, Vector *params, int max_offset, Node *body,
 // Methods for handling Token.
 
 /// Return TokenKind of the current token.
-TokenKind peek() { return token->kind; }
+bool peek(TokenKind kind) { return token->kind == kind; }
 
 /// Return TokenKind of the next token.
 TokenKind peek_next() { return token->next->kind; }
@@ -411,8 +412,10 @@ LVar *new_lvar(Token *token, Type *type) {
     lvar->token = token;
     int offset;
     int size = sizeof_type(type);
-    if(size == 0)
+    if(size == 0) {
+        print_structs();
         error_at_token(token, "Inncomplete type is not allowed.");
+    }
     if(locals) {
         offset = locals->offset + size;
     } else {
@@ -536,27 +539,34 @@ Type *find_typedef(Token *ident) {
     return NULL;
 }
 
-Type *get_member_type(Type *type, Token *ident) {
+MemberInfo *get_member_type(Type *type, Token *ident) {
     if(!is_struct(type))
         error_at_token(ident, "Not a struct.");
-    Type *ty;
+    MemberInfo *member;
     if(!type->tag_name) {
         if(!type->member)
             error_at_token(ident, "No tag name and the type has no member.");
-        ty = type->member;
+        member = type->member;
     } else {
         TagName *tag = find_tag(type->tag_name);
         if(!tag)
             error_at_token(ident, "Undefined tag name.");
-        ty = tag->type->member;
+        member = tag->type->member;
     }
 
-    while(ty) {
-        if(cmp_token(ty->var_name, ident))
-            return ty;
-        ty = ty->next;
+    while(member) {
+        if(cmp_token(member->ident, ident))
+            return member;
+        member = member->next;
     }
     return NULL;
+}
+
+MemberInfo *new_member_info(Token *ident, Type *type) {
+    MemberInfo *ty_ident = calloc(1, sizeof(MemberInfo));
+    ty_ident->type = type;
+    ty_ident->ident = ident;
+    return ty_ident;
 }
 
 // Parser
@@ -566,17 +576,17 @@ Node *parse_assign_expr();
 Node *parse_block();
 Node *parse_stmt();
 Node *parse_block_item();
-Type *parse_decl(bool);
+MemberInfo *parse_decl(bool);
 
 Node *parse_prim_expr() {
     Token *cur_token = token;
     if(at_eof()) {
         error_at_token(token, "Unexpected EOF.");
     }
-    if(peek() == TK_NUM) {
+    if(peek(TK_NUM)) {
         return new_node_num(consume_number(), cur_token);
     }
-    if(peek() == TK_STR) {
+    if(peek(TK_STR)) {
         return new_node_str(consume());
     }
     if(consume_if(TK_OP_PAREN)) {
@@ -595,14 +605,15 @@ Node *parse_prim_expr() {
         if(tag && is_enum_el(tag->type)) {
             return new_node_num(tag->type->offset, cur_token);
         }
-        if(peek() == TK_OP_PAREN) {
+        if(peek(TK_OP_PAREN)) {
             if(find_func(cur_token))
                 return new_node_ident(cur_token);
         }
         error_at_token(cur_token, "Identifier is not defined.");
     }
     if(consume_if(TK_MACRO)) {
-        return new_node_num(get_line(cur_token->str), cur_token);
+        if(strncmp(cur_token->str, "__LINE__", 8) == 0)
+            return new_node_num(get_line(cur_token->str), cur_token);
     }
     if(is_type_specifier(token))
         error_at_token(token, "Can not use declaration here.");
@@ -622,24 +633,24 @@ Node *parse_postfix_expr() {
             node->type = fn_global->type->ptr_to;
             Vector *vec = vec_new();
             Token *op_token = token;
-            Type *param_ty = fn_global->type->params;
-            while(peek() != TK_CL_PAREN) {
-                if(!param_ty)
-                    error_at_token(token, "Too many arguments is func call.");
+            MemberInfo *param = fn_global->type->params;
+            while(!peek(TK_CL_PAREN)) {
+                // if(!param)
+                //    error_at_token(token, "Too many arguments is func call.");
                 Node *arg = parse_assign_expr();
                 if(is_array(type(arg)))
                     arg = new_node_expr(ND_ADDR, arg, NULL, arg->token);
-                if(!is_compatible_type(param_ty, type(arg))) {
-                    error_types(param_ty, type(arg));
+                if(!is_compatible_type(param->type, type(arg))) {
+                    error_types(param->type, type(arg));
                     error_at_node(arg, "The type of an argument is mismatch "
                                        "with func parameter.");
                 }
                 vec_push(vec, arg);
-                param_ty = param_ty->next;
+                param = param->next;
                 if(!consume_if(TK_COMMA))
                     break;
             }
-            if(param_ty)
+            if(param)
                 error_at_token(token, "Too few arguments is func call.");
             expect(TK_CL_PAREN);
             node = new_node_call(node, vec, node->token);
@@ -696,9 +707,9 @@ Node *parse_unary_expr() {
         return new_node_binary(ND_DEREF, node, NULL, op_token);
     } else if(consume_if(TK_SIZEOF)) {
         Type *ty;
-        if(peek() == TK_OP_PAREN && is_type_specifier(token->next)) {
+        if(peek(TK_OP_PAREN) && is_type_specifier(token->next)) {
             expect(TK_OP_PAREN);
-            ty = parse_decl(false);
+            ty = parse_decl(false)->type;
             expect(TK_CL_PAREN);
         } else {
             ty = type(parse_unary_expr());
@@ -854,13 +865,13 @@ Node *parse_for() {
         }
     }
 
-    if(peek() != TK_SEMI) {
+    if(!peek(TK_SEMI)) {
         cond = parse_expr();
     } else {
         cond = new_node_num(1, token);
     }
     expect(TK_SEMI);
-    if(peek() != TK_CL_PAREN)
+    if(peek(!TK_CL_PAREN))
         post = parse_expr();
     else
         post = NULL;
@@ -933,8 +944,7 @@ Node *parse_stmt() {
         Node *const_expr = parse_expr();
         expect(TK_COLON);
         Node *body = new_node_block(vec_new());
-        while(peek() != TK_CASE && peek() != TK_DEFAULT &&
-              peek() != TK_CL_BRACE)
+        while(!peek(TK_CASE) && !peek(TK_DEFAULT) && !peek(TK_CL_BRACE))
             add_stmt_to_block(body, parse_stmt());
         return new_node_case(const_expr, body, op_token);
     case TK_DEFAULT:
@@ -952,9 +962,11 @@ Node *parse_stmt() {
 }
 
 Node *parse_local_declaration() {
-    Type *type = parse_decl(false);
+    MemberInfo *ty_ident = parse_decl(false);
+    Token *ident = ty_ident->ident;
+    Type *type = ty_ident->type;
 
-    if(!type->var_name) {
+    if(!ident) {
         if(!is_struct(type))
             error_at_token(token, "Expected an identifier.");
         else
@@ -962,7 +974,7 @@ Node *parse_local_declaration() {
     }
     Node *node = NULL;
     if(is_func(type))
-        error_at_token(type->var_name,
+        error_at_token(ident,
                        "Functions can be declared only in the top level.");
     Token *op_token = token;
     if(consume_if(TK_ASSIGN)) {
@@ -972,11 +984,11 @@ Node *parse_local_declaration() {
         } else {
             node = get_ptr_if_array(node);
         }
-        node = new_node_expr(
-            ND_ASSIGN, new_node_lvar(new_lvar(type->var_name, type), op_token),
-            node, op_token);
+        node = new_node_expr(ND_ASSIGN,
+                             new_node_lvar(new_lvar(ident, type), op_token),
+                             node, op_token);
     } else {
-        new_lvar(type->var_name, type);
+        new_lvar(ident, type);
     }
     expect(TK_SEMI);
     return node;
@@ -984,10 +996,12 @@ Node *parse_local_declaration() {
 
 Node *parse_block_item() {
     if(consume_if(TK_TYPEDEF)) {
-        Type *type = parse_decl(true);
-        if(!type->var_name)
+        MemberInfo *ty_ident = parse_decl(true);
+        Token *ident = ty_ident->ident;
+        Type *type = ty_ident->type;
+        if(!ident)
             error_at_token(token, "Expected identifier.");
-        new_typedef(type->var_name, type);
+        new_typedef(ident, type);
         expect(TK_SEMI);
         return NULL;
     }
@@ -1005,7 +1019,7 @@ Node *parse_block() {
         scope->scope_head = true;
     LVar *save_scope = scope;
 
-    while(peek() != TK_CL_BRACE) {
+    while(!peek(TK_CL_BRACE)) {
         Node *node = parse_block_item();
         if(node)
             vec_push(vec, node);
@@ -1016,17 +1030,17 @@ Node *parse_block() {
     return new_node_block(vec);
 }
 
-Type *parse_declaretor(Type *type) {
+MemberInfo *parse_declaretor(Type *type) {
     // declarator
     while(consume_if(TK_MUL)) {
         type = new_type_ptr_to(type);
     }
 
     Type anchor;
-    Type *outer = NULL;
+    MemberInfo *outer = NULL;
     Token *ident = NULL;
     // direct-declarator
-    if(peek() == TK_IDENT) {
+    if(peek(TK_IDENT)) {
         ident = expect(TK_IDENT);
         if(find_lvar_in_scope(ident))
             error_at_token(ident, "Duplicate definition of local variable.");
@@ -1040,7 +1054,7 @@ Type *parse_declaretor(Type *type) {
     Type *cursor = &head;
     while(consume_if(TK_OP_BRACKET)) {
         int size = 0;
-        if(peek() != TK_CL_BRACKET)
+        if(!peek(TK_CL_BRACKET))
             // this should be assignment-expression
             size = expect(TK_NUM)->int_val;
         cursor->ptr_to = new_type_array(type, size);
@@ -1051,17 +1065,19 @@ Type *parse_declaretor(Type *type) {
 
     if(consume_if(TK_OP_PAREN)) {
         type = new_type_func(type);
-        Type head;
+        MemberInfo head;
         head.next = NULL;
-        Type *param_type = &head;
-        while(peek() != TK_CL_PAREN) {
-            Type *ptype = parse_decl(false);
-            Token *pident = ptype->var_name;
-            if(is_array(ptype))
-                ptype = new_type_ptr_to(ptype->ptr_to);
-            ptype->var_name = pident;
-            param_type->next = ptype;
-            param_type = ptype;
+        MemberInfo *cursor = &head;
+        while(!peek(TK_CL_PAREN)) {
+            if(peek(TK_ELLIPSIS)) {
+                consume();
+                break;
+            }
+            MemberInfo *pinfo = parse_decl(false);
+            if(is_array(pinfo->type))
+                pinfo->type = new_type_ptr_to(pinfo->type->ptr_to);
+            cursor->next = pinfo;
+            cursor = pinfo;
             if(!consume_if(TK_COMMA))
                 break;
         }
@@ -1070,31 +1086,31 @@ Type *parse_declaretor(Type *type) {
     }
 
     if(outer) {
-        Type *cursor = outer;
+        Type *cursor = outer->type;
         while(cursor->ptr_to != &anchor)
             cursor = cursor->ptr_to;
         cursor->ptr_to = type;
-        type = outer;
-    } else
-        type->var_name = ident;
+        type = outer->type;
+        ident = outer->ident;
+    }
 
-    return type;
+    return new_member_info(ident, type);
 }
 
 Type *parse_enum_specifier() {
     Type *type = new_type_enum();
-    if(peek() == TK_IDENT)
+    if(peek(TK_IDENT))
         type->tag_name = consume_ident();
-    Type head;
+    MemberInfo head;
     head.next = NULL;
-    Type *cursor = &head;
+    MemberInfo *cursor = &head;
     if(consume_if(TK_OP_BRACE)) {
         int i = 0;
-        while(peek() != TK_CL_BRACE) {
+        while(!peek(TK_CL_BRACE)) {
             Type *new = new_type_enum_el(i++);
             new->tag_name = consume_ident();
-            cursor->next = new;
-            cursor = new;
+            cursor->next = new_member_info(new->tag_name, new);
+            cursor = cursor->next;
             new_tag(new->tag_name, new);
             if(!consume_if(TK_COMMA))
                 break;
@@ -1107,49 +1123,51 @@ Type *parse_enum_specifier() {
 }
 
 Type *parse_struct_specifier(bool allow_undefined_tag) {
-    Type *type = new_type_struct();
+    Type *struct_ty = new_type_struct();
     // struct-or-union-specifier
     TagName *tag = NULL;
     // tag_name: Token of tag-name
     Token *tag_name = NULL;
-    if(peek() == TK_IDENT)
+    if(peek(TK_IDENT))
         tag_name = consume();
-    if(peek() == TK_OP_BRACE) {
+    if(peek(TK_OP_BRACE)) {
         // struct-declaration-list
         if(find_tag(tag_name))
             error_at_token(tag_name, "Duplicate definition of a tag name.");
-        tag = new_tag(tag_name, type);
+        tag = new_tag(tag_name, struct_ty);
         // struct-specifier
         consume(TK_OP_BRACE);
-        Type head;
+        MemberInfo head;
         head.next = NULL;
-        Type *cursor = &head;
+        MemberInfo *cursor = &head;
         int offset = 0;
         while(!consume_if(TK_CL_BRACE)) {
             // struct-declaration
-            Type *member = parse_decl(false);
-            if(!member->var_name)
+            MemberInfo *ty_ident = parse_decl(false);
+            Token *ident = ty_ident->ident;
+            Type *type = ty_ident->type;
+            if(!ident)
                 error_at_token(token, "Missing Identifier.");
             // check duplicate member definition
-            Type *ty = head.next;
+            MemberInfo *ty = head.next;
             while(ty) {
-                if(cmp_token(ty->var_name, member->var_name))
-                    error_at_token(member->var_name, "Duplicate member.");
+                if(cmp_token(ty->ident, ident))
+                    error_at_token(ident, "Duplicate member.");
                 ty = ty->next;
             }
 
-            int align = alignof_type(member);
+            int align = alignof_type(type);
             offset = align_to(offset, align);
-            member->offset = offset;
-            offset += sizeof_type(member);
-            cursor->next = member;
-            cursor = member;
+            ty_ident->offset = offset;
+            offset += sizeof_type(type);
+            cursor->next = ty_ident;
+            cursor = ty_ident;
             expect(TK_SEMI);
         }
-        type->member = head.next;
+        struct_ty->member = head.next;
         if(tag)
-            tag->type = type;
-        return type;
+            tag->type = struct_ty;
+        return struct_ty;
     } else {
         if(!tag_name)
             error_at_token(token,
@@ -1157,13 +1175,13 @@ Type *parse_struct_specifier(bool allow_undefined_tag) {
         tag = find_tag(tag_name);
         if(!tag) {
             if(allow_undefined_tag) {
-                type->tag_name = tag_name;
+                struct_ty->tag_name = tag_name;
             } else
                 error_at_token(tag_name, "Tag name is not defined.");
         } else {
-            type = tag->type;
+            struct_ty = tag->type;
         }
-        return type;
+        return struct_ty;
     }
 }
 
@@ -1193,7 +1211,7 @@ Type *parse_type_specifier(bool allow_undefined_tag) {
     error_at_token(token, "Expected type specifier or typedef name.");
 }
 
-Type *parse_decl(bool allow_undefined_tag) {
+MemberInfo *parse_decl(bool allow_undefined_tag) {
     // declaration-specifiers
     if(!is_type_specifier(token))
         error_at_token(token, "Expected type specifier or typedef name.");
@@ -1202,23 +1220,24 @@ Type *parse_decl(bool allow_undefined_tag) {
     return parse_declaretor(type);
 }
 
-Node *parse_func_definition(Type *func_type) {
+Node *parse_func_definition(MemberInfo *ty_ident) {
     Node *decl;
-    Global *func = new_func(func_type->var_name, func_type, NULL);
+    Token *ident = ty_ident->ident;
+    Type *type = ty_ident->type;
+    Global *func = new_func(ident, type, NULL);
     // function definition
     Vector *params = vec_new();
-    Type *cursor = func_type->params;
+    MemberInfo *cursor = type->params;
     while(cursor) {
-        vec_push(params, new_node_lvar(new_lvar(cursor->var_name, cursor),
-                                       cursor->var_name));
+        vec_push(params, new_node_lvar(new_lvar(cursor->ident, cursor->type),
+                                       cursor->ident));
         cursor = cursor->next;
     }
     Node *body = parse_block();
     int max_offset = 0;
     if(locals)
         max_offset = locals->offset;
-    decl = new_node_fdecl(func_type->var_name, params, max_offset, body,
-                          func_type);
+    decl = new_node_fdecl(ident, params, max_offset, body, type);
     func->body = decl;
     return decl;
 }
@@ -1226,23 +1245,31 @@ Node *parse_func_definition(Type *func_type) {
 void parse_program() {
     ext_declarations = vec_new();
     while(!at_eof()) {
+        print_typedefs();
         locals = NULL;
         scope = NULL;
         switch_level = 0;
         Node *decl;
+        if(consume_if(TK_MACRO))
+            continue;
         if(consume_if(TK_TYPEDEF)) {
-            Type *type = parse_decl(true);
-            if(!type->var_name)
+            MemberInfo *ty_ident = parse_decl(true);
+            fprintf(stderr, "typedef %.*s\n", ty_ident->ident->len,
+                    ty_ident->ident->str);
+            if(!ty_ident->ident)
                 error_at_token(token, "Expected identifier.");
-            new_typedef(type->var_name, type);
+            new_typedef(ty_ident->ident, ty_ident->type);
             expect(TK_SEMI);
             continue;
         }
-        Type *type = parse_decl(false);
-
-        if(!type->var_name) {
+        MemberInfo *ty_ident = parse_decl(false);
+        fprintf(stderr, "decl %.*s\n", ty_ident->ident->len,
+                ty_ident->ident->str);
+        Token *ident = ty_ident->ident;
+        Type *type = ty_ident->type;
+        if(!ident) {
             if(is_struct(type) || is_enum(type)) {
-                // struct { ... };
+                // struct XXX { ... };
                 expect(TK_SEMI);
                 continue;
             } else
@@ -1250,13 +1277,12 @@ void parse_program() {
                 error_at_token(token, "Expected an identifier.");
         }
 
-        if(type->ty != FUNC) {
+        if(!is_func(type)) {
             // gloval var declaration
-            if(find_gvar(type->var_name))
-                error_at_token(type->var_name,
-                               "Redefinition of global variable");
+            if(find_gvar(ident))
+                error_at_token(ident, "Redefinition of global variable");
             Token *op_token = token;
-            Global *gvar = new_gvar(type->var_name, type);
+            Global *gvar = new_gvar(ident, type);
             if(consume_if(TK_ASSIGN)) {
                 gvar->body = parse_assign_expr();
             }
@@ -1276,17 +1302,18 @@ void parse_program() {
             continue;
         } else if(consume_if(TK_SEMI)) {
             // function declaration
-            Global *func = new_func(type->var_name, type, NULL);
+            Global *func = new_func(ident, type, NULL);
             continue;
-        } else if(peek() == TK_OP_BRACE) {
+        } else if(peek(TK_OP_BRACE)) {
             // function definition
-            decl = parse_func_definition(type);
+
+            decl = parse_func_definition(ty_ident);
             printf("// ");
             print_node(decl);
             printf("\n");
             print_locals();
             vec_push(ext_declarations, decl);
         } else
-            error_at_token(token, "Unexpected token.");
+            error_at_token(token, "U6nexpected token.");
     }
 }

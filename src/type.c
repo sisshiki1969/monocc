@@ -96,10 +96,17 @@ bool is_arythmetic(Type *type) {
 int align_to(int n, int align) { return (n + align - 1) & ~(align - 1); }
 
 int alignof_struct(Type *type) {
-    Type *cursor = type->member;
+    MemberInfo *cursor = type->member;
+    TagName *tag = find_tag(type->tag_name);
+    if(!tag) {
+        if(!type->member)
+            error("anonymous struct with no members.");
+        cursor = type->member;
+    } else
+        cursor = tag->type->member;
     int align = 0;
     while(cursor) {
-        int a = alignof_type(cursor);
+        int a = alignof_type(cursor->type);
         if(a > align)
             align = a;
         cursor = cursor->next;
@@ -125,14 +132,13 @@ int alignof_type(Type *type) {
     case STRUCT:
         return alignof_struct(type);
     default:
-        error("Internal error: can not calculate align of unknown type "
-              "'%.*s'.",
-              type->var_name->len, type->var_name->str);
+        error("Internal error: can not calculate align of unknown type ID=%d.",
+              type->ty);
     }
 }
 
 int sizeof_struct(Type *type) {
-    Type *cursor;
+    MemberInfo *cursor;
     TagName *tag = find_tag(type->tag_name);
     if(!tag) {
         if(!type->member)
@@ -142,11 +148,11 @@ int sizeof_struct(Type *type) {
         cursor = tag->type->member;
     int size = 0;
     while(cursor) {
-        size = align_to(size, alignof_type(cursor));
-        size += sizeof_type(cursor); // sizeof_type(cursor);
+        size = align_to(size, alignof_type(cursor->type));
+        size += sizeof_type(cursor->type); // sizeof_type(cursor);
         cursor = cursor->next;
     }
-    return align_to(size, alignof_struct(type));
+    return align_to(size, alignof_type(type));
 }
 
 int sizeof_type(Type *type) {
@@ -167,9 +173,8 @@ int sizeof_type(Type *type) {
     case STRUCT:
         return sizeof_struct(type);
     default:
-        error("Internal error: can not calculate size of unknown type "
-              "'%.*s'.",
-              type->var_name->len, type->var_name->str);
+        error("Internal error: can not calculate size of unknown type ID=%d",
+              type->ty);
     }
 }
 
@@ -181,15 +186,15 @@ bool is_identical_type(Type *l_type, Type *r_type) {
     if(is_array(l_type))
         return is_identical_type(l_type->ptr_to, r_type->ptr_to);
     if(is_struct(l_type)) {
-        Type *l_memty = l_type->member;
-        Type *r_memty = r_type->member;
-        while(l_memty) {
-            if(!is_identical_type(l_memty, r_memty))
+        MemberInfo *l_mem = l_type->member;
+        MemberInfo *r_mem = r_type->member;
+        while(l_mem) {
+            if(!is_identical_type(l_mem->type, r_mem->type))
                 return false;
-            l_memty = l_memty->next;
-            r_memty = r_memty->next;
+            l_mem = l_mem->next;
+            r_mem = r_mem->next;
         }
-        if(!r_memty)
+        if(!r_mem)
             return true;
         else
             return false;

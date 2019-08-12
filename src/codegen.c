@@ -170,7 +170,7 @@ void gen_lval_to_rax(Node *node) {
         return;
     } else if(node->kind == ND_MEMBER) {
         gen_lval_to_rax(node->lhs);
-        printf("\tadd  rax, %d\n", node->type->offset);
+        printf("\tadd  rax, %d\n", node->offset);
     } else {
         error_at_node(node, "Expected l-value.");
     }

@@ -44,6 +44,7 @@ void print_token(Token *token) {
     case TK_COLON:
     case TK_DOT:
     case TK_ARROW:
+    case TK_ELLIPSIS:
         printf("[%.*s]", token->len, token->str);
         break;
     // Reserved words
@@ -143,8 +144,7 @@ void print_node(Node *node) {
     case ND_MEMBER:
         printf("(MEMBER ");
         print_node(node->lhs);
-        printf(" %.*s %d)", node->token->len, node->token->str,
-               node->type->offset);
+        printf(" %.*s %d)", node->token->len, node->token->str, node->offset);
         return;
     case ND_BREAK:
         printf("BREAK ");
@@ -294,7 +294,7 @@ void print_nodes() {
     }
 }
 
-void print_struct_member(Type *member);
+void print_struct_member(FILE *stream, MemberInfo *member);
 
 /// Print Type to stream.
 void print_type(FILE *stream, Type *type) {
@@ -314,14 +314,15 @@ void print_type(FILE *stream, Type *type) {
         print_type(stream, type->ptr_to);
     } else if(type->ty == FUNC) {
         fprintf(stream, "func ");
-        Type *param = type->params;
+        MemberInfo *param = type->params;
         fprintf(stream, "( ");
         bool first = true;
         while(param) {
             if(!first)
                 fprintf(stream, ", ");
             first = false;
-            print_type(stream, param);
+            print_type(stream, param->type);
+            fprintf(stream, " %.*s", param->ident->len, param->ident->str);
             param = param->next;
         }
         fprintf(stream, ") ");
@@ -333,10 +334,10 @@ void print_type(FILE *stream, Type *type) {
                     type->tag_name->str);
         } else {
             fprintf(stream, "<> { ");
-            print_struct_member(type->member);
+            print_struct_member(stream, type->member);
             fprintf(stream, "}");
         }
-        Type *member = type->member;
+        // Type *member = type->member;
     } else if(type->ty == ENUM) {
         fprintf(stream, "enum ");
         if(type->tag_name) {
@@ -353,29 +354,29 @@ void print_type(FILE *stream, Type *type) {
         error("print_type(): Unknown Type.");
 }
 
-void print_struct_member(Type *member) {
+void print_struct_member(FILE *stream, MemberInfo *member) {
     bool first = true;
     while(member) {
         if(!first)
-            fprintf(stdout, ", ");
+            fprintf(stream, ", ");
         first = false;
-        print_type(stdout, member);
-        if(member->var_name)
-            fprintf(stdout, "<%.*s:%d>", member->var_name->len,
-                    member->var_name->str, member->offset);
+        print_type(stream, member->type);
+        if(member->ident)
+            fprintf(stream, "<%.*s:%d>", member->ident->len, member->ident->str,
+                    member->offset);
         else
-            fprintf(stdout, "<>");
+            fprintf(stream, "<>");
         member = member->next;
     }
 }
 
-void print_enum_member(Type *member) {
+void print_enum_member(MemberInfo *member) {
     bool first = true;
     while(member) {
         if(!first)
             fprintf(stdout, ", ");
         first = false;
-        print_type(stdout, member);
+        print_type(stdout, member->type);
         member = member->next;
     }
 }
@@ -435,7 +436,7 @@ void print_structs() {
             fprintf(stdout, "// anonymus ");
         if(is_struct(tag->type)) {
             fprintf(stdout, "struct { ");
-            print_struct_member(tag->type->member);
+            print_struct_member(stdout, tag->type->member);
             fprintf(stdout, "}\n");
         } else if(is_enum(tag->type)) {
             fprintf(stdout, "enum { ");

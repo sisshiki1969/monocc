@@ -14,7 +14,14 @@ test: monocc
 	$(CC) -o tmp tmp.s lib.o
 	./tmp
 
+self: monocc
+	./src/monocc -test
+	cp -f ./src/tokenize.c ./src/monocc.h ./test
+	./src/monocc -file ./test/tokenize.c > tmp.s
+	$(CC) -o tmp tmp.s lib.o
+	./tmp
+
 clean:
 	rm -f ./src/monocc ./src/*.o *~ tmp*
 
-.PHONY: test clean
+.PHONY: test self clean

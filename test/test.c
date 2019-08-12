@@ -1,3 +1,4 @@
+//#include "test.h"
 void assert_expect(int line, int expected, int actual);
 void print(int a);
 void printf_(char *str);
@@ -17,7 +18,7 @@ int ***K;    // * * * int
 int (**L)[]; // * * [] int
 int (**M)(); // * * func() int
 int *(*N)[]; // * [] * int
-void (*signal(int, void (*)(int)))(int);
+// int (*signal(int, int (*)(int)))(int);
 
 int fibo(int x) {
     if(x < 2)
