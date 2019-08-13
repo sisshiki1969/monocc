@@ -18,7 +18,7 @@ int ***K;    // * * * int
 int (**L)[]; // * * [] int
 int (**M)(); // * * func() int
 int *(*N)[]; // * [] * int
-// int (*signal(int, int (*)(int)))(int);
+void (*signal(int, void (*)(int)))(int);
 
 int fibo(int x) {
     if(x < 2)

@@ -21,9 +21,9 @@ bool is_reserved(char *str, int len, char *reserved) {
 /// Tokenize the input string.
 void tokenize(char *p, bool is_main) {
     Token head;
-    head.next = 0;
+    head.next = NULL;
     Token *cur = &head;
-
+    fprintf(stderr, "%c", *p);
     while(*p) {
         if(isspace(*p)) {
             p++;
@@ -38,11 +38,11 @@ void tokenize(char *p, bool is_main) {
                 if(*p == '"') {
                     char *end = strchr(p + 1, '"');
                     int len = end - p - 1;
-                    char *file_name = calloc(1, len + 1 + 7);
-                    memcpy(file_name, "./test/", 7);
-                    memcpy(file_name + 7, p + 1, len);
+                    char *file_name = calloc(1, len + 1 + 6);
+                    memcpy(file_name, "./src/", 6);
+                    memcpy(file_name + 6, p + 1, len);
 
-                    fprintf(stderr, "include <%s>\n", file_name);
+                    // fprintf(stderr, "include <%s>\n", file_name);
                     char *text = read_file(file_name);
                     tokenize(text, false);
                 }

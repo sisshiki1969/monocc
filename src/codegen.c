@@ -312,7 +312,7 @@ void gen_land(Node *node) {
     char *exit_label = new_label();
     gen(node->lhs);
 
-    if(is_int(l_ty)) {
+    if(is_aryth(l_ty)) {
         reg_mode = 1;
     } else if(is_ptr(l_ty)) {
         reg_mode = 0;
@@ -325,7 +325,7 @@ void gen_land(Node *node) {
 
     gen(node->rhs);
 
-    if(is_int(r_ty)) {
+    if(is_aryth(r_ty)) {
         reg_mode = 1;
     } else if(is_ptr(r_ty)) {
         reg_mode = 0;
@@ -352,7 +352,7 @@ void gen_lor(Node *node) {
     char *exit_label = new_label();
     gen(node->lhs);
 
-    if(is_int(l_ty)) {
+    if(is_aryth(l_ty)) {
         reg_mode = 1;
     } else if(is_ptr(l_ty)) {
         reg_mode = 0;
@@ -365,7 +365,7 @@ void gen_lor(Node *node) {
 
     gen(node->rhs);
 
-    if(is_int(r_ty)) {
+    if(is_aryth(r_ty)) {
         reg_mode = 1;
     } else if(is_ptr(r_ty)) {
         reg_mode = 0;
@@ -391,7 +391,7 @@ void gen_lnot(Node *node) {
     char *exit_label = new_label();
     gen(node->lhs);
 
-    if(is_int(l_ty)) {
+    if(is_aryth(l_ty)) {
         reg_mode = 1;
     } else if(is_ptr(l_ty)) {
         reg_mode = 0;
@@ -445,40 +445,40 @@ void gen(Node *node) {
 
         switch(node->kind) {
         case ND_ADD:
-            if(is_arythmetic(l_ty) && is_arythmetic(r_ty)) {
+            if(is_aryth(l_ty) && is_aryth(r_ty)) {
                 printf("\tadd  rax, rdi\n");
-            } else if(is_ptr(l_ty) && is_int(r_ty)) {
+            } else if(is_ptr(l_ty) && is_aryth(r_ty)) {
                 printf("\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
                 printf("\tadd  rax, rdi\n");
-            } else if(is_int(l_ty) && is_ptr(r_ty)) {
+            } else if(is_aryth(l_ty) && is_ptr(r_ty)) {
                 printf("\timul rax, %d\n", sizeof_type(r_ty->ptr_to));
                 printf("\tadd  rax, rdi\n");
             } else
                 error_at_node(node, "Illegal operation. (Type mismatch)");
             break;
         case ND_SUB:
-            if(is_arythmetic(l_ty) && is_arythmetic(r_ty)) {
+            if(is_aryth(l_ty) && is_aryth(r_ty)) {
                 printf("\tsub  rax, rdi\n");
             } else if(is_ptr(l_ty) && is_ptr(r_ty)) {
                 printf("\tsub  rax, rdi\n");
                 printf("\tcqo\n");
                 printf("\tmov  rdi, %d\n", sizeof_type(l_ty->ptr_to));
                 printf("\tidiv rdi\n");
-            } else if(is_ptr(l_ty) && is_int(r_ty)) {
+            } else if(is_ptr(l_ty) && is_aryth(r_ty)) {
                 printf("\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
                 printf("\tsub  rax, rdi\n");
             } else
                 error_at_node(node, "Illegal operation. (Type mismatch)");
             break;
         case ND_MUL:
-            if(is_int(l_ty) && is_int(r_ty)) {
+            if(is_aryth(l_ty) && is_aryth(r_ty)) {
                 printf("\timul rax, rdi\n");
             } else
                 error_at_node(node,
                               "Illegal operation. (Not an arythmetic type)");
             break;
         case ND_DIV:
-            if(is_int(l_ty) && is_int(r_ty)) {
+            if(is_aryth(l_ty) && is_aryth(r_ty)) {
                 printf("\tcqo\n");
                 printf("\tidiv rax, rdi\n");
             } else
@@ -489,7 +489,7 @@ void gen(Node *node) {
         case ND_NEQ:
         case ND_GE:
         case ND_GT:
-            if(is_int(l_ty) && is_int(r_ty)) {
+            if(is_aryth(l_ty) && is_aryth(r_ty)) {
                 reg_mode = 1;
             } else if(is_ptr(l_ty) && is_ptr(r_ty)) {
                 reg_mode = 0;

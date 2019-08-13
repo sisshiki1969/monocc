@@ -22,13 +22,38 @@ int isalnum(int c);
 int strlen(char *s);
 char *strchr(char *s, int c);
 int strncmp(char *str, char *reserved, int len);
+int strcmp(char *str1, char *str2);
 int isspace(int p);
+int isdigit(int p);
+int isalpha(int p);
 void memcpy(char *dest, char *src, int len);
+int printf(char *fmt);
+int fprintf(FILE *stream, char *fmt);
+FILE *fopen(char *p, char *mode);
+int fseek(FILE *fp, int n, int seek_end);
+void fread(char *buf, int size, int n, FILE *fp);
+int ftell(FILE *fp);
+void fclose(FILE *fp);
+char *strerror(int n);
+FILE *stderr;
+FILE *stdout;
+int true = 1;
+int false = 0;
+int NULL = 0;
+int SEEK_END = 2;
+int SEEK_SET = 0;
+typedef int size_t;
 #endif
+
+FILE *get_stderr();
+FILE *get_stdout();
+int get_errno();
 
 // Token
 
-typedef enum {
+typedef enum TokenKind TokenKind;
+
+enum TokenKind {
     TK_IDENT,
     TK_NUM,
     TK_STR,
@@ -98,7 +123,7 @@ typedef enum {
     TK_EOF,
 
     TK_MACRO,
-} TokenKind;
+};
 
 typedef struct Token Token;
 
@@ -140,7 +165,9 @@ struct Type {
 typedef enum {
     ND_IDENT,
     ND_NUM,
+
     ND_STR,
+    ND_INIT,
 
     ND_ADD,
     ND_SUB,
@@ -323,7 +350,7 @@ bool is_enum(Type *type);
 bool is_enum_el(Type *type);
 bool is_ptr_to_char(Type *type);
 bool is_array_of_char(Type *type);
-bool is_arythmetic(Type *type);
+bool is_aryth(Type *type);
 bool is_identical_type(Type *l_type, Type *r_type);
 bool is_compatible_type(Type *l_type, Type *r_type);
 bool is_assignable_type(Type *l_type, Type *r_type);
@@ -346,6 +373,7 @@ void gen_stmt(Node *node);
 
 char *source_text;
 char registers[4][5][4];
+
 Token *token;
 Vector *ext_declarations;
 Vector *strings;
@@ -355,7 +383,3 @@ TagName *tagnames;
 Typedef *tdef_names;
 Global *globals;
 Global *functions;
-
-struct List {
-    struct List *next;
-};

@@ -321,8 +321,14 @@ void print_type(FILE *stream, Type *type) {
             if(!first)
                 fprintf(stream, ", ");
             first = false;
-            print_type(stream, param->type);
-            fprintf(stream, " %.*s", param->ident->len, param->ident->str);
+            if(param->type)
+                print_type(stream, param->type);
+            else
+                fprintf(stream, "NULL_TYPE");
+            if(param->ident)
+                fprintf(stream, " %.*s ", param->ident->len, param->ident->str);
+            else
+                fprintf(stream, "- ");
             param = param->next;
         }
         fprintf(stream, ") ");

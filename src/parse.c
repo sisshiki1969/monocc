@@ -640,13 +640,14 @@ Node *parse_postfix_expr() {
                 Node *arg = parse_assign_expr();
                 if(is_array(type(arg)))
                     arg = new_node_expr(ND_ADDR, arg, NULL, arg->token);
-                if(!is_compatible_type(param->type, type(arg))) {
+                if(param && !is_compatible_type(param->type, type(arg))) {
                     error_types(param->type, type(arg));
                     error_at_node(arg, "The type of an argument is mismatch "
                                        "with func parameter.");
                 }
                 vec_push(vec, arg);
-                param = param->next;
+                if(param)
+                    param = param->next;
                 if(!consume_if(TK_COMMA))
                     break;
             }
@@ -725,18 +726,27 @@ Node *parse_unary_expr() {
     }
 }
 
+Node *parse_cast_expr() {
+    if(peek(TK_OP_PAREN) && is_type_specifier(token->next)) {
+        expect(TK_OP_PAREN);
+        parse_decl(false);
+        expect(TK_CL_PAREN);
+    }
+    return parse_unary_expr();
+}
+
 Node *parse_mul_expr() {
-    Node *node = parse_unary_expr();
+    Node *node = parse_cast_expr();
     Node *rhs;
 
     while(true) {
         Token *op_token = token;
         if(consume_if(TK_MUL)) {
-            rhs = parse_unary_expr();
+            rhs = parse_cast_expr();
             node = new_node_binary(ND_MUL, node, rhs, op_token);
             continue;
         } else if(consume_if(TK_DIV)) {
-            rhs = parse_unary_expr();
+            rhs = parse_cast_expr();
             node = new_node_binary(ND_DIV, node, rhs, op_token);
             continue;
         }
@@ -995,6 +1005,8 @@ Node *parse_local_declaration() {
 }
 
 Node *parse_block_item() {
+    // fprintf(stderr, "    line %d\n", get_line(token->str));
+
     if(consume_if(TK_TYPEDEF)) {
         MemberInfo *ty_ident = parse_decl(true);
         Token *ident = ty_ident->ident;
@@ -1130,13 +1142,12 @@ Type *parse_struct_specifier(bool allow_undefined_tag) {
     Token *tag_name = NULL;
     if(peek(TK_IDENT))
         tag_name = consume();
-    if(peek(TK_OP_BRACE)) {
+    if(consume_if(TK_OP_BRACE)) {
         // struct-declaration-list
         if(find_tag(tag_name))
             error_at_token(tag_name, "Duplicate definition of a tag name.");
         tag = new_tag(tag_name, struct_ty);
         // struct-specifier
-        consume(TK_OP_BRACE);
         MemberInfo head;
         head.next = NULL;
         MemberInfo *cursor = &head;
@@ -1242,10 +1253,29 @@ Node *parse_func_definition(MemberInfo *ty_ident) {
     return decl;
 }
 
+Node *parse_initializer_list() {
+    Token *op_token = token;
+    if(consume_if(TK_OP_BRACE)) {
+        Vector *vec = vec_new();
+        while(!peek(TK_CL_BRACE)) {
+            vec_push(vec, parse_initializer_list());
+            if(!consume_if(TK_COMMA))
+                break;
+        }
+        expect(TK_CL_BRACE);
+        Node *node = new_node(ND_INIT, op_token);
+        node->nodes = vec;
+        return node;
+    } else {
+        Node *node = parse_assign_expr();
+        return node;
+    }
+}
+
 void parse_program() {
     ext_declarations = vec_new();
     while(!at_eof()) {
-        print_typedefs();
+        fprintf(stderr, "line %d\n", get_line(token->str));
         locals = NULL;
         scope = NULL;
         switch_level = 0;
@@ -1254,8 +1284,6 @@ void parse_program() {
             continue;
         if(consume_if(TK_TYPEDEF)) {
             MemberInfo *ty_ident = parse_decl(true);
-            fprintf(stderr, "typedef %.*s\n", ty_ident->ident->len,
-                    ty_ident->ident->str);
             if(!ty_ident->ident)
                 error_at_token(token, "Expected identifier.");
             new_typedef(ty_ident->ident, ty_ident->type);
@@ -1263,8 +1291,13 @@ void parse_program() {
             continue;
         }
         MemberInfo *ty_ident = parse_decl(false);
-        fprintf(stderr, "decl %.*s\n", ty_ident->ident->len,
-                ty_ident->ident->str);
+        /*
+        if(ty_ident->ident)
+            fprintf(stderr, "decl %.*s\n", ty_ident->ident->len,
+                    ty_ident->ident->str);
+        else
+            fprintf(stderr, "decl <unnamed>\n");
+            */
         Token *ident = ty_ident->ident;
         Type *type = ty_ident->type;
         if(!ident) {
@@ -1279,12 +1312,17 @@ void parse_program() {
 
         if(!is_func(type)) {
             // gloval var declaration
-            if(find_gvar(ident))
-                error_at_token(ident, "Redefinition of global variable");
+            Global *gvar = find_gvar(ident);
+            if(gvar && gvar->body)
+                error_at_token(ident, "Reinitialization of global variable");
             Token *op_token = token;
-            Global *gvar = new_gvar(ident, type);
+            if(!gvar)
+                gvar = new_gvar(ident, type);
             if(consume_if(TK_ASSIGN)) {
-                gvar->body = parse_assign_expr();
+                if(peek(TK_OP_BRACE)) {
+                    gvar->body = parse_initializer_list();
+                } else
+                    gvar->body = parse_assign_expr();
             }
             if(is_array_of_char(gvar->type)) {
                 if(!gvar->body) {

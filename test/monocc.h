@@ -23,12 +23,22 @@ int strlen(char *s);
 char *strchr(char *s, int c);
 int strncmp(char *str, char *reserved, int len);
 int isspace(int p);
+int isdigit(int p);
+int isalpha(int p);
 void memcpy(char *dest, char *src, int len);
+int fprintf(FILE *stream, char *fmt);
+FILE *stderr;
+FILE *stdout;
+int true = 1;
+int false = 0;
+int NULL = 0;
 #endif
 
 // Token
 
-typedef enum {
+typedef enum TokenKind TokenKind;
+
+enum TokenKind {
     TK_IDENT,
     TK_NUM,
     TK_STR,
@@ -98,7 +108,7 @@ typedef enum {
     TK_EOF,
 
     TK_MACRO,
-} TokenKind;
+};
 
 typedef struct Token Token;
 
@@ -323,7 +333,7 @@ bool is_enum(Type *type);
 bool is_enum_el(Type *type);
 bool is_ptr_to_char(Type *type);
 bool is_array_of_char(Type *type);
-bool is_arythmetic(Type *type);
+bool is_aryth(Type *type);
 bool is_identical_type(Type *l_type, Type *r_type);
 bool is_compatible_type(Type *l_type, Type *r_type);
 bool is_assignable_type(Type *l_type, Type *r_type);

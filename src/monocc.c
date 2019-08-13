@@ -1,21 +1,16 @@
 #include "monocc.h"
 
-char registers[4][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
-                           {"edi", "esi", "edx", "ecx", "r8d"},
-                           {"di", "si", "dx", "cx", "r8w"},
-                           {"dil", "sil", "dl", "cl", "r8b"}};
-
 /// Read file and return char* of data.
 char *read_file(char *path) {
     FILE *fp = fopen(path, "r");
     if(!fp)
-        error("cannot open %s: %s\n", path, strerror(errno));
+        error("cannot open %s: %s\n", path, strerror(get_errno()));
 
     if(fseek(fp, 0, SEEK_END) == -1)
-        error("%s: fseek: %s\n", path, strerror(errno));
+        error("%s: fseek: %s\n", path, strerror(get_errno()));
     size_t size = ftell(fp);
     if(fseek(fp, 0, SEEK_SET) == -1)
-        error("%s: fseek: %s\n", path, strerror(errno));
+        error("%s: fseek: %s\n", path, strerror(get_errno()));
 
     char *buf = calloc(1, size + 2);
     fread(buf, size, 1, fp);
@@ -25,8 +20,14 @@ char *read_file(char *path) {
     buf[size] = '\0';
     fclose(fp);
     fprintf(stderr, "monocc: file read\n");
+    // fprintf(stderr, "%s", buf);
     return buf;
 }
+
+char registers[4][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
+                           {"edi", "esi", "edx", "ecx", "r8d"},
+                           {"di", "si", "dx", "cx", "r8w"},
+                           {"dil", "sil", "dl", "cl", "r8b"}};
 
 void compile() {
     fprintf(stderr, "monocc: tokenize\n");
@@ -66,7 +67,7 @@ void compile() {
             if(!global->body)
                 i = 0;
             else if(global->body->kind == ND_NUM)
-                i = global->body->int_val % 256;
+                i = global->body->int_val; // % 256;
             else
                 error_at_node(
                     global->body,
@@ -106,14 +107,21 @@ void compile() {
     printf("\n");
 
     printf("\t.text\n");
-    printf("\t.global main\n");
+
     int len = vec_len(ext_declarations);
-    for(int i = 0; i < len; i++)
-        gen_stmt(ext_declarations->data[i]);
+    for(int i = 0; i < len; i++) {
+        Node *node = ext_declarations->data[i];
+        printf("\t.global %.*s\n", node->token->len, node->token->str);
+        gen_stmt(node);
+    }
     fprintf(stderr, "monocc: compile complete\n");
 }
 
 int main(int argc, char **argv) {
+    if(!stderr)
+        stderr = get_stderr();
+    if(!stdout)
+        stdout = get_stdout();
     fprintf(stderr, "%s\n", argv[0]);
     if(argc == 2 && strcmp(argv[1], "-test") == 0) {
         test_vec();
