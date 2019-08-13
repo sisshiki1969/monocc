@@ -32,6 +32,11 @@ bool is_binary_op(NodeKind kind) {
     case ND_GT:
     case ND_LAND:
     case ND_LOR:
+    case ND_AND:
+    case ND_OR:
+    case ND_XOR:
+    case ND_SHR:
+    case ND_SHL:
         return true;
     }
     return false;
@@ -485,6 +490,44 @@ void gen(Node *node) {
                 error_at_node(node,
                               "Illegal operation. (Not an arythmetic type)");
             break;
+        case ND_AND:
+            if(is_aryth(l_ty) && is_aryth(r_ty)) {
+                printf("\tand  rax, rdi\n");
+            } else
+                error_at_node(node,
+                              "Illegal operation. (Not an arythmetic type)");
+            break;
+        case ND_OR:
+            if(is_aryth(l_ty) && is_aryth(r_ty)) {
+                printf("\tor   rax, rdi\n");
+            } else
+                error_at_node(node,
+                              "Illegal operation. (Not an arythmetic type)");
+            break;
+        case ND_XOR:
+            if(is_aryth(l_ty) && is_aryth(r_ty)) {
+                printf("\txor  rax, rdi\n");
+            } else
+                error_at_node(node,
+                              "Illegal operation. (Not an arythmetic type)");
+            break;
+        case ND_SHR:
+            if(is_aryth(l_ty) && is_aryth(r_ty)) {
+                printf("\tmov  cl , dil\n");
+                printf("\tshr  rax, cl\n");
+            } else
+                error_at_node(node,
+                              "Illegal operation. (Not an arythmetic type)");
+            break;
+        case ND_SHL:
+            if(is_aryth(l_ty) && is_aryth(r_ty)) {
+                printf("\tmov  cl , dil\n");
+                printf("\tshl  rax, cl\n");
+            } else
+                error_at_node(node,
+                              "Illegal operation. (Not an arythmetic type)");
+            break;
+
         case ND_EQ:
         case ND_NEQ:
         case ND_GE:

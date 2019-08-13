@@ -32,6 +32,9 @@ void print_token(Token *token) {
     case TK_AND:
     case TK_OR:
     case TK_NOT:
+    case TK_XOR:
+    case TK_SHR:
+    case TK_SHL:
 
     case TK_SEMI:
     case TK_OP_PAREN:
@@ -115,6 +118,11 @@ void print_node(Node *node) {
         case ND_GT:
         case ND_LAND:
         case ND_LOR:
+        case ND_AND:
+        case ND_OR:
+        case ND_XOR:
+        case ND_SHR:
+        case ND_SHL:
             printf("(%.*s ", node->token->len, node->token->str);
             break;
         default:

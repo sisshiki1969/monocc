@@ -770,22 +770,38 @@ Node *parse_add_expr() {
     }
 }
 
-Node *parse_rel_expr() {
+Node *parse_shift_expr() {
     Node *node = parse_add_expr();
+
+    while(true) {
+        Token *op_token = token;
+        if(consume_if(TK_SHR)) {
+            node = new_node_binary(ND_SHR, node, parse_add_expr(), op_token);
+            continue;
+        } else if(consume_if(TK_SHL)) {
+            node = new_node_binary(ND_SHL, node, parse_add_expr(), op_token);
+            continue;
+        }
+        return node;
+    }
+}
+
+Node *parse_rel_expr() {
+    Node *node = parse_shift_expr();
 
     for(;;) {
         Token *op_token = token;
         if(consume_if(TK_GE)) {
-            node = new_node_binary(ND_GE, node, parse_add_expr(), op_token);
+            node = new_node_binary(ND_GE, node, parse_shift_expr(), op_token);
             continue;
         } else if(consume_if(TK_GT)) {
-            node = new_node_binary(ND_GT, node, parse_add_expr(), op_token);
+            node = new_node_binary(ND_GT, node, parse_shift_expr(), op_token);
             continue;
         } else if(consume_if(TK_LE)) {
-            node = new_node_binary(ND_GE, parse_add_expr(), node, op_token);
+            node = new_node_binary(ND_GE, parse_shift_expr(), node, op_token);
             continue;
         } else if(consume_if(TK_LT)) {
-            node = new_node_binary(ND_GT, parse_add_expr(), node, op_token);
+            node = new_node_binary(ND_GT, parse_shift_expr(), node, op_token);
             continue;
         }
         return node;
@@ -807,12 +823,48 @@ Node *parse_eq_expr() {
     }
 }
 
-Node *parse_land_expr() {
+Node *parse_and_expr() {
     Node *node = parse_eq_expr();
     for(;;) {
         Token *op_token = token;
+        if(consume_if(TK_AND)) {
+            node = new_node_binary(ND_AND, node, parse_eq_expr(), op_token);
+            continue;
+        }
+        return node;
+    }
+}
+
+Node *parse_xor_expr() {
+    Node *node = parse_and_expr();
+    for(;;) {
+        Token *op_token = token;
+        if(consume_if(TK_XOR)) {
+            node = new_node_binary(ND_XOR, node, parse_and_expr(), op_token);
+            continue;
+        }
+        return node;
+    }
+}
+
+Node *parse_or_expr() {
+    Node *node = parse_xor_expr();
+    for(;;) {
+        Token *op_token = token;
+        if(consume_if(TK_OR)) {
+            node = new_node_binary(ND_OR, node, parse_xor_expr(), op_token);
+            continue;
+        }
+        return node;
+    }
+}
+
+Node *parse_land_expr() {
+    Node *node = parse_or_expr();
+    for(;;) {
+        Token *op_token = token;
         if(consume_if(TK_LAND)) {
-            node = new_node_binary(ND_LAND, node, parse_eq_expr(), op_token);
+            node = new_node_binary(ND_LAND, node, parse_or_expr(), op_token);
             continue;
         }
         return node;

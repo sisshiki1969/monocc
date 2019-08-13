@@ -196,6 +196,10 @@ void tokenize(char *p, bool is_main) {
                 cur = new_token(TK_GE, cur, p - 1, 2);
                 p++;
                 continue;
+            } else if(*p == '>') {
+                cur = new_token(TK_SHR, cur, p - 1, 2);
+                p++;
+                continue;
             } else {
                 cur = new_token(TK_GT, cur, p - 1, 1);
                 continue;
@@ -205,6 +209,10 @@ void tokenize(char *p, bool is_main) {
             p++;
             if(*p == '=') {
                 cur = new_token(TK_LE, cur, p - 1, 2);
+                p++;
+                continue;
+            } else if(*p == '<') {
+                cur = new_token(TK_SHL, cur, p - 1, 2);
                 p++;
                 continue;
             } else {
@@ -253,6 +261,10 @@ void tokenize(char *p, bool is_main) {
         }
         if(*p == ']') {
             cur = new_token(TK_CL_BRACKET, cur, p++, 1);
+            continue;
+        }
+        if(*p == '^') {
+            cur = new_token(TK_XOR, cur, p++, 1);
             continue;
         }
         if(*p == '&') {

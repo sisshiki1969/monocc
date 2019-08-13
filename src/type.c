@@ -313,12 +313,22 @@ Type *type(Node *node) {
     l_ty = type(node->lhs);
     r_ty = type(node->rhs);
     switch(node->kind) {
+    case ND_AND:
+    case ND_OR:
+    case ND_XOR:
+    case ND_SHR:
+    case ND_SHL:
+        if(is_aryth(l_ty) && is_aryth(r_ty)) {
+            node->type = l_ty;
+        } else
+            error_at_node(node, "Illegal operation. (Type mismatch)");
+        return node->type;
     case ND_ADD:
         if(is_aryth(l_ty) && is_aryth(r_ty)) {
             node->type = l_ty;
-        } else if(is_ptr(l_ty) && is_int(r_ty)) {
+        } else if(is_ptr(l_ty) && is_aryth(r_ty)) {
             node->type = l_ty;
-        } else if(is_int(l_ty) && is_ptr(r_ty)) {
+        } else if(is_aryth(l_ty) && is_ptr(r_ty)) {
             node->type = r_ty;
         } else
             error_at_node(node, "Illegal operation. (Type mismatch)");

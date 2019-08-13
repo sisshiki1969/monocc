@@ -18,6 +18,8 @@ typedef struct {
     char smallbuf[1];
 } FILE;
 void *calloc(int n, int size);
+void *malloc(int size);
+void *realloc(void *ptr, int size);
 int isalnum(int c);
 int strlen(char *s);
 char *strchr(char *s, int c);
@@ -27,8 +29,9 @@ int isspace(int p);
 int isdigit(int p);
 int isalpha(int p);
 void memcpy(char *dest, char *src, int len);
-int printf(char *fmt);
-int fprintf(FILE *stream, char *fmt);
+int printf(char *fmt, ...);
+int fprintf(FILE *stream, char *fmt, ...);
+int sprintf(char *str, char *fmt, ...);
 FILE *fopen(char *p, char *mode);
 int fseek(FILE *fp, int n, int seek_end);
 void fread(char *buf, int size, int n, FILE *fp);
@@ -81,7 +84,10 @@ enum TokenKind {
     TK_LOR,
     TK_AND,
     TK_OR,
+    TK_XOR,
     TK_NOT,
+    TK_SHR,
+    TK_SHL,
 
     TK_SEMI,
     TK_OP_PAREN,
@@ -180,6 +186,11 @@ typedef enum {
     ND_LAND,
     ND_LOR,
     ND_NOT,
+    ND_AND,
+    ND_OR,
+    ND_XOR,
+    ND_SHR,
+    ND_SHL,
 
     ND_ASSIGN,
     ND_ADDR,

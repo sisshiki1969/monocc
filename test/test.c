@@ -435,7 +435,9 @@ int main() {
     block_scope();
     for_();
     list_();
+    struct_();
 
+    // switch
     assert_expect(__LINE__, 11, switch_(1));
     assert_expect(__LINE__, 13, switch_(2));
     assert_expect(__LINE__, 13, switch_(3));
@@ -443,21 +445,30 @@ int main() {
     assert_expect(__LINE__, 15, switch_(5));
     assert_expect(__LINE__, 15, switch_(6));
 
+    // switch
     assert_expect(__LINE__, 11, switch2_('a'));
     assert_expect(__LINE__, 12, switch2_('b'));
     assert_expect(__LINE__, 12, switch2_('c'));
     assert_expect(__LINE__, 15, switch2_('z'));
 
+    // 8-queen solver
     assert_expect(__LINE__, 92, q8());
 
-    struct_();
-
-    bool t_or_f = 0;
-
+    // enum
     assert_expect(__LINE__, 0, ZERO);
     assert_expect(__LINE__, 1, ONE);
     assert_expect(__LINE__, 2, TWO);
     assert_expect(__LINE__, 3, THREE);
+
+    assert_expect(__LINE__, 15, 13 | 7);
+    assert_expect(__LINE__, 5115, 938 | 5073);
+    assert_expect(__LINE__, 5, 13 & 7);
+    assert_expect(__LINE__, 896, 938 & 5073);
+    assert_expect(__LINE__, 10, 13 ^ 7);
+    assert_expect(__LINE__, 4219, 938 ^ 5073);
+
+    assert_expect(__LINE__, 29, 938 >> 5);
+    assert_expect(__LINE__, 1664, 13 << 7);
 
     printf_("passed tests.\n");
     return 0;
