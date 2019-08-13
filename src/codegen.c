@@ -646,6 +646,8 @@ void gen(Node *node) {
         emit_deref_rax(node);
         printf("\tpush rax\n");
         return;
+    case ND_CAST:
+        return;
     case ND_ASSIGN:
         l_ty = type(node->lhs);
         r_ty = type(node->rhs);

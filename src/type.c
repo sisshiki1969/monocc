@@ -216,8 +216,11 @@ bool is_compatible_type(Type *l_type, Type *r_type) {
         return false;
     if(!is_aryth(l_type) && is_aryth(r_type))
         return false;
-    if(is_ptr(l_type) && is_ptr(r_type))
+    if(is_ptr(l_type) && is_ptr(r_type)) {
+        if(is_void(l_type->ptr_to) || is_void(r_type->ptr_to))
+            return true;
         return is_identical_type(l_type->ptr_to, r_type->ptr_to);
+    }
     if(is_func(l_type) && is_func(r_type))
         return is_identical_type(l_type, r_type);
     return false;
@@ -292,6 +295,8 @@ Type *type(Node *node) {
     case ND_ASSIGN:
         return type(node->lhs);
     case ND_CALL:
+        return node->type;
+    case ND_CAST:
         return node->type;
     case ND_ADDR:
         l_ty = type(node->lhs);

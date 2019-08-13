@@ -642,8 +642,8 @@ Node *parse_postfix_expr() {
                     arg = new_node_expr(ND_ADDR, arg, NULL, arg->token);
                 if(param && !is_compatible_type(param->type, type(arg))) {
                     error_types(param->type, type(arg));
-                    error_at_node(arg, "The type of an argument is mismatch "
-                                       "with func parameter.");
+                    error_at_node(arg, "The type of an argument is mismatch %s",
+                                  "with func parameter.");
                 }
                 vec_push(vec, arg);
                 if(param)
@@ -729,8 +729,10 @@ Node *parse_unary_expr() {
 Node *parse_cast_expr() {
     if(peek(TK_OP_PAREN) && is_type_specifier(token->next)) {
         expect(TK_OP_PAREN);
-        parse_decl(false);
+        MemberInfo *info = parse_decl(false);
         expect(TK_CL_PAREN);
+        Node *node = new_node(ND_CAST, info->ident);
+        node->type = info->type;
     }
     return parse_unary_expr();
 }
@@ -975,11 +977,11 @@ Node *parse_stmt() {
         switch_level++;
         expect(TK_SWITCH);
         expect(TK_OP_PAREN);
-        Node *expr = parse_eq_expr(); // this should be a conditional-expr.
+        node = parse_eq_expr(); // this should be a conditional-expr.
         expect(TK_CL_PAREN);
-        Node *stmt = parse_stmt();
+        then_ = parse_stmt();
         switch_level--;
-        return new_node_switch(expr, stmt, op_token);
+        return new_node_switch(node, then_, op_token);
     case TK_WHILE:
         expect(TK_WHILE);
         expect(TK_OP_PAREN);
@@ -1003,20 +1005,20 @@ Node *parse_stmt() {
             error_at_token(op_token,
                            "a case label may only be used within a switch.");
         expect(TK_CASE);
-        Node *const_expr = parse_expr();
+        node = parse_expr();
         expect(TK_COLON);
-        Node *body = new_node_block(vec_new());
+        then_ = new_node_block(vec_new());
         while(!peek(TK_CASE) && !peek(TK_DEFAULT) && !peek(TK_CL_BRACE))
-            add_stmt_to_block(body, parse_stmt());
-        return new_node_case(const_expr, body, op_token);
+            add_stmt_to_block(then_, parse_stmt());
+        return new_node_case(node, then_, op_token);
     case TK_DEFAULT:
         if(switch_level == 0)
             error_at_token(op_token,
                            "a default label may only be used within a switch.");
         expect(TK_DEFAULT);
         expect(TK_COLON);
-        body = parse_stmt();
-        return new_node_default(body, op_token);
+        node = parse_stmt();
+        return new_node_default(node, op_token);
     }
     node = parse_expr();
     expect(TK_SEMI);

@@ -150,6 +150,13 @@ void print_node(Node *node) {
         print_node(node->lhs);
         printf(")");
         return;
+    case ND_CAST:
+        printf("(CAST ");
+        print_type(stdout, node->type);
+        printf(" ");
+        print_node(node->lhs);
+        printf(")");
+        return;
     case ND_MEMBER:
         printf("(MEMBER ");
         print_node(node->lhs);

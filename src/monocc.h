@@ -28,7 +28,8 @@ int strcmp(char *str1, char *str2);
 int isspace(int p);
 int isdigit(int p);
 int isalpha(int p);
-void memcpy(char *dest, char *src, int len);
+void memcpy(void *dest, void *src, int len);
+int memcmp(void *dest, void *src, int len);
 int printf(char *fmt, ...);
 int fprintf(FILE *stream, char *fmt, ...);
 int sprintf(char *str, char *fmt, ...);
@@ -42,7 +43,7 @@ extern FILE *stderr;
 extern FILE *stdout;
 int true = 1;
 int false = 0;
-int NULL = 0;
+void *NULL = (void *)0;
 int SEEK_END = 2;
 int SEEK_SET = 0;
 typedef int size_t;
@@ -199,6 +200,7 @@ typedef enum {
     ND_GVAR,
     ND_CALL,
     ND_MEMBER,
+    ND_CAST,
 
     ND_IF,
     ND_WHILE,
