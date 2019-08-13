@@ -29,6 +29,84 @@ char registers[4][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
                            {"di", "si", "dx", "cx", "r8w"},
                            {"dil", "sil", "dl", "cl", "r8b"}};
 
+void emit_basic_global(Type *type, Node *init) {
+    if(is_array_of_char(type)) {
+        if(!init) {
+            // char str[];  => incomplete type
+            if(type->array_size == 0)
+                error_at_token(init->token, "Incomplete type is not allowed.");
+            // char str[10];
+            else
+                printf("\t.zero %d\n", sizeof_type(type));
+        } else if(init->kind == ND_STR) {
+            // char str[] = "sample";
+            printf("\t.string \"%.*s\"\n", init->token->len, init->token->str);
+            int ary_size = type->array_size;
+            int str_size = init->token->len + 1;
+            if(ary_size > str_size)
+                printf("\t.zero %d\n", ary_size - str_size);
+        } else
+            error_at_node(init, "Unsupported initializer.");
+    } else if(is_array(type)) {
+        if(!init) {
+            printf("\t.zero %d\n", sizeof_type(type));
+            return;
+        }
+        if(init->kind != ND_INIT)
+            error_at_node(init, "Unsupported initializer.");
+        Vector *vec = init->nodes;
+        type = type->ptr_to;
+        for(int i = 0; i < vec_len(vec); i++) {
+            emit_basic_global(type, vec->data[i]);
+        }
+    } else if(is_int(type)) {
+        int i;
+        if(!init)
+            i = 0;
+        else if(init->kind == ND_NUM)
+            i = init->int_val;
+        else
+            error_at_node(
+                init, "Calculation in an initializer is not supported yet.");
+        printf("\t.long %d\n", i);
+    } else if(is_char(type)) {
+        int i;
+        if(!init)
+            i = 0;
+        else if(init->kind == ND_NUM)
+            i = init->int_val; // % 256;
+        else
+            error_at_node(
+                init, "Calculation in an initializer is not supported yet.");
+        printf("\t.byte %d\n", i);
+    } else if(is_ptr_to_char(type)) {
+        // char *str = "sample";
+        if(init && init->kind == ND_STR)
+            printf("\t.quad .LS%06d\n", init->int_val);
+        else
+            printf("\t.quad 0\n");
+    } else {
+        int s = sizeof_type(type);
+        switch(s) {
+        case 1:
+            printf("\t.byte 0\n");
+            break;
+        case 2:
+            printf("\t.short 0\n");
+            break;
+        case 4:
+            printf("\t.long 0\n");
+            break;
+        case 8:
+            printf("\t.align 8\n");
+            printf("\t.quad 0\n");
+            break;
+        default:
+            printf("\t.zero %d\n", s);
+        }
+    }
+}
+
 void compile() {
     fprintf(stderr, "monocc: tokenize\n");
     tokenize(source_text, true);
@@ -49,51 +127,13 @@ void compile() {
     Global *global = globals;
 
     fprintf(stderr, "monocc: emit globals...\n");
-    while(global) {
+    for(; global; global = global->next) {
+        if(global->is_extern) {
+            continue;
+        }
+        printf("\t.global %.*s\n", global->token->len, global->token->str);
         printf("%.*s:\n", global->token->len, global->token->str);
-        if(is_int(global->type)) {
-            int i;
-            if(!global->body)
-                i = 0;
-            else if(global->body->kind == ND_NUM)
-                i = global->body->int_val;
-            else
-                error_at_node(
-                    global->body,
-                    "Calculation in an initializer is not supported yet.");
-            printf("\t.long %d\n", i);
-        } else if(is_char(global->type)) {
-            int i;
-            if(!global->body)
-                i = 0;
-            else if(global->body->kind == ND_NUM)
-                i = global->body->int_val; // % 256;
-            else
-                error_at_node(
-                    global->body,
-                    "Calculation in an initializer is not supported yet.");
-            printf("\t.byte %d\n", i);
-        } else if(is_ptr_to_char(global->type)) {
-            // print_node(global->body);
-            if(global->body && global->body->kind == ND_STR)
-                printf("\t.quad .LS%06d\n", global->body->int_val);
-            else
-                printf("\t.zero %d\n", sizeof_type(global->type));
-        } else if(is_array_of_char(global->type)) {
-            if(!global->body) {
-                if(global->type->array_size == 0)
-                    error_at_token(global->token,
-                                   "Incomplete type is not allowed.");
-                else
-                    printf("\t.zero %d\n", sizeof_type(global->type));
-            } else if(global->body->kind == ND_STR) {
-                printf("\t.string \"%.*s\"\n", global->body->token->len,
-                       global->body->token->str);
-            } else
-                error_at_token(global->token, "Unsupported initializer.");
-        } else
-            printf("\t.zero %d\n", sizeof_type(global->type));
-        global = global->next;
+        emit_basic_global(global->type, global->body);
     };
     fprintf(stderr, "monocc: emitted globals\n");
 
@@ -118,16 +158,13 @@ void compile() {
 }
 
 int main(int argc, char **argv) {
-    if(!stderr)
-        stderr = get_stderr();
-    if(!stdout)
-        stdout = get_stdout();
     fprintf(stderr, "%s\n", argv[0]);
     if(argc == 2 && strcmp(argv[1], "-test") == 0) {
         test_vec();
         return 0;
     } else if(argc == 3 && strcmp(argv[1], "-file") == 0) {
         source_text = read_file(argv[2]);
+        // fprintf(stderr, "%s", source_text);
     } else if(argc == 2) {
         source_text = argv[1];
     } else {
@@ -135,4 +172,5 @@ int main(int argc, char **argv) {
         return 1;
     }
     compile();
+    return 0;
 }

@@ -2,6 +2,7 @@ CFLAGS=-std=c11 -g -static
 LDLIBS = -L /usr/lib -L /usr/local/lib
 SRCS=$(wildcard ./src/*.c)
 OBJS=$(SRCS:.c=.o)
+SRC2=$(wildcard ./self/*.c)
 
 monocc: $(OBJS)
 	$(CC) -c lib.c
@@ -16,12 +17,15 @@ test: monocc
 	./tmp
 
 self: monocc
-	rm -f ./src/monocc.o
-	./src/monocc -file ./src/monocc.c > tmp.s
-	$(CC) -c tmp.s
-	cp -f tmp.o ./src/monocc.o
-	$(CC) $(CFLAGS) -o tmp $(OBJS) $(LDLIBS)
-	./tmp -file ./src/monocc.c
+	rm -f ./self/* tmp*
+	cp -f ./src/*.c ./self 
+	cp -f ./src/*.h ./self 
+	rm -f ./self/monocc.c
+	./src/monocc -file ./src/monocc.c > ./self/monocc.s 
+	$(CC) -c -o ./self/monocc.o ./self/monocc.s
+	$(CC) $(CFLAGS) -o self_1  $(SRC2) ./self/monocc.o $(LDLIBS)
+	./self_1 -file ./src/monocc.c > ./self/monocc2.s
+	diff ./self/monocc.s ./self/monocc2.s
 
 clean:
 	rm -f ./src/monocc ./src/*.o *~ tmp*

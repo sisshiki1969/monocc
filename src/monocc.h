@@ -35,8 +35,8 @@ void fread(char *buf, int size, int n, FILE *fp);
 int ftell(FILE *fp);
 void fclose(FILE *fp);
 char *strerror(int n);
-FILE *stderr;
-FILE *stdout;
+extern FILE *stderr;
+extern FILE *stdout;
 int true = 1;
 int false = 0;
 int NULL = 0;
@@ -45,8 +45,6 @@ int SEEK_SET = 0;
 typedef int size_t;
 #endif
 
-FILE *get_stderr();
-FILE *get_stdout();
 int get_errno();
 
 // Token
@@ -118,6 +116,7 @@ enum TokenKind {
     TK_ENUM,
     TK_UNION,
 
+    TK_EXTERN,
     TK_TYPEDEF,
 
     TK_EOF,
@@ -245,6 +244,7 @@ struct Global {
     Token *token;
     Type *type;
     Node *body;
+    bool is_extern;
 };
 
 // Tag name

@@ -20,10 +20,11 @@ bool is_reserved(char *str, int len, char *reserved) {
 
 /// Tokenize the input string.
 void tokenize(char *p, bool is_main) {
+    // fprintf(stderr, "%s", p);
     Token head;
     head.next = NULL;
     Token *cur = &head;
-    fprintf(stderr, "%c", *p);
+
     while(*p) {
         if(isspace(*p)) {
             p++;
@@ -126,6 +127,8 @@ void tokenize(char *p, bool is_main) {
                 cur = new_token(TK_UNION, cur, org_p, len);
             } else if(is_reserved(org_p, len, "typedef")) {
                 cur = new_token(TK_TYPEDEF, cur, org_p, len);
+            } else if(is_reserved(org_p, len, "extern")) {
+                cur = new_token(TK_EXTERN, cur, org_p, len);
             } else {
                 cur = new_token(TK_IDENT, cur, org_p, len);
             }

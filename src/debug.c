@@ -69,6 +69,7 @@ void print_token(Token *token) {
     case TK_UNION:
 
     case TK_TYPEDEF:
+    case TK_EXTERN:
     case TK_MACRO:
         printf("<%.*s>", token->len, token->str);
         break;
@@ -171,6 +172,20 @@ void print_node(Node *node) {
     }
     if(node->kind == ND_STR) {
         printf(" \"%.*s\" ", node->token->len, node->token->str);
+        return;
+    }
+    if(node->kind == ND_INIT) {
+        Vector *vec = node->nodes;
+        bool first = true;
+        printf("{");
+        for(int i = 0; i < vec_len(vec); i++) {
+            if(!first)
+                printf(",");
+            first = false;
+            print_node(vec->data[i]);
+            // printf(" ");
+        }
+        printf("}");
         return;
     }
     if(node->kind == ND_ASSIGN) {
@@ -406,6 +421,7 @@ void print_globals() {
     while(global) {
         fprintf(stdout, "// %.*s ", global->token->len, global->token->str);
         print_type(stdout, global->type);
+        print_node(global->body);
         fprintf(stdout, "\n");
         global = global->next;
     }

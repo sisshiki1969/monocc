@@ -3,4 +3,5 @@
 tmp*
 monocc
 .*/*
+self/*
 a.out

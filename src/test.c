@@ -7,6 +7,4 @@ void assert_expect(int line, int expected, int actual) {
     exit(1);
 }
 
-FILE *get_stderr() { return stderr; }
-FILE *get_stdout() { return stdout; }
 int get_errno() { return errno; }

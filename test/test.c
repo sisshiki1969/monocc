@@ -50,8 +50,19 @@ int j = 2015;
 char s = 270;
 char *str = "Hi, guys.\tAre you hungry";
 char str_ary[] = "Hey, girls.\nAre you angry?";
+char quick[15] = "QuickBrownFox";
+int ary_int[5] = {1, 2, 3, 4, 5};
+char reg[4][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
+                     {"edi", "esi", "edx", "ecx", "r8d"},
+                     {"di", "si", "dx", "cx", "r8w"},
+                     {"dil", "sil", "dl", "cl", "r8b"}};
 
 int array_global() {
+    for(int i = 0; i < 5; i++)
+        assert_expect(__LINE__, i + 1, ary_int[i]);
+    assert_expect(__LINE__, 'i', reg[2][1][1]);
+    assert_expect(__LINE__, 'w', reg[2][4][2]);
+
     i = 0;
     while(i <= 9) {
         j = 0;

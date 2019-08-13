@@ -1275,7 +1275,7 @@ Node *parse_initializer_list() {
 void parse_program() {
     ext_declarations = vec_new();
     while(!at_eof()) {
-        fprintf(stderr, "line %d\n", get_line(token->str));
+        // fprintf(stderr, "line %d\n", get_line(token->str));
         locals = NULL;
         scope = NULL;
         switch_level = 0;
@@ -1290,14 +1290,11 @@ void parse_program() {
             expect(TK_SEMI);
             continue;
         }
+        bool is_extern = false;
+        if(consume_if(TK_EXTERN)) {
+            is_extern = true;
+        }
         MemberInfo *ty_ident = parse_decl(false);
-        /*
-        if(ty_ident->ident)
-            fprintf(stderr, "decl %.*s\n", ty_ident->ident->len,
-                    ty_ident->ident->str);
-        else
-            fprintf(stderr, "decl <unnamed>\n");
-            */
         Token *ident = ty_ident->ident;
         Type *type = ty_ident->type;
         if(!ident) {
@@ -1312,13 +1309,22 @@ void parse_program() {
 
         if(!is_func(type)) {
             // gloval var declaration
-            Global *gvar = find_gvar(ident);
-            if(gvar && gvar->body)
-                error_at_token(ident, "Reinitialization of global variable");
             Token *op_token = token;
-            if(!gvar)
+            Global *gvar = find_gvar(ident);
+            if(gvar) {
+                if(gvar->body)
+                    error_at_token(ident,
+                                   "Reinitialization of global variable.");
+                if(!is_identical_type(gvar->type, type))
+                    error_at_token(ident, "Conflicting types.");
+            } else
                 gvar = new_gvar(ident, type);
+            gvar->is_extern = is_extern;
             if(consume_if(TK_ASSIGN)) {
+                if(is_extern)
+                    error_at_token(
+                        op_token,
+                        "Can not initialize variables with 'extern'.");
                 if(peek(TK_OP_BRACE)) {
                     gvar->body = parse_initializer_list();
                 } else
@@ -1332,7 +1338,8 @@ void parse_program() {
                                        "Incomplete type is not allowed.");
                 } else if(gvar->body->kind == ND_STR) {
                     // char s[] = "...";
-                    gvar->type->array_size = gvar->body->offset;
+                    if(gvar->type->array_size == 0)
+                        gvar->type->array_size = gvar->body->offset;
                 } else
                     error_at_node(gvar->body, "Unsupported initializer.");
             }
