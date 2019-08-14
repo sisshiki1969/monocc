@@ -58,16 +58,21 @@ void error(char *fmt, ...) {
     exit(1);
 }
 
+void print_error_line(FileInfo *fi, PosInfo *pos, int len) {
+    fprintf(stderr, "error in file: %s\n", fi->file_name);
+    fprintf(stderr, "line: %d\n", pos->line);
+    fprintf(stderr, "%.*s\n", pos->line_len, pos->line_start);
+    fprintf(stderr, "%*s%.*s\n", pos->pos_in_line, "", len,
+            "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+}
+
 /// Show an error on a character.
 void error_at_char(FileInfo *fi, char *err_char, char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
 
     PosInfo *pos = get_pos(err_char, fi->start);
-    fprintf(stderr, "error in file: %s\n", fi->file_name);
-    fprintf(stderr, "line: %d\n", pos->line);
-    fprintf(stderr, "%.*s\n", pos->line_len, pos->line_start);
-    fprintf(stderr, "%*s^\n", pos->pos_in_line, "");
+    print_error_line(fi, pos, 1);
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
     exit(1);
@@ -77,11 +82,7 @@ void error_at_token(Token *token, char *fmt, ...) {
     FileInfo *fi = get_file_info(token->str);
     PosInfo *pos = get_pos(token->str, fi->start);
 
-    fprintf(stderr, "error in file: %s\n", fi->file_name);
-    fprintf(stderr, "line: %d\n", pos->line);
-    fprintf(stderr, "%.*s\n", pos->line_len, pos->line_start);
-    fprintf(stderr, "%*s%.*s\n", pos->pos_in_line, "", token->len,
-            "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+    print_error_line(fi, pos, token->len);
     fprintf(stderr, fmt);
     fprintf(stderr, "\n");
     exit(1);
@@ -171,12 +172,9 @@ void error_at_node(Node *node, char *fmt, ...) {
 
     Span *span = get_node_span(node);
     FileInfo *fi = get_file_info(span->start);
-    PosInfo *pi = get_pos(span->start, fi->start);
+    PosInfo *pos = get_pos(span->start, fi->start);
 
-    fprintf(stderr, "line: %d\n", pi->line);
-    fprintf(stderr, "%.*s\n", pi->line_len, pi->line_start);
-    fprintf(stderr, "%*s%.*s\n", pi->pos_in_line, "",
-            (int)(span->end - span->start), "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+    print_error_line(fi, pos, (int)(span->end - span->start));
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
     exit(1);

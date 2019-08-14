@@ -17,14 +17,17 @@ typedef struct {
     int fd;
     char smallbuf[1];
 } FILE;
+typedef int size_t;
 void *calloc(int n, int size);
 void *malloc(int size);
 void *realloc(void *ptr, int size);
 int isalnum(int c);
 int strlen(char *s);
 char *strchr(char *s, int c);
+char *strrchr(char *s, int c);
 int strncmp(char *str, char *reserved, int len);
 int strcmp(char *str1, char *str2);
+char *strncpy(char *dest, char *src, size_t n);
 int isspace(int p);
 int isdigit(int p);
 int isalpha(int p);
@@ -46,7 +49,6 @@ int false = 0;
 void *NULL = (void *)0;
 int SEEK_END = 2;
 int SEEK_SET = 0;
-typedef int size_t;
 #endif
 
 int get_errno();
@@ -390,6 +392,7 @@ void gen_stmt(Node *node);
 
 // Globals
 
+char *cur_dir;
 char *source_text;
 char registers[4][5][4];
 

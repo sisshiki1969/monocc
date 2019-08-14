@@ -159,7 +159,6 @@ void compile(char *file) {
 }
 
 int main(int argc, char **argv) {
-    fprintf(stderr, "%s\n", argv[0]);
     char *file;
     if(argc == 2 && strcmp(argv[1], "-test") == 0) {
         test_vec();
@@ -167,7 +166,6 @@ int main(int argc, char **argv) {
     } else if(argc == 3 && strcmp(argv[1], "-file") == 0) {
         file = argv[2];
         source_text = read_file(argv[2]);
-        // fprintf(stderr, "%s", source_text);
     } else if(argc == 2) {
         file = "input";
         source_text = argv[1];
@@ -175,6 +173,7 @@ int main(int argc, char **argv) {
         fprintf(stderr, "Invalid arguments.\n");
         return 1;
     }
+
     compile(file);
     return 0;
 }

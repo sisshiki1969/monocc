@@ -47,16 +47,26 @@ void tokenize(char *file, char *p, bool is_main) {
             char *cursor = strchr(p, '\n');
             if(strncmp(p + 1, "include", 7) == 0) {
                 p += 8;
-                while(*p == ' ')
+                while(*p == ' ' || *p == '\t')
                     p++;
                 if(*p == '"') {
+                    // get directory name of the current file.
+                    char *f = strrchr(file, '/');
+                    if(!f)
+                        cur_dir = "./";
+                    else {
+                        cur_dir = calloc(1, f - file + 2);
+                        strncpy(cur_dir, file, f - file + 1);
+                    }
+                    fprintf(stderr, "directory: %s\n", cur_dir);
+
                     char *end = strchr(p + 1, '"');
                     int len = end - p - 1;
-                    char *file_name = calloc(1, len + 1 + 6);
-                    memcpy(file_name, "./src/", 6);
-                    memcpy(file_name + 6, p + 1, len);
+                    char *file_name = calloc(1, strlen(cur_dir) + len + 1);
+                    strcpy(file_name, cur_dir);
+                    strncpy(file_name + strlen(cur_dir), p + 1, len);
 
-                    // fprintf(stderr, "include <%s>\n", file_name);
+                    fprintf(stderr, "include <%s>\n", file_name);
                     char *text = read_file(file_name);
                     tokenize(file_name, text, false);
                 }
