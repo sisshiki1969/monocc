@@ -102,7 +102,6 @@ int alignof_struct(Type *type) {
     if(!tag) {
         if(!type->member)
             error("anonymous struct with no members.");
-        cursor = type->member;
     } else
         cursor = tag->type->member;
     int align = 0;

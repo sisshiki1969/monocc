@@ -51,6 +51,17 @@ typedef int size_t;
 
 int get_errno();
 
+// File info
+
+typedef struct FileInfo FileInfo;
+
+struct FileInfo {
+    FileInfo *next;
+    char *file_name;
+    char *start;
+    char *end;
+};
+
 // Token
 
 typedef enum TokenKind TokenKind;
@@ -282,11 +293,6 @@ struct Typedef {
 
 Type *find_typedef(Token *ident);
 
-typedef struct {
-    int start;
-    int end;
-} Span;
-
 typedef struct Vector Vector;
 
 struct Vector {
@@ -299,16 +305,16 @@ char *read_file(char *path);
 
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
 
-int get_line(char *p);
+int get_line(char *p, char *source);
 void error(char *fmt, ...);
-void error_at_char(char *source, char *fmt, ...);
+void error_at_char(FileInfo *fi, char *source, char *fmt, ...);
 void error_at_token(Token *token, char *fmt, ...);
 void error_at_node(Node *node, char *fmt, ...);
 
 // Methods for Token
 
 void print_tokens(Token *token);
-void tokenize(char *source, bool is_main);
+void tokenize(char *file, char *source, bool is_main);
 
 // Methods for Node
 
@@ -387,6 +393,7 @@ void gen_stmt(Node *node);
 char *source_text;
 char registers[4][5][4];
 
+FileInfo *file_informations;
 Token *token;
 Vector *ext_declarations;
 Vector *strings;

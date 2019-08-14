@@ -613,7 +613,8 @@ Node *parse_prim_expr() {
     }
     if(consume_if(TK_MACRO)) {
         if(strncmp(cur_token->str, "__LINE__", 8) == 0)
-            return new_node_num(get_line(cur_token->str), cur_token);
+            return new_node_num(get_line(cur_token->str, source_text),
+                                cur_token);
     }
     if(is_type_specifier(token))
         error_at_token(token, "Can not use declaration here.");
@@ -1059,8 +1060,6 @@ Node *parse_local_declaration() {
 }
 
 Node *parse_block_item() {
-    // fprintf(stderr, "    line %d\n", get_line(token->str));
-
     if(consume_if(TK_TYPEDEF)) {
         MemberInfo *ty_ident = parse_decl(true);
         Token *ident = ty_ident->ident;
@@ -1329,7 +1328,6 @@ Node *parse_initializer_list() {
 void parse_program() {
     ext_declarations = vec_new();
     while(!at_eof()) {
-        // fprintf(stderr, "line %d\n", get_line(token->str));
         locals = NULL;
         scope = NULL;
         switch_level = 0;

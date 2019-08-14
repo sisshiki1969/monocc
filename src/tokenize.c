@@ -18,12 +18,25 @@ bool is_reserved(char *str, int len, char *reserved) {
     return len == strlen(reserved) && strncmp(str, reserved, len) == 0;
 }
 
+FileInfo *new_file_info(char *file_name, char *start) {
+    FileInfo *fi = calloc(1, sizeof(FileInfo));
+    fi->next = file_informations;
+    fi->file_name = file_name;
+    fi->start = start;
+    file_informations = fi;
+    return fi;
+}
+
 /// Tokenize the input string.
-void tokenize(char *p, bool is_main) {
-    // fprintf(stderr, "%s", p);
+/// char *file; file name
+/// char *p; ptr to source text.
+/// bool is_main; false if the included code by #include.
+void tokenize(char *file, char *p, bool is_main) {
     Token head;
     head.next = NULL;
     Token *cur = &head;
+
+    FileInfo *fi = new_file_info(file, p);
 
     while(*p) {
         if(isspace(*p)) {
@@ -45,7 +58,7 @@ void tokenize(char *p, bool is_main) {
 
                     // fprintf(stderr, "include <%s>\n", file_name);
                     char *text = read_file(file_name);
-                    tokenize(text, false);
+                    tokenize(file_name, text, false);
                 }
             }
             // cur = new_token(TK_MACRO, cur, p, cursor - p);
@@ -316,12 +329,13 @@ void tokenize(char *p, bool is_main) {
                         src++;
                         break;
                     default:
-                        error_at_char(src - 1, "Unsupported escape sequence.");
+                        error_at_char(fi, src - 1,
+                                      "Unsupported escape sequence.");
                     }
                 }
             }
             if(!*src)
-                error_at_char(src - 1, "Missing closing quote.");
+                error_at_char(fi, src - 1, "Missing closing quote.");
             cur = new_token(TK_STR, cur, p, (int)(src - p));
             p = src + 1;
             continue;
@@ -372,12 +386,12 @@ void tokenize(char *p, bool is_main) {
 
             p++;
             if(*p++ != '\'')
-                error_at_char(p - 1, "Unexpected token. Expected \"'\".");
+                error_at_char(fi, p - 1, "Unexpected token. Expected \"'\".");
             cur = new_token(TK_NUM, cur, org_p, p - org_p);
             cur->int_val = ch;
             continue;
         }
-        error_at_char(p, "Unexpected character.");
+        error_at_char(fi, p, "Unexpected character.");
     }
 
     if(!token) {
@@ -389,5 +403,6 @@ void tokenize(char *p, bool is_main) {
         cursor->next = head.next;
     }
     if(is_main)
-        cur = new_token(TK_EOF, cur, p++, 1);
+        cur = new_token(TK_EOF, cur, p, 1);
+    fi->end = p;
 }

@@ -418,7 +418,7 @@ void gen_lnot(Node *node) {
 void gen(Node *node) {
     if(!node)
         return;
-    printf("// Line %d ", get_line(node->token->str));
+    printf("// Line %d ", get_line(node->token->str, source_text));
     print_node(node);
     printf("\n");
     Node *parent;

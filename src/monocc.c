@@ -107,19 +107,20 @@ void emit_basic_global(Type *type, Node *init) {
     }
 }
 
-void compile() {
-    fprintf(stderr, "monocc: tokenize\n");
-    tokenize(source_text, true);
+void compile(char *file) {
+    tokenize(file, source_text, true);
     print_tokens(token);
+    fprintf(stderr, "monocc: tokenize\n");
 
     strings = vec_new();
-    fprintf(stderr, "monocc: parse\n");
     parse_program();
+    fprintf(stderr, "monocc: parse\n");
     print_globals();
     print_funcs();
     print_strings();
     print_structs();
     print_typedefs();
+
     printf("\n");
     printf("\t.intel_syntax noprefix\n");
 
@@ -159,18 +160,21 @@ void compile() {
 
 int main(int argc, char **argv) {
     fprintf(stderr, "%s\n", argv[0]);
+    char *file;
     if(argc == 2 && strcmp(argv[1], "-test") == 0) {
         test_vec();
         return 0;
     } else if(argc == 3 && strcmp(argv[1], "-file") == 0) {
+        file = argv[2];
         source_text = read_file(argv[2]);
         // fprintf(stderr, "%s", source_text);
     } else if(argc == 2) {
+        file = "input";
         source_text = argv[1];
     } else {
         fprintf(stderr, "Invalid arguments.\n");
         return 1;
     }
-    compile();
+    compile(file);
     return 0;
 }

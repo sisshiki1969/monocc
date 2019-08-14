@@ -1,16 +1,52 @@
 #include "monocc.h"
 
-int get_line(char *p) {
-    char *line_start = source_text;
+typedef struct PosInfo PosInfo;
+
+struct PosInfo {
+    int line;
+    int pos_in_line;
+    char *line_start;
+    int line_len;
+};
+
+int get_line(char *p, char *source) {
     char *cursor;
     int line = 1;
-    while(cursor = strchr(line_start, '\n')) {
+    while(cursor = strchr(source, '\n')) {
         if(cursor > p)
             break;
-        line_start = cursor + 1;
+        source = cursor + 1;
         line++;
     }
     return line;
+}
+
+PosInfo *get_pos(char *p, char *source) {
+    char *cursor;
+    int line = 1;
+    while(cursor = strchr(source, '\n')) {
+        if(cursor > p)
+            break;
+        source = cursor + 1;
+        line++;
+    }
+    if(!cursor)
+        cursor = strchr(p, '\0');
+
+    PosInfo *pos = calloc(1, sizeof(PosInfo));
+    pos->line = line;
+    pos->pos_in_line = (int)(p - source);
+    pos->line_start = source;
+    pos->line_len = (int)(cursor - source);
+    return pos;
+}
+
+FileInfo *get_file_info(char *p) {
+    for(FileInfo *fi = file_informations; fi; fi = fi->next) {
+        if(fi->start <= p && p <= fi->end)
+            return fi;
+    }
+    error("Internal error: Can not find file.");
 }
 
 void error(char *fmt, ...) {
@@ -22,56 +58,42 @@ void error(char *fmt, ...) {
     exit(1);
 }
 
-void error_at_char(char *err_char, char *fmt, ...) {
+/// Show an error on a character.
+void error_at_char(FileInfo *fi, char *err_char, char *fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
-    char *p = source_text;
-    char *cursor;
-    int line = 1;
-    while(cursor = strchr(p, '\n')) {
-        if(cursor > err_char)
-            break;
-        p = cursor + 1;
-        line++;
-    }
-    int pos = err_char - p;
-    fprintf(stderr, "line: %d\n", line);
-    fprintf(stderr, "%.*s\n", (int)(cursor - p), p);
-    fprintf(stderr, "%*s^\n", pos, "");
+
+    PosInfo *pos = get_pos(err_char, fi->start);
+    fprintf(stderr, "error in file: %s\n", fi->file_name);
+    fprintf(stderr, "line: %d\n", pos->line);
+    fprintf(stderr, "%.*s\n", pos->line_len, pos->line_start);
+    fprintf(stderr, "%*s^\n", pos->pos_in_line, "");
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
     exit(1);
 }
 
 void error_at_token(Token *token, char *fmt, ...) {
-    // va_list ap;
-    // va_start(ap, fmt);
+    FileInfo *fi = get_file_info(token->str);
+    PosInfo *pos = get_pos(token->str, fi->start);
 
-    char *p = source_text;
-    char *line_end;
-    int line = 1;
-    while(line_end = strchr(p, '\n')) {
-        if(line_end > token->str)
-            break;
-        p = line_end + 1;
-        line++;
-    }
-    if(!line_end) {
-        line_end = strchr(p, '\0');
-    }
-
-    int pos = token->str - p;
-    fprintf(stderr, "line: %d\n", line);
-    fprintf(stderr, "%.*s\n", (int)(line_end - p), p);
-    fprintf(stderr, "%*s%.*s\n", pos, "", token->len,
+    fprintf(stderr, "error in file: %s\n", fi->file_name);
+    fprintf(stderr, "line: %d\n", pos->line);
+    fprintf(stderr, "%.*s\n", pos->line_len, pos->line_start);
+    fprintf(stderr, "%*s%.*s\n", pos->pos_in_line, "", token->len,
             "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
     fprintf(stderr, fmt);
     fprintf(stderr, "\n");
     exit(1);
 }
 
+typedef struct {
+    char *start;
+    char *end;
+} Span;
+
 Span *new_span(Token *token) {
-    int start = (int)(token->str - source_text);
+    char *start = token->str;
     Span *span = calloc(1, sizeof(Span));
     span->start = start;
     span->end = start + token->len;
@@ -99,7 +121,9 @@ Span *get_node_span(Node *node) {
     case ND_IDENT:
     case ND_NUM:
     case ND_LVAR:
+    case ND_GVAR:
     case ND_STR:
+    case ND_INIT:
         span = new_span(node->token);
         break;
     case ND_ADD:
@@ -110,6 +134,16 @@ Span *get_node_span(Node *node) {
     case ND_NEQ:
     case ND_GE:
     case ND_GT:
+
+    case ND_LAND:
+    case ND_LOR:
+    case ND_NOT:
+    case ND_AND:
+    case ND_OR:
+    case ND_XOR:
+    case ND_SHR:
+    case ND_SHL:
+
     case ND_ASSIGN:
         span = new_span(node->token);
         merge_span(span, get_node_span(node->lhs));
@@ -118,10 +152,8 @@ Span *get_node_span(Node *node) {
     case ND_ADDR:
     case ND_DEREF:
     case ND_MEMBER:
-        span = new_span(node->token);
-        merge_span(span, get_node_span(node->lhs));
-        break;
     case ND_CALL:
+    case ND_CAST:
         span = new_span(node->token);
         merge_span(span, get_node_span(node->lhs));
         break;
@@ -138,26 +170,13 @@ void error_at_node(Node *node, char *fmt, ...) {
     va_start(ap, fmt);
 
     Span *span = get_node_span(node);
-    // fprintf(stderr, "span (%d:%d)\n", span->start, span->end);
+    FileInfo *fi = get_file_info(span->start);
+    PosInfo *pi = get_pos(span->start, fi->start);
 
-    char *line_start = source_text;
-    char *line_end;
-    int line = 1;
-    while(line_end = strchr(line_start, '\n')) {
-        if(line_end > source_text + span->start)
-            break;
-        line_start = line_end + 1;
-        line++;
-    }
-    if(!line_end) {
-        line_end = strchr(line_start, '\0');
-    }
-
-    int pos = span->start - (int)(line_start - source_text);
-    fprintf(stderr, "line: %d\n", line);
-    fprintf(stderr, "%.*s\n", (int)(line_end - line_start), line_start);
-    fprintf(stderr, "%*s%.*s\n", pos, "", span->end - span->start,
-            "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+    fprintf(stderr, "line: %d\n", pi->line);
+    fprintf(stderr, "%.*s\n", pi->line_len, pi->line_start);
+    fprintf(stderr, "%*s%.*s\n", pi->pos_in_line, "",
+            (int)(span->end - span->start), "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
     vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
     exit(1);
