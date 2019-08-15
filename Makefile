@@ -1,5 +1,5 @@
 CFLAGS=-std=c11 -g -static
-LDLIBS = -L /usr/lib -L /usr/local/lib
+LDLIBS = -L /usr/lib -L /usr/local/lib -L /usr/include/
 SRCS=$(wildcard ./src/*.c)
 OBJS=$(SRCS:.c=.o)
 SRC2=$(wildcard ./self/*.c)
@@ -17,7 +17,7 @@ test: monocc
 	./tmp
 
 self: monocc
-	rm -f ./self/* ./self2/* tmp*
+	rm -f ./self/* ./self2/* tmp* ./src/*.o ./src/*.s
 	cp -f ./src/* ./self
 	cp -f ./src/* ./self2
 	./src/monocc ./self/monocc.c

@@ -14,22 +14,22 @@ Global *functions;
 char *output_file_name;
 FILE *output;
 
-char registers[4][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
-                           {"edi", "esi", "edx", "ecx", "r8d"},
-                           {"di", "si", "dx", "cx", "r8w"},
-                           {"dil", "sil", "dl", "cl", "r8b"}};
+char *registers[4][5] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
+                         {"edi", "esi", "edx", "ecx", "r8d"},
+                         {"di", "si", "dx", "cx", "r8w"},
+                         {"dil", "sil", "dl", "cl", "r8b"}};
 
 /// Read file and return char* of data.
 char *read_file(char *path) {
     FILE *fp = fopen(path, "r");
     if(!fp)
-        error("cannot open %s: %s\n", path, strerror(0));
+        error("cannot open %s: %s\n", path, strerror(errno));
 
     if(fseek(fp, 0, SEEK_END) == -1)
-        error("%s: fseek: %s\n", path, strerror(0));
+        error("%s: fseek: %s\n", path, strerror(errno));
     size_t size = ftell(fp);
     if(fseek(fp, 0, SEEK_SET) == -1)
-        error("%s: fseek: %s\n", path, strerror(0));
+        error("%s: fseek: %s\n", path, strerror(errno));
 
     char *buf = calloc(1, size + 2);
     fread(buf, size, 1, fp);

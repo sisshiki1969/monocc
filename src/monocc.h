@@ -46,14 +46,15 @@ char *strerror(int n);
 void exit(int status);
 extern FILE *stderr;
 extern FILE *stdout;
+extern int *__errno_location();
+
 #define true 1
 #define false 0
 #define NULL ((void *)0)
 #define SEEK_END 2
 #define SEEK_SET 0
-//#define errno (*__geterrno())
+#define errno (*__errno_location())
 #endif
-extern int *__geterrno();
 
 // File info
 
@@ -410,7 +411,7 @@ Token *find_macro(Token *token);
 // Globals
 
 extern char *source_text;
-extern char registers[4][5][4];
+extern char *registers[4][5];
 
 extern FileInfo *file_informations;
 extern Token *token;
