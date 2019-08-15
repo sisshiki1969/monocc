@@ -340,11 +340,17 @@ int q8() {
     return q8_count;
 }
 
+int fun(int *p) { return *p; }
+
 int main() {
-    printf_(str_ary);
-    printf_("\n");
-    printf_(str);
-    printf_("\n");
+#define true 1
+#define false 0
+#define NULL ((void *)0)
+    int *jum = NULL;
+    assert_expect(__LINE__, 1, true);
+    assert_expect(__LINE__, 0, false);
+    // assert_expect(__LINE__, (int *)5, NULL);
+
     assert_expect(__LINE__, 1979, i);
     assert_expect(__LINE__, 2015, j);
     assert_expect(__LINE__, 14, s);

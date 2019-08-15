@@ -27,6 +27,7 @@ char *strchr(char *s, int c);
 char *strrchr(char *s, int c);
 int strncmp(char *str, char *reserved, int len);
 int strcmp(char *str1, char *str2);
+char *strcpy(char *dest, char *src);
 char *strncpy(char *dest, char *src, size_t n);
 int isspace(int p);
 int isdigit(int p);
@@ -42,16 +43,17 @@ void fread(char *buf, int size, int n, FILE *fp);
 int ftell(FILE *fp);
 void fclose(FILE *fp);
 char *strerror(int n);
+void exit(int status);
 extern FILE *stderr;
 extern FILE *stdout;
-int true = 1;
-int false = 0;
-void *NULL = (void *)0;
-int SEEK_END = 2;
-int SEEK_SET = 0;
+#define true 1
+#define false 0
+#define NULL ((void *)0)
+#define SEEK_END 2
+#define SEEK_SET 0
+//#define errno (*__geterrno())
 #endif
-
-int get_errno();
+extern int *__geterrno();
 
 // File info
 
@@ -329,7 +331,7 @@ void parse_program();
 // for debug and test.
 
 void assert_expect(int line, int expected, int actual);
-void print_token(Token *token);
+void print_token(FILE *stream, Token *token);
 void print_nodes();
 void print_node(Node *node);
 void print_locals();
@@ -390,19 +392,34 @@ void vec_push(Vector *vec, Node *data);
 void gen(Node *node);
 void gen_stmt(Node *node);
 
+// Macros
+
+typedef struct Macro Macro;
+
+struct Macro {
+    Macro *next;
+    Token *token;
+    Token *subst;
+};
+
+Macro *new_macro(Token *token, Token *subst);
+Token *find_macro(Token *token);
+
 // Globals
 
-char *cur_dir;
-char *source_text;
-char registers[4][5][4];
+extern char *source_text;
+extern char registers[4][5][4];
 
-FileInfo *file_informations;
-Token *token;
-Vector *ext_declarations;
-Vector *strings;
-LVar *locals;
-LVar *scope;
-TagName *tagnames;
-Typedef *tdef_names;
-Global *globals;
-Global *functions;
+extern FileInfo *file_informations;
+extern Token *token;
+extern Vector *ext_declarations;
+extern Vector *strings;
+extern LVar *locals;
+extern LVar *scope;
+extern TagName *tagnames;
+extern Typedef *tdef_names;
+extern Global *globals;
+extern Global *functions;
+
+extern char *output_file_name;
+extern FILE *output;

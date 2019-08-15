@@ -21,7 +21,7 @@ void printf_(char *str) { printf("%s", str); }
 
 int assert_expect(int line, int expected, int actual) {
     if(expected == actual) {
-        fprintf(stderr, "line %d: passed\n", line);
+        // fprintf(stderr, "line %d: passed\n", line);
         return 0;
     }
     fprintf(stderr, "line %d: %d expected, but got %d\n", line, expected,

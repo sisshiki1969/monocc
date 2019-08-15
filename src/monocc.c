@@ -1,16 +1,35 @@
 #include "monocc.h"
 
+char *source_text;
+FileInfo *file_informations;
+Token *token;
+Vector *ext_declarations;
+Vector *strings;
+LVar *locals;
+LVar *scope;
+TagName *tagnames;
+Typedef *tdef_names;
+Global *globals;
+Global *functions;
+char *output_file_name;
+FILE *output;
+
+char registers[4][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
+                           {"edi", "esi", "edx", "ecx", "r8d"},
+                           {"di", "si", "dx", "cx", "r8w"},
+                           {"dil", "sil", "dl", "cl", "r8b"}};
+
 /// Read file and return char* of data.
 char *read_file(char *path) {
     FILE *fp = fopen(path, "r");
     if(!fp)
-        error("cannot open %s: %s\n", path, strerror(get_errno()));
+        error("cannot open %s: %s\n", path, strerror(0));
 
     if(fseek(fp, 0, SEEK_END) == -1)
-        error("%s: fseek: %s\n", path, strerror(get_errno()));
+        error("%s: fseek: %s\n", path, strerror(0));
     size_t size = ftell(fp);
     if(fseek(fp, 0, SEEK_SET) == -1)
-        error("%s: fseek: %s\n", path, strerror(get_errno()));
+        error("%s: fseek: %s\n", path, strerror(0));
 
     char *buf = calloc(1, size + 2);
     fread(buf, size, 1, fp);
@@ -24,11 +43,6 @@ char *read_file(char *path) {
     return buf;
 }
 
-char registers[4][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
-                           {"edi", "esi", "edx", "ecx", "r8d"},
-                           {"di", "si", "dx", "cx", "r8w"},
-                           {"dil", "sil", "dl", "cl", "r8b"}};
-
 void emit_basic_global(Type *type, Node *init) {
     if(is_array_of_char(type)) {
         if(!init) {
@@ -37,19 +51,20 @@ void emit_basic_global(Type *type, Node *init) {
                 error_at_token(init->token, "Incomplete type is not allowed.");
             // char str[10];
             else
-                printf("\t.zero %d\n", sizeof_type(type));
+                fprintf(output, "\t.zero %d\n", sizeof_type(type));
         } else if(init->kind == ND_STR) {
             // char str[] = "sample";
-            printf("\t.string \"%.*s\"\n", init->token->len, init->token->str);
+            fprintf(output, "\t.string \"%.*s\"\n", init->token->len,
+                    init->token->str);
             int ary_size = type->array_size;
             int str_size = init->token->len + 1;
             if(ary_size > str_size)
-                printf("\t.zero %d\n", ary_size - str_size);
+                fprintf(output, "\t.zero %d\n", ary_size - str_size);
         } else
             error_at_node(init, "Unsupported initializer.");
     } else if(is_array(type)) {
         if(!init) {
-            printf("\t.zero %d\n", sizeof_type(type));
+            fprintf(output, "\t.zero %d\n", sizeof_type(type));
             return;
         }
         if(init->kind != ND_INIT)
@@ -68,7 +83,7 @@ void emit_basic_global(Type *type, Node *init) {
         else
             error_at_node(
                 init, "Calculation in an initializer is not supported yet.");
-        printf("\t.long %d\n", i);
+        fprintf(output, "\t.long %d\n", i);
     } else if(is_char(type)) {
         int i;
         if(!init)
@@ -78,39 +93,55 @@ void emit_basic_global(Type *type, Node *init) {
         else
             error_at_node(
                 init, "Calculation in an initializer is not supported yet.");
-        printf("\t.byte %d\n", i);
+        fprintf(output, "\t.byte %d\n", i);
     } else if(is_ptr_to_char(type)) {
         // char *str = "sample";
         if(init && init->kind == ND_STR)
-            printf("\t.quad .LS%06d\n", init->int_val);
+            fprintf(output, "\t.quad .LS%06d\n", init->int_val);
         else
-            printf("\t.quad 0\n");
+            fprintf(output, "\t.quad 0\n");
     } else {
         int s = sizeof_type(type);
         switch(s) {
         case 1:
-            printf("\t.byte 0\n");
+            fprintf(output, "\t.byte 0\n");
             break;
         case 2:
-            printf("\t.short 0\n");
+            fprintf(output, "\t.short 0\n");
             break;
         case 4:
-            printf("\t.long 0\n");
+            fprintf(output, "\t.long 0\n");
             break;
         case 8:
-            printf("\t.align 8\n");
-            printf("\t.quad 0\n");
+            fprintf(output, "\t.align 8\n");
+            fprintf(output, "\t.quad 0\n");
             break;
         default:
-            printf("\t.zero %d\n", s);
+            fprintf(output, "\t.zero %d\n", s);
         }
     }
 }
 
 void compile(char *file) {
     tokenize(file, source_text, true);
-    print_tokens(token);
     fprintf(stderr, "monocc: tokenize\n");
+    for(Token *t = token; t; t = t->next) {
+        // print_token(stderr, t);
+        Token *subst = find_macro(t);
+        if(!subst)
+            continue;
+        Token *next_token = t->next;
+        t->kind = subst->kind;
+        t->next = subst->next;
+        t->str = subst->str;
+        t->len = subst->len;
+        t->int_val = subst->int_val;
+        while(t->next)
+            t = t->next;
+        t->next = next_token;
+    }
+    print_tokens(token);
+    fprintf(stderr, "monocc: pp\n");
 
     strings = vec_new();
     parse_program();
@@ -121,10 +152,10 @@ void compile(char *file) {
     print_structs();
     print_typedefs();
 
-    printf("\n");
-    printf("\t.intel_syntax noprefix\n");
+    fprintf(output, "\n");
+    fprintf(output, "\t.intel_syntax noprefix\n");
 
-    printf("\t.data\n");
+    fprintf(output, "\t.data\n");
     Global *global = globals;
 
     fprintf(stderr, "monocc: emit globals...\n");
@@ -132,27 +163,28 @@ void compile(char *file) {
         if(global->is_extern) {
             continue;
         }
-        printf("\t.global %.*s\n", global->token->len, global->token->str);
-        printf("%.*s:\n", global->token->len, global->token->str);
+        fprintf(output, "\t.global %.*s\n", global->token->len,
+                global->token->str);
+        fprintf(output, "%.*s:\n", global->token->len, global->token->str);
         emit_basic_global(global->type, global->body);
     };
     fprintf(stderr, "monocc: emitted globals\n");
 
     int i = 0;
     while(i < vec_len(strings)) {
-        printf(".LS%06d:\n", strings->data[i]->int_val);
-        printf("\t.string \"%.*s\"\n", strings->data[i]->token->len,
-               strings->data[i]->token->str);
+        fprintf(output, ".LS%06d:\n", strings->data[i]->int_val);
+        fprintf(output, "\t.string \"%.*s\"\n", strings->data[i]->token->len,
+                strings->data[i]->token->str);
         i++;
     }
-    printf("\n");
+    fprintf(output, "\n");
 
-    printf("\t.text\n");
+    fprintf(output, "\t.text\n");
 
     int len = vec_len(ext_declarations);
     for(int i = 0; i < len; i++) {
         Node *node = ext_declarations->data[i];
-        printf("\t.global %.*s\n", node->token->len, node->token->str);
+        fprintf(output, "\t.global %.*s\n", node->token->len, node->token->str);
         gen_stmt(node);
     }
     fprintf(stderr, "monocc: compile complete\n");
@@ -160,20 +192,43 @@ void compile(char *file) {
 
 int main(int argc, char **argv) {
     char *file;
-    if(argc == 2 && strcmp(argv[1], "-test") == 0) {
-        test_vec();
-        return 0;
-    } else if(argc == 3 && strcmp(argv[1], "-file") == 0) {
-        file = argv[2];
-        source_text = read_file(argv[2]);
-    } else if(argc == 2) {
-        file = "input";
-        source_text = argv[1];
-    } else {
-        fprintf(stderr, "Invalid arguments.\n");
-        return 1;
+
+    for(int i = 1; i < argc; i++) {
+        if(strcmp(argv[i], "-test") == 0) {
+            test_vec();
+            return 0;
+        } else if(strcmp(argv[i], "-string") == 0) {
+            if(i + 1 < argc) {
+                fprintf(stderr, "No input string.\n");
+                return 1;
+            }
+            file = "input";
+            source_text = argv[i + 1];
+            break;
+        } else {
+            file = argv[i];
+            source_text = read_file(argv[i]);
+            output_file_name = calloc(1, strlen(file) + 5);
+            strcpy(output_file_name, file);
+            char *dot = output_file_name + strlen(output_file_name) - 2;
+            if(strcmp(dot, ".c") != 0) {
+                fprintf(stderr, "Invalid aource file name.");
+                return 1;
+            }
+            *(dot + 1) = 's';
+
+            fprintf(stderr, "output file: %s\n", output_file_name);
+            output = fopen(output_file_name, "w");
+            if(!output) {
+                fprintf(stderr, "Cannot open output file.\n");
+                exit(1);
+            }
+
+            compile(file);
+            return 0;
+        }
     }
 
-    compile(file);
-    return 0;
+    fprintf(stderr, "Invalid arguments.\n");
+    return 1;
 }

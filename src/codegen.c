@@ -70,8 +70,8 @@ char *new_label() {
 }
 
 /// Emit assembly for label.
-void emit_label(char *label) { printf("%s:\n", label); }
-void emit_jmp(char *label) { printf("\tjmp  %s\n", label); }
+void emit_label(char *label) { fprintf(output, "%s:\n", label); }
+void emit_jmp(char *label) { fprintf(output, "\tjmp  %s\n", label); }
 
 void push_loop() {
     char *continue_label = new_label();
@@ -138,13 +138,13 @@ int reg_size(Type *type) {
 void emit_deref_rax(Node *node) {
     switch(reg_size(type(node))) {
     case 0:
-        printf("\tmov  rax, [rax]\n");
+        fprintf(output, "\tmov  rax, [rax]\n");
         break;
     case 1:
-        printf("\tmov  eax, [rax]\n");
+        fprintf(output, "\tmov  eax, [rax]\n");
         break;
     case 3:
-        printf("\tmovsx eax, BYTE PTR [rax]\n");
+        fprintf(output, "\tmovsx eax, BYTE PTR [rax]\n");
         break;
     default:
         error_at_node(node, "Size of the variable is unknown.");
@@ -154,8 +154,8 @@ void emit_deref_rax(Node *node) {
 /// Push address of local var.
 /// using reg: none.
 void emit_lvar_addr(LVar *lvar) {
-    printf("\tmov  rax, rbp\n");
-    printf("\tsub  rax, %d\n", lvar->offset);
+    fprintf(output, "\tmov  rax, rbp\n");
+    fprintf(output, "\tsub  rax, %d\n", lvar->offset);
 }
 
 /// Generate address of a local variable.
@@ -165,17 +165,18 @@ void gen_lval_to_rax(Node *node) {
         emit_lvar_addr(node->lvar);
         return;
     } else if(node->kind == ND_GVAR) {
-        printf("\tlea  rax, %.*s[rip]\n", node->token->len, node->token->str);
+        fprintf(output, "\tlea  rax, %.*s[rip]\n", node->token->len,
+                node->token->str);
         return;
     } else if(node->kind == ND_DEREF) {
         gen(node->lhs);
-        printf("\tpop rax\n");
+        fprintf(output, "\tpop rax\n");
     } else if(node->kind == ND_STR) {
-        printf("\tlea  rax, .LS%06d[rip]\n", node->int_val);
+        fprintf(output, "\tlea  rax, .LS%06d[rip]\n", node->int_val);
         return;
     } else if(node->kind == ND_MEMBER) {
         gen_lval_to_rax(node->lhs);
-        printf("\tadd  rax, %d\n", node->offset);
+        fprintf(output, "\tadd  rax, %d\n", node->offset);
     } else {
         error_at_node(node, "Expected l-value.");
     }
@@ -187,9 +188,9 @@ void gen_if(Node *node) {
     char *else_str = new_label();
     char *end_str = new_label();
     gen(node->lhs);
-    printf("\tpop  rax\n");
-    printf("\tcmp  rax, 0\n");
-    printf("\tje   %s\n", else_str);
+    fprintf(output, "\tpop  rax\n");
+    fprintf(output, "\tcmp  rax, 0\n");
+    fprintf(output, "\tje   %s\n", else_str);
     gen_stmt(node->rhs);
     emit_jmp(end_str);
     emit_label(else_str);
@@ -203,9 +204,9 @@ void gen_while(Node *node) {
     char *end_str = get_break(node->token);
     emit_label(cond_str);
     gen(node->lhs);
-    printf("\tpop  rax\n");
-    printf("\tcmp  rax, 0\n");
-    printf("\tje   %s\n", end_str);
+    fprintf(output, "\tpop  rax\n");
+    fprintf(output, "\tcmp  rax, 0\n");
+    fprintf(output, "\tje   %s\n", end_str);
     gen_stmt(node->rhs);
     emit_jmp(cond_str);
     emit_label(end_str);
@@ -220,14 +221,14 @@ void gen_for(Node *node) {
     gen(node->lhs);
     emit_label(loop_label);
     gen(node->rhs);
-    printf("\tpop  rax\n");
-    printf("\tcmp  rax, 0\n");
-    printf("\tje   %s\n", end_label);
+    fprintf(output, "\tpop  rax\n");
+    fprintf(output, "\tcmp  rax, 0\n");
+    fprintf(output, "\tje   %s\n", end_label);
     gen_stmt(node->nodes->data[0]);
     emit_label(post_label);
     gen(node->xhs);
     if(node->xhs)
-        printf("\tpop  rax\n");
+        fprintf(output, "\tpop  rax\n");
     emit_jmp(loop_label);
     emit_label(end_label);
     pop_loop();
@@ -250,59 +251,59 @@ void gen_call(Node *node) {
         gen(args[i]);
     }
     for(int i = 0; i < len; i++) {
-        printf("\tpop  %s\n", registers[0][i]);
+        fprintf(output, "\tpop  %s\n", registers[0][i]);
     }
     Token *name = node->lhs->token; // node->lhs: callee
 
     char *label1 = new_label();
     char *label2 = new_label();
-    printf("\tmov  rax, rsp\n");
-    printf("\tand  rax, 15\n");
-    printf("\tjnz  %s\n", label1);
-    printf("\tmov  rax, 0\n");
-    printf("\tcall %.*s\n", name->len, name->str);
+    fprintf(output, "\tmov  rax, rsp\n");
+    fprintf(output, "\tand  rax, 15\n");
+    fprintf(output, "\tjnz  %s\n", label1);
+    fprintf(output, "\tmov  rax, 0\n");
+    fprintf(output, "\tcall %.*s\n", name->len, name->str);
     emit_jmp(label2);
 
     emit_label(label1);
-    printf("\tsub  rsp, 8\n");
-    printf("\tmov  rax, 0\n");
-    printf("\tcall %.*s\n", name->len, name->str);
-    printf("\tadd  rsp, 8\n");
+    fprintf(output, "\tsub  rsp, 8\n");
+    fprintf(output, "\tmov  rax, 0\n");
+    fprintf(output, "\tcall %.*s\n", name->len, name->str);
+    fprintf(output, "\tadd  rsp, 8\n");
 
     emit_label(label2);
-    printf("\tpush rax\n");
+    fprintf(output, "\tpush rax\n");
 }
 
 void gen_fdecl(Node *node) {
     if(!node->lhs)
         return;
 
-    printf("%.*s:\n", node->token->len, node->token->str);
+    fprintf(output, "%.*s:\n", node->token->len, node->token->str);
 
-    printf("\tpush rbp\n");
-    printf("\tmov  rbp, rsp\n");
+    fprintf(output, "\tpush rbp\n");
+    fprintf(output, "\tmov  rbp, rsp\n");
     int offset = (node->offset & (-16)) + 16;
-    printf("\tsub  rsp, %d\n", offset);
+    fprintf(output, "\tsub  rsp, %d\n", offset);
 
     int len = vec_len(node->nodes);
     Node **params = node->nodes->data;
     for(int i = 0; i < len; i++) {
-        printf("\tmov  [rbp - %d], %s\n", params[i]->lvar->offset,
-               registers[reg_size(type(params[i]))][i]);
+        fprintf(output, "\tmov  [rbp - %d], %s\n", params[i]->lvar->offset,
+                registers[reg_size(type(params[i]))][i]);
     }
 
     gen_block(node->lhs);
 
-    printf("\tmov  rsp, rbp\n");
-    printf("\tpop  rbp\n");
-    printf("\tret\n");
+    fprintf(output, "\tmov  rsp, rbp\n");
+    fprintf(output, "\tpop  rbp\n");
+    fprintf(output, "\tret\n");
 }
 
 void gen_stmt(Node *node) {
     if(node) {
         gen(node);
         if(is_expr(node->kind))
-            printf("\tpop  rax\n");
+            fprintf(output, "\tpop  rax\n");
     }
 }
 
@@ -324,9 +325,9 @@ void gen_land(Node *node) {
     } else
         error_at_node(node, "Illegal operation. (Type mismatch)");
 
-    printf("\tpop  rax\n");
-    printf("\tcmp  %s, 0\n", reg_l[reg_mode]);
-    printf("\tje   %s\n", false_label);
+    fprintf(output, "\tpop  rax\n");
+    fprintf(output, "\tcmp  %s, 0\n", reg_l[reg_mode]);
+    fprintf(output, "\tje   %s\n", false_label);
 
     gen(node->rhs);
 
@@ -337,15 +338,15 @@ void gen_land(Node *node) {
     } else
         error_at_node(node, "Illegal operation. (Type mismatch)");
 
-    printf("\tpop  rax\n");
-    printf("\tcmp  %s, 0\n", reg_l[reg_mode]);
-    printf("\tje   %s\n", false_label);
+    fprintf(output, "\tpop  rax\n");
+    fprintf(output, "\tcmp  %s, 0\n", reg_l[reg_mode]);
+    fprintf(output, "\tje   %s\n", false_label);
 
-    printf("\tmov  rax, 1\n");
+    fprintf(output, "\tmov  rax, 1\n");
     emit_jmp(exit_label);
 
     emit_label(false_label);
-    printf("\tmov  rax, 0\n");
+    fprintf(output, "\tmov  rax, 0\n");
     emit_label(exit_label);
 }
 
@@ -364,9 +365,9 @@ void gen_lor(Node *node) {
     } else
         error_at_node(node, "Illegal operation. (Type mismatch)");
 
-    printf("\tpop  rax\n");
-    printf("\tcmp  %s, 0\n", reg_l[reg_mode]);
-    printf("\tjne  %s\n", true_label);
+    fprintf(output, "\tpop  rax\n");
+    fprintf(output, "\tcmp  %s, 0\n", reg_l[reg_mode]);
+    fprintf(output, "\tjne  %s\n", true_label);
 
     gen(node->rhs);
 
@@ -377,15 +378,15 @@ void gen_lor(Node *node) {
     } else
         error_at_node(node, "Illegal operation. (Type mismatch)");
 
-    printf("\tpop  rax\n");
-    printf("\tcmp  %s, 0\n", reg_l[reg_mode]);
-    printf("\tjne  %s\n", true_label);
+    fprintf(output, "\tpop  rax\n");
+    fprintf(output, "\tcmp  %s, 0\n", reg_l[reg_mode]);
+    fprintf(output, "\tjne  %s\n", true_label);
 
-    printf("\tmov  rax, 0\n");
+    fprintf(output, "\tmov  rax, 0\n");
     emit_jmp(exit_label);
 
     emit_label(true_label);
-    printf("\tmov  rax, 1\n");
+    fprintf(output, "\tmov  rax, 1\n");
     emit_label(exit_label);
 }
 
@@ -403,24 +404,24 @@ void gen_lnot(Node *node) {
     } else
         error_at_node(node, "Illegal operation. (Type mismatch)");
 
-    printf("\tpop  rax\n");
-    printf("\tcmp  %s, 0\n", reg_l[reg_mode]);
-    printf("\tjne  %s\n", false_label);
+    fprintf(output, "\tpop  rax\n");
+    fprintf(output, "\tcmp  %s, 0\n", reg_l[reg_mode]);
+    fprintf(output, "\tjne  %s\n", false_label);
 
-    printf("\tmov  rax, 1\n");
+    fprintf(output, "\tmov  rax, 1\n");
     emit_jmp(exit_label);
 
     emit_label(false_label);
-    printf("\tmov  rax, 0\n");
+    fprintf(output, "\tmov  rax, 0\n");
     emit_label(exit_label);
 }
 
 void gen(Node *node) {
     if(!node)
         return;
-    printf("// Line %d ", get_line(node->token->str, source_text));
+    fprintf(output, "// Line %d ", get_line(node->token->str, source_text));
     print_node(node);
-    printf("\n");
+    fprintf(output, "\n");
     Node *parent;
     char *label;
     int i;
@@ -433,96 +434,96 @@ void gen(Node *node) {
         int reg_mode;
         if(node->kind == ND_LAND) {
             gen_land(node);
-            printf("\tpush  rax\n");
+            fprintf(output, "\tpush  rax\n");
             return;
         }
         if(node->kind == ND_LOR) {
             gen_lor(node);
-            printf("\tpush  rax\n");
+            fprintf(output, "\tpush  rax\n");
             return;
         }
         gen(node->lhs);
         gen(node->rhs);
 
-        printf("\tpop  rdi\n");
-        printf("\tpop  rax\n");
+        fprintf(output, "\tpop  rdi\n");
+        fprintf(output, "\tpop  rax\n");
         char *cmp_op;
 
         switch(node->kind) {
         case ND_ADD:
             if(is_aryth(l_ty) && is_aryth(r_ty)) {
-                printf("\tadd  rax, rdi\n");
+                fprintf(output, "\tadd  rax, rdi\n");
             } else if(is_ptr(l_ty) && is_aryth(r_ty)) {
-                printf("\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
-                printf("\tadd  rax, rdi\n");
+                fprintf(output, "\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
+                fprintf(output, "\tadd  rax, rdi\n");
             } else if(is_aryth(l_ty) && is_ptr(r_ty)) {
-                printf("\timul rax, %d\n", sizeof_type(r_ty->ptr_to));
-                printf("\tadd  rax, rdi\n");
+                fprintf(output, "\timul rax, %d\n", sizeof_type(r_ty->ptr_to));
+                fprintf(output, "\tadd  rax, rdi\n");
             } else
                 error_at_node(node, "Illegal operation. (Type mismatch)");
             break;
         case ND_SUB:
             if(is_aryth(l_ty) && is_aryth(r_ty)) {
-                printf("\tsub  rax, rdi\n");
+                fprintf(output, "\tsub  rax, rdi\n");
             } else if(is_ptr(l_ty) && is_ptr(r_ty)) {
-                printf("\tsub  rax, rdi\n");
-                printf("\tcqo\n");
-                printf("\tmov  rdi, %d\n", sizeof_type(l_ty->ptr_to));
-                printf("\tidiv rdi\n");
+                fprintf(output, "\tsub  rax, rdi\n");
+                fprintf(output, "\tcqo\n");
+                fprintf(output, "\tmov  rdi, %d\n", sizeof_type(l_ty->ptr_to));
+                fprintf(output, "\tidiv rdi\n");
             } else if(is_ptr(l_ty) && is_aryth(r_ty)) {
-                printf("\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
-                printf("\tsub  rax, rdi\n");
+                fprintf(output, "\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
+                fprintf(output, "\tsub  rax, rdi\n");
             } else
                 error_at_node(node, "Illegal operation. (Type mismatch)");
             break;
         case ND_MUL:
             if(is_aryth(l_ty) && is_aryth(r_ty)) {
-                printf("\timul rax, rdi\n");
+                fprintf(output, "\timul rax, rdi\n");
             } else
                 error_at_node(node,
                               "Illegal operation. (Not an arythmetic type)");
             break;
         case ND_DIV:
             if(is_aryth(l_ty) && is_aryth(r_ty)) {
-                printf("\tcqo\n");
-                printf("\tidiv rax, rdi\n");
+                fprintf(output, "\tcqo\n");
+                fprintf(output, "\tidiv rax, rdi\n");
             } else
                 error_at_node(node,
                               "Illegal operation. (Not an arythmetic type)");
             break;
         case ND_AND:
             if(is_aryth(l_ty) && is_aryth(r_ty)) {
-                printf("\tand  rax, rdi\n");
+                fprintf(output, "\tand  rax, rdi\n");
             } else
                 error_at_node(node,
                               "Illegal operation. (Not an arythmetic type)");
             break;
         case ND_OR:
             if(is_aryth(l_ty) && is_aryth(r_ty)) {
-                printf("\tor   rax, rdi\n");
+                fprintf(output, "\tor   rax, rdi\n");
             } else
                 error_at_node(node,
                               "Illegal operation. (Not an arythmetic type)");
             break;
         case ND_XOR:
             if(is_aryth(l_ty) && is_aryth(r_ty)) {
-                printf("\txor  rax, rdi\n");
+                fprintf(output, "\txor  rax, rdi\n");
             } else
                 error_at_node(node,
                               "Illegal operation. (Not an arythmetic type)");
             break;
         case ND_SHR:
             if(is_aryth(l_ty) && is_aryth(r_ty)) {
-                printf("\tmov  cl , dil\n");
-                printf("\tshr  rax, cl\n");
+                fprintf(output, "\tmov  cl , dil\n");
+                fprintf(output, "\tshr  rax, cl\n");
             } else
                 error_at_node(node,
                               "Illegal operation. (Not an arythmetic type)");
             break;
         case ND_SHL:
             if(is_aryth(l_ty) && is_aryth(r_ty)) {
-                printf("\tmov  cl , dil\n");
-                printf("\tshl  rax, cl\n");
+                fprintf(output, "\tmov  cl , dil\n");
+                fprintf(output, "\tshl  rax, cl\n");
             } else
                 error_at_node(node,
                               "Illegal operation. (Not an arythmetic type)");
@@ -552,14 +553,15 @@ void gen(Node *node) {
                 cmp_op = "g";
                 break;
             }
-            printf("\tcmp  %s, %s\n", reg_l[reg_mode], reg_r[reg_mode]);
-            printf("\tset%s al\n", cmp_op);
-            printf("\tmovzb %s, al\n", reg_l[reg_mode]);
+            fprintf(output, "\tcmp  %s, %s\n", reg_l[reg_mode],
+                    reg_r[reg_mode]);
+            fprintf(output, "\tset%s al\n", cmp_op);
+            fprintf(output, "\tmovzb %s, al\n", reg_l[reg_mode]);
             break;
         default:
             error_at_token(node->token, "gen(): Unimplemented binary op.");
         }
-        printf("\tpush rax\n");
+        fprintf(output, "\tpush rax\n");
         return;
     }
     switch(node->kind) {
@@ -577,11 +579,11 @@ void gen(Node *node) {
         push_loop_switch(node);
         // evaluate const-expr and save as a local var.
         emit_lvar_addr(node->lvar);
-        printf("\tpush rax\n");
+        fprintf(output, "\tpush rax\n");
         gen(node->lhs);
-        printf("\tpop  rdi\n");
-        printf("\tpop  rax\n");
-        printf("\tmov  [rax], edi\n");
+        fprintf(output, "\tpop  rdi\n");
+        fprintf(output, "\tpop  rax\n");
+        fprintf(output, "\tmov  [rax], edi\n");
         gen_stmt(node->rhs);
         emit_jmp(get_break(NULL));
         for(i = 0; i < vec_len(node->nodes); i++) {
@@ -599,22 +601,22 @@ void gen(Node *node) {
         // TODO: return without expression returns undefined value.
         if(node->lhs) {
             gen(node->lhs);
-            printf("\tpop  rax\n");
+            fprintf(output, "\tpop  rax\n");
         }
 
-        printf("\tmov  rsp, rbp\n");
-        printf("\tpop  rbp\n");
-        printf("\tret\n");
+        fprintf(output, "\tmov  rsp, rbp\n");
+        fprintf(output, "\tpop  rbp\n");
+        fprintf(output, "\tret\n");
         return;
     case ND_CASE:
         parent = get_inner_switch();
         gen(node->lhs);
         emit_lvar_addr(parent->lvar);
-        printf("\tmov  eax, [rax]\n");
-        printf("\tpop  rdi\n");
-        printf("\tcmp  eax, edi\n");
+        fprintf(output, "\tmov  eax, [rax]\n");
+        fprintf(output, "\tpop  rdi\n");
+        fprintf(output, "\tcmp  eax, edi\n");
         label = new_label();
-        printf("\tje   %s\n", label);
+        fprintf(output, "\tje   %s\n", label);
         node->rhs->label = label;
         vec_push(parent->nodes, node->rhs);
         return;
@@ -633,20 +635,21 @@ void gen(Node *node) {
         return;
     // expression
     case ND_NUM:
-        printf("\tpush %d\n", node->int_val);
+        fprintf(output, "\tpush %d\n", node->int_val);
         return;
     case ND_LVAR:
     case ND_GVAR:
         gen_lval_to_rax(node);
         emit_deref_rax(node);
-        printf("\tpush rax\n");
+        fprintf(output, "\tpush rax\n");
         return;
     case ND_MEMBER:
         gen_lval_to_rax(node);
         emit_deref_rax(node);
-        printf("\tpush rax\n");
+        fprintf(output, "\tpush rax\n");
         return;
     case ND_CAST:
+        gen(node->lhs);
         return;
     case ND_ASSIGN:
         l_ty = type(node->lhs);
@@ -658,22 +661,23 @@ void gen(Node *node) {
             int offset = node->lhs->lvar->offset;
             char *p = node->rhs->label;
             while(*p) {
-                printf("\tmov  BYTE PTR [rbp - %d], %d\n", offset--, *p++);
+                fprintf(output, "\tmov  BYTE PTR [rbp - %d], %d\n", offset--,
+                        *p++);
             }
-            printf("\tmov  BYTE PTR [rbp - %d], 0\n", offset);
-            printf("\tpush rdi\n");
+            fprintf(output, "\tmov  BYTE PTR [rbp - %d], 0\n", offset);
+            fprintf(output, "\tpush rdi\n");
             return;
         } else if(!is_assignable_type(l_ty, r_ty)) {
             error_types(l_ty, r_ty);
             error_at_node(node->lhs, "Type mismatch in assignment operation.");
         }
         gen_lval_to_rax(node->lhs);
-        printf("\tpush rax\n");
+        fprintf(output, "\tpush rax\n");
         gen(node->rhs);
-        printf("\tpop  rdi\n");
-        printf("\tpop  rax\n");
-        printf("\tmov  [rax], %s\n", reg_r[reg_size(type(node->lhs))]);
-        printf("\tpush rdi\n");
+        fprintf(output, "\tpop  rdi\n");
+        fprintf(output, "\tpop  rax\n");
+        fprintf(output, "\tmov  [rax], %s\n", reg_r[reg_size(type(node->lhs))]);
+        fprintf(output, "\tpush rdi\n");
         return;
     case ND_CALL:
         gen_call(node);
@@ -683,11 +687,11 @@ void gen(Node *node) {
         return;
     case ND_ADDR:
         gen_lval_to_rax(node->lhs);
-        printf("\tpush rax\n");
+        fprintf(output, "\tpush rax\n");
         return;
     case ND_STR:
         gen_lval_to_rax(node);
-        printf("\tpush rax\n");
+        fprintf(output, "\tpush rax\n");
         return;
     case ND_DEREF:
         if(!is_ptr(type(node->lhs)))
@@ -695,13 +699,13 @@ void gen(Node *node) {
                 node->lhs,
                 "Illegal operation. (dereference of non-pointer type)");
         gen(node->lhs);
-        printf("\tpop  rax\n");
+        fprintf(output, "\tpop  rax\n");
         emit_deref_rax(node);
-        printf("\tpush rax\n");
+        fprintf(output, "\tpush rax\n");
         return;
     case ND_NOT:
         gen_lnot(node);
-        printf("\tpush rax\n");
+        fprintf(output, "\tpush rax\n");
         return;
     }
     error_at_token(node->token, "gen(): Unimplemented NodeKind.");

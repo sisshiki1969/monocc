@@ -730,10 +730,13 @@ Node *parse_unary_expr() {
 Node *parse_cast_expr() {
     if(peek(TK_OP_PAREN) && is_type_specifier(token->next)) {
         expect(TK_OP_PAREN);
+        Token *op_token = token;
         MemberInfo *info = parse_decl(false);
         expect(TK_CL_PAREN);
-        Node *node = new_node(ND_CAST, info->ident);
+        Node *node = new_node(ND_CAST, op_token);
         node->type = info->type;
+        node->lhs = parse_cast_expr();
+        return node;
     }
     return parse_unary_expr();
 }
@@ -1405,9 +1408,9 @@ void parse_program() {
             // function definition
 
             decl = parse_func_definition(ty_ident);
-            printf("// ");
+            fprintf(output, "// ");
             print_node(decl);
-            printf("\n");
+            fprintf(output, "\n");
             print_locals();
             vec_push(ext_declarations, decl);
         } else
