@@ -572,6 +572,7 @@ MemberInfo *new_member_info(Token *ident, Type *type) {
 // Parser
 
 Node *parse_expr();
+Node *parse_cast_expr();
 Node *parse_assign_expr();
 Node *parse_block();
 Node *parse_stmt();
@@ -698,14 +699,14 @@ Node *get_ptr_if_array(Node *node) {
 Node *parse_unary_expr() {
     Token *op_token = token;
     if(consume_if(TK_ADD)) {
-        return parse_unary_expr();
+        return parse_cast_expr();
     } else if(consume_if(TK_SUB)) {
         return new_node_binary(ND_SUB, new_node_num(0, token),
-                               parse_unary_expr(), op_token);
+                               parse_cast_expr(), op_token);
     } else if(consume_if(TK_AND)) {
-        return new_node_expr(ND_ADDR, parse_unary_expr(), NULL, op_token);
+        return new_node_expr(ND_ADDR, parse_cast_expr(), NULL, op_token);
     } else if(consume_if(TK_MUL)) {
-        Node *node = parse_unary_expr();
+        Node *node = parse_cast_expr();
         return new_node_binary(ND_DEREF, node, NULL, op_token);
     } else if(consume_if(TK_SIZEOF)) {
         Type *ty;
@@ -719,7 +720,12 @@ Node *parse_unary_expr() {
         return new_node_num(sizeof_type(ty), op_token);
     } else if(consume_if(TK_NOT)) {
         Node *node = new_node(ND_NOT, op_token);
-        node->lhs = parse_unary_expr();
+        node->lhs = parse_cast_expr();
+        node->type = new_type_int();
+        return node;
+    } else if(consume_if(TK_TILDA)) {
+        Node *node = new_node(ND_CMP, op_token);
+        node->lhs = parse_cast_expr();
         node->type = new_type_int();
         return node;
     } else {

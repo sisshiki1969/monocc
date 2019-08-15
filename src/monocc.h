@@ -116,6 +116,7 @@ enum TokenKind {
     TK_COLON,
     TK_DOT,
     TK_ARROW,
+    TK_TILDA,
     TK_ELLIPSIS,
 
     TK_IF,
@@ -207,6 +208,7 @@ typedef enum {
     ND_XOR,
     ND_SHR,
     ND_SHL,
+    ND_CMP,
 
     ND_ASSIGN,
     ND_ADDR,

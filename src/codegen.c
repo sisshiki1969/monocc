@@ -707,6 +707,12 @@ void gen(Node *node) {
         gen_lnot(node);
         fprintf(output, "\tpush rax\n");
         return;
+    case ND_CMP:
+        gen(node->lhs);
+        fprintf(output, "\tpop  rax\n");
+        fprintf(output, "\tnot  rax\n");
+        fprintf(output, "\tpush rax\n");
+        return;
     }
     error_at_token(node->token, "gen(): Unimplemented NodeKind.");
 }

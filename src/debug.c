@@ -50,6 +50,7 @@ void print_token(FILE *stream, Token *token) {
     case TK_COMMA:
     case TK_COLON:
     case TK_DOT:
+    case TK_TILDA:
     case TK_ARROW:
     case TK_ELLIPSIS:
         fprintf(stream, "[%.*s]", token->len, token->str);
@@ -141,6 +142,11 @@ void print_node(Node *node) {
     switch(node->kind) {
     case ND_NOT:
         fprintf(output, "(! ");
+        print_node(node->lhs);
+        fprintf(output, ")");
+        return;
+    case ND_CMP:
+        fprintf(output, "(~ ");
         print_node(node->lhs);
         fprintf(output, ")");
         return;

@@ -298,6 +298,10 @@ void tokenize(char *file, char *p, bool is_main) {
             cur = new_token(TK_COMMA, cur, p++, 1);
             continue;
         }
+        if(*p == '~') {
+            cur = new_token(TK_TILDA, cur, p++, 1);
+            continue;
+        }
         if(*p == '=') {
             p++;
             if(*p == '=') {
