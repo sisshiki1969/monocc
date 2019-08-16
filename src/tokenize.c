@@ -23,15 +23,6 @@ Token *dup_token(Token *src) {
     return new;
 }
 
-/// Create a new token.
-Token *macro_token(char *str, int len) {
-    Token *new_token = calloc(1, sizeof(Token));
-    new_token->kind = TK_IDENT;
-    new_token->str = str;
-    new_token->len = len;
-    return new_token;
-}
-
 bool is_ident_char(char c) { return isalnum(c) || c == '_'; }
 
 bool is_reserved(char *str, int len, char *reserved) {
@@ -114,7 +105,7 @@ void tokenize(char *file, char *p, bool is_main) {
             continue;
         }
         if(*p == '#') {
-            char *cursor = strchr(p++, '\n');
+            char *line_end = strchr(p++, '\n');
             while(*p == ' ' || *p == '\t')
                 p++;
             int len = 0;
@@ -151,31 +142,52 @@ void tokenize(char *file, char *p, bool is_main) {
                 p += len;
                 while(*p == ' ' || *p == '\t')
                     p++;
+                if(!isalpha(*p) && !(*p == '_'))
+                    error_at_char(fi, p, "Expected identifier.");
                 int len = 0;
                 while(is_ident_char(*(p + len)))
                     len++;
-                Token *tok = macro_token(p, len);
+
+                Token *cursor = cur;
+                cur = new_token(TK_IDENT, cur, p, len);
+                Token *tok = cur;
+                p += len;
+                /*
+                if(*p == '(') {
+                    // function macro
+                    p++;
+                    Token head;
+                    head.next = NULL;
+                    Token *t = &head;
+                    TokContext *args_ctx = new_tok_context(fi, t, p);
+                    while(*p != ')') {
+                        read_token(args_ctx);
+                        if(*p != ',')
+                            break;
+                    }
+                }*/
+
                 print_token(stderr, tok);
                 fprintf(stderr, "=>");
-                p += len;
+                cur = cursor;
+                cur->next = NULL;
 
-                Token head;
-                head.next = NULL;
-                Token *cursor = &head;
-                TokContext *macro_ctx = new_tok_context(fi, cursor, p);
+                ctx->char_ptr = p;
+                ctx->current_token = cur;
                 int i = 0;
-                while(*(macro_ctx->char_ptr) != '\n' && i < 50) {
-                    print_token(stderr, read_token(macro_ctx));
+                while(*(ctx->char_ptr) != '\n' && i < 50) {
+                    print_token(stderr, read_token(ctx));
                     i++;
                 }
-                if(!head.next)
+                if(!cursor->next)
                     error_at_token(tok, "No substitute token.");
-                new_macro(tok, head.next);
+                new_macro(tok, cursor->next);
+                cursor->next = NULL;
 
                 fprintf(stderr, "\n");
             }
 
-            p = cursor + 1;
+            p = line_end + 1;
             continue;
         }
         // TokContext *ctx = new_tok_context(fi, cur, p);
@@ -210,6 +222,13 @@ Token *read_token(TokContext *ctx) {
         p += 2;
         char *next = strchr(p, '\n');
         p = next + 1;
+    } else if(strncmp(p, "/*", 2) == 0) {
+        p += 2;
+        char *next = strstr(p, "*/");
+        if(!next) {
+            error_at_char(fi, p - 2, "Comment unclosed at end of file.");
+        }
+        p = next + 2;
     } else if(strncmp(p, "__LINE__", 8) == 0) {
         cur = new_token(TK_MACRO, cur, p, 8);
         p += 8;

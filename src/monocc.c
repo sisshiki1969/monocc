@@ -122,11 +122,11 @@ void emit_basic_global(Type *type, Node *init) {
     }
 }
 
-void compile(char *file) {
-    tokenize(file, source_text, true);
-    fprintf(stderr, "monocc: tokenize\n");
+void pp() {
     for(Token *t = token; t; t = t->next) {
         // print_token(stderr, t);
+        if(t->kind != TK_IDENT)
+            continue;
         Token *subst = find_macro(t);
         if(!subst)
             continue;
@@ -140,6 +140,13 @@ void compile(char *file) {
             t = t->next;
         t->next = next_token;
     }
+}
+
+void compile(char *file) {
+    tokenize(file, source_text, true);
+    fprintf(stderr, "monocc: tokenize\n");
+
+    pp();
     print_tokens(token);
     fprintf(stderr, "monocc: pp\n");
 

@@ -349,7 +349,7 @@ int main() {
     int *jum = NULL;
     assert_expect(__LINE__, 1, true);
     assert_expect(__LINE__, 0, false);
-    // assert_expect(__LINE__, (int *)5, NULL);
+    assert_expect(__LINE__, 0, (int)NULL);
 
     assert_expect(__LINE__, 1979, i);
     assert_expect(__LINE__, 2015, j);
@@ -438,7 +438,10 @@ int main() {
     for_();
     list_();
     struct_();
-
+    /*                  /*
+    comment
+    these are comments.
+    */
     // switch
     assert_expect(__LINE__, 11, switch_(1));
     assert_expect(__LINE__, 13, switch_(2));

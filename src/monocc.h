@@ -25,6 +25,7 @@ int isalnum(int c);
 int strlen(char *s);
 char *strchr(char *s, int c);
 char *strrchr(char *s, int c);
+char *strstr(char *s1, char *s2);
 int strncmp(char *str, char *reserved, int len);
 int strcmp(char *str1, char *str2);
 char *strcpy(char *dest, char *src);
