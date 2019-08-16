@@ -403,10 +403,11 @@ typedef struct Macro Macro;
 struct Macro {
     Macro *next;
     Token *token;
+    Token *args;
     Token *subst;
 };
 
-Macro *new_macro(Token *token, Token *subst);
+Macro *new_macro(Token *token, Token *args, Token *subst);
 Token *find_macro(Token *token);
 
 // Globals

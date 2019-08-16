@@ -40,9 +40,10 @@ FileInfo *new_file_info(char *file_name, char *start) {
 
 Macro *macros;
 
-Macro *new_macro(Token *token, Token *subst) {
+Macro *new_macro(Token *token, Token *args, Token *subst) {
     Macro *m = calloc(1, sizeof(Macro));
     m->token = token;
+    m->args = args;
     m->subst = subst;
     m->next = macros;
     macros = m;
@@ -72,17 +73,30 @@ Token *find_macro(Token *token) {
 typedef struct TokContext TokContext;
 struct TokContext {
     FileInfo *file_info;
-    Token *current_token;
-    char *char_ptr;
+    Token *cur;
+    char *p;
 };
 
 TokContext *new_tok_context(FileInfo *file_info, Token *current_token,
                             char *char_ptr) {
     TokContext *ctx = calloc(1, sizeof(TokContext));
     ctx->file_info = file_info;
-    ctx->current_token = current_token;
-    ctx->char_ptr = char_ptr;
+    ctx->cur = current_token;
+    ctx->p = char_ptr;
     return ctx;
+}
+
+bool read_if(TokContext *ctx, int c) {
+    if(*(ctx->p) == c) {
+        ctx->p++;
+        return true;
+    }
+    return false;
+}
+
+void skip_space(TokContext *ctx) {
+    while(*(ctx->p) == ' ' || *(ctx->p) == '\t')
+        ctx->p++;
 }
 
 Token *read_token(TokContext *ctx);
@@ -149,41 +163,42 @@ void tokenize(char *file, char *p, bool is_main) {
                     len++;
 
                 Token *head = cur;
-                cur = new_token(TK_IDENT, cur, p, len);
-                Token *tok = cur;
+                Token *tok = new_token(TK_IDENT, cur, p, len);
                 p += len;
 
-                if(*p == '(') {
+                ctx->p = p;
+                ctx->cur = head;
+                print_token(stderr, tok);
+
+                if(read_if(ctx, '(')) {
+                    skip_space(ctx);
                     // function macro
-                    p++;
-                    ctx->char_ptr = p;
-                    ctx->current_token = head;
-                    while(*(ctx->char_ptr) != ')') {
-                        read_token(ctx);
-                        if(*(ctx->char_ptr) != ',')
+                    while(*(ctx->p) != ')') {
+                        print_token(stderr, read_token(ctx));
+                        skip_space(ctx);
+                        if(*(ctx->p) != ',')
                             break;
-                        ctx->char_ptr++;
+                        ctx->p++;
                     }
-                    if(*(ctx->char_ptr) != ')')
-                        error_at_char(fi, ctx->char_ptr, "Expected ')'");
-                    p = ctx->char_ptr + 1;
+                    if(!read_if(ctx, ')'))
+                        error_at_char(fi, ctx->p, "Expected ')'");
                 }
 
-                print_token(stderr, tok);
                 fprintf(stderr, "=>");
-                cur = head;
-                cur->next = NULL;
+                Token *args = head->next;
+                head->next = NULL;
+                ctx->cur = head;
 
-                ctx->char_ptr = p;
-                ctx->current_token = cur;
+                skip_space(ctx);
                 int i = 0;
-                while(*(ctx->char_ptr) != '\n' && i < 50) {
+                while(*(ctx->p) != '\n' && i < 50) {
                     print_token(stderr, read_token(ctx));
+                    skip_space(ctx);
                     i++;
                 }
                 if(!head->next)
-                    error_at_token(tok, "No substitute token.");
-                new_macro(tok, head->next);
+                    error_at_char(fi, ctx->p - 1, "No substitute token.");
+                new_macro(tok, args, head->next);
                 head->next = NULL;
 
                 fprintf(stderr, "\n");
@@ -193,11 +208,11 @@ void tokenize(char *file, char *p, bool is_main) {
             continue;
         }
         // TokContext *ctx = new_tok_context(fi, cur, p);
-        ctx->char_ptr = p;
-        ctx->current_token = cur;
+        ctx->p = p;
+        ctx->cur = cur;
         read_token(ctx);
-        cur = ctx->current_token;
-        p = ctx->char_ptr;
+        cur = ctx->cur;
+        p = ctx->p;
     }
 
     if(!token) {
@@ -209,14 +224,14 @@ void tokenize(char *file, char *p, bool is_main) {
         cursor->next = head.next;
     }
     if(is_main)
-        cur = new_token(TK_EOF, ctx->current_token, p, 1);
+        cur = new_token(TK_EOF, ctx->cur, p, 1);
     fi->end = p;
 }
 
 Token *read_token(TokContext *ctx) {
-    char *p = ctx->char_ptr;
+    char *p = ctx->p;
     FileInfo *fi = ctx->file_info;
-    Token *cur = ctx->current_token;
+    Token *cur = ctx->cur;
     while(*p == ' ' || *p == '\t') {
         p++;
     }
@@ -486,11 +501,10 @@ Token *read_token(TokContext *ctx) {
         cur->int_val = ch;
     }
 
-    if(ctx->char_ptr == p)
+    if(ctx->p == p)
         error_at_char(fi, p, "Illegal character.");
 
-    ctx->char_ptr = p;
-    ctx->file_info = fi;
-    ctx->current_token = cur;
+    ctx->p = p;
+    ctx->cur = cur;
     return cur;
 }
