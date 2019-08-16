@@ -351,6 +351,9 @@ int main() {
     assert_expect(__LINE__, 0, false);
     assert_expect(__LINE__, 0, (int)NULL);
 
+#define mac(abc, bcd) 4
+    assert_expect(__LINE__, 4, mac);
+
     assert_expect(__LINE__, 1979, i);
     assert_expect(__LINE__, 2015, j);
     assert_expect(__LINE__, 14, s);

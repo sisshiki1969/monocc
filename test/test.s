@@ -229,6 +229,7 @@
 // [assert_expect][(]<__LINE__>[,][1][,][1][)][;]
 // [assert_expect][(]<__LINE__>[,][0][,][0][)][;]
 // [assert_expect][(]<__LINE__>[,][0][,][(]<int>[)][(][(]<void>[*][)][0][)][)][;]
+// [assert_expect][(]<__LINE__>[,][4][,][4][)][;]
 // [assert_expect][(]<__LINE__>[,][1979][,][i][)][;]
 // [assert_expect][(]<__LINE__>[,][2015][,][j][)][;]
 // [assert_expect][(]<__LINE__>[,][14][,][s][)][;]
@@ -438,7 +439,7 @@
 
 // FDECL main func ( ) int 
 //    
-//    (BLOCK(= (LVAR 8) (CAST * void   0 )):(CALL assert_expect ( 350 : 1 : 1 :) ):(CALL assert_expect ( 351 : 0 : 0 :) ):(CALL assert_expect ( 352 : 0 :(CAST int  (CAST * void   0 )):) ):(CALL assert_expect ( 354 : 1979 :(GVAR i):) ):(CALL assert_expect ( 355 : 2015 :(GVAR j):) ):(CALL assert_expect ( 356 : 14 :(GVAR s):) ):(CALL assert_expect ( 358 : 9 : 9 :) ):(CALL assert_expect ( 359 : 4 :(+ (-  0   3 )  7 ):) ):(CALL assert_expect ( 360 : 21 :(- (+  5   20 )  4 ):) ):(CALL assert_expect ( 361 : 21 :(+  5  (*  4   4 )):) ):(CALL assert_expect ( 362 : 24 :(* (*  4  (-  5   2 )) (-  4   2 )):) ):(CALL assert_expect ( 363 : 13 :(- (+  6  (*  3   4 )) (/  15   3 )):) ):(CALL assert_expect ( 364 : 33 :(/ (* (+  6   3 ) (-  15   4 ))  3 ):) ):(CALL assert_expect ( 365 : 0 :(==  3  (+  3   1 )):) ):(CALL assert_expect ( 366 : 1 :(!=  4  (*  4   2 )):) ):(CALL assert_expect ( 367 : 0 :(!=  3  (*  1   3 )):) ):(CALL assert_expect ( 368 : 1 :(>=  5  (-  8   4 )):) ):(CALL assert_expect ( 369 : 1 :(>=  5  (-  7   2 )):) ):(CALL assert_expect ( 370 : 0 :(>= (-  11   8 )  5 ):) ):(CALL assert_expect ( 371 : 1 :(<= (*  2   30 )  3 ):) ):(CALL assert_expect ( 372 : 1 :(<= (/  9   3 )  3 ):) ):(CALL assert_expect ( 373 : 0 :(<= (-  20   18 )  3 ):) ):(CALL assert_expect ( 374 : 1 :(== (+ (* (-  0   5 )  2 )  10 )  0 ):) ):(CALL assert_expect ( 375 : 1 :(== (/  6   2 ) (/  9   3 )):) ):(CALL assert_expect ( 376 : 1 :(< (+  4   1 )  4 ):) ):(CALL assert_expect ( 377 : 1 :(> (+  1   4 )  4 ):) ):(CALL assert_expect ( 378 : 0 :(< (-  4   1 )  4 ):) ):(CALL assert_expect ( 379 : 0 :(> (-  1   4 )  4 ):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 381 : 0 :(&&  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 382 : 0 :(LVAR 12):) ):(CALL assert_expect ( 383 : 0 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 384 : 1 :(LVAR 12):) ):(CALL assert_expect ( 385 : 1 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 386 : 2 :(LVAR 12):) ):(CALL assert_expect ( 387 : 1 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 388 : 3 :(LVAR 12):) ):(CALL assert_expect ( 389 : 1 :(||  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 390 : 3 :(LVAR 12):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 392 : 0 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 393 : 1 :(LVAR 12):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 395 : 0 :(||  0  (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))):) ):(CALL assert_expect ( 396 : 1 :(LVAR 12):) ):(CALL assert_expect ( 397 : 1 :(|| (&&  1   1 ) (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 398 : 1 :(LVAR 12):) ):(CALL assert_expect ( 399 : 1 :(!  0 ):) ):(CALL assert_expect ( 400 : 0 :(!  1 ):) ):(CALL assert_expect ( 401 : 0 :(! (! (!  1 ))):) ):(= (LVAR 16)  10 ):(CALL assert_expect ( 406 : 15 :(= (LVAR 16) (+= (LVAR 16)  5 )):) ):(CALL assert_expect ( 407 : 15 :(LVAR 16):) ):(CALL assert_expect ( 408 : 8 :(= (LVAR 16) (-= (LVAR 16)  7 )):) ):(CALL assert_expect ( 409 : 8 :(LVAR 16):) ):(CALL assert_expect ( 410 : 40 :(= (LVAR 16) (*= (LVAR 16)  5 )):) ):(CALL assert_expect ( 411 : 40 :(LVAR 16):) ):(CALL assert_expect ( 412 : 4 :(= (LVAR 16) (/= (LVAR 16)  10 )):) ):(CALL assert_expect ( 413 : 4 :(LVAR 16):) ):(CALL assert_expect ( 416 : 4 :(++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ):) ):(CALL assert_expect ( 417 : 5 :(LVAR 16):) ):(CALL assert_expect ( 418 : 5 :(-- (= (LVAR 16) (-- (LVAR 16)  1 ))  1 ):) ):(CALL assert_expect ( 419 : 4 :(LVAR 16):) ):(= (LVAR 20) (/  100  (LVAR 16))):(CALL assert_expect ( 424 : 25 :(LVAR 20):) ):(= (LVAR 24)  77 ):(IF (== (LVAR 24)  77 ) (= (LVAR 24)  55 ) (= (LVAR 24)  66 )):(CALL assert_expect ( 432 : 55 :(LVAR 24):) ):(CALL assert_expect ( 433 : 1346269 :(CALL fibo ( 30 :) ):) ):(CALL array_global () ):(CALL array_local () ):(CALL string () ):(CALL block_scope () ):(CALL for_ () ):(CALL list_ () ):(CALL struct_ () ):(CALL assert_expect ( 446 : 11 :(CALL switch_ ( 1 :) ):) ):(CALL assert_expect ( 447 : 13 :(CALL switch_ ( 2 :) ):) ):(CALL assert_expect ( 448 : 13 :(CALL switch_ ( 3 :) ):) ):(CALL assert_expect ( 449 : 13 :(CALL switch_ ( 4 :) ):) ):(CALL assert_expect ( 450 : 15 :(CALL switch_ ( 5 :) ):) ):(CALL assert_expect ( 451 : 15 :(CALL switch_ ( 6 :) ):) ):(CALL assert_expect ( 454 : 11 :(CALL switch2_ ( 97 :) ):) ):(CALL assert_expect ( 455 : 12 :(CALL switch2_ ( 98 :) ):) ):(CALL assert_expect ( 456 : 12 :(CALL switch2_ ( 99 :) ):) ):(CALL assert_expect ( 457 : 15 :(CALL switch2_ ( 122 :) ):) ):(CALL assert_expect ( 460 : 92 :(CALL q8 () ):) ):(CALL assert_expect ( 463 : 0 : 0 :) ):(CALL assert_expect ( 464 : 1 : 1 :) ):(CALL assert_expect ( 465 : 2 : 2 :) ):(CALL assert_expect ( 466 : 3 : 3 :) ):(CALL assert_expect ( 468 : 15 :(|  13   7 ):) ):(CALL assert_expect ( 469 : 5115 :(|  938   5073 ):) ):(CALL assert_expect ( 470 : 5 :(&  13   7 ):) ):(CALL assert_expect ( 471 : 896 :(&  938   5073 ):) ):(CALL assert_expect ( 472 : 10 :(^  13   7 ):) ):(CALL assert_expect ( 473 : 4219 :(^  938   5073 ):) ):(CALL assert_expect ( 475 : 29 :(>>  938   5 ):) ):(CALL assert_expect ( 476 : 1664 :(<<  13   7 ):) ):(CALL printf_ ((ADDR  "passed tests.\n" ):) ):(RETURN  0 ):))
+//    (BLOCK(= (LVAR 8) (CAST * void   0 )):(CALL assert_expect ( 350 : 1 : 1 :) ):(CALL assert_expect ( 351 : 0 : 0 :) ):(CALL assert_expect ( 352 : 0 :(CAST int  (CAST * void   0 )):) ):(CALL assert_expect ( 355 : 4 : 4 :) ):(CALL assert_expect ( 357 : 1979 :(GVAR i):) ):(CALL assert_expect ( 358 : 2015 :(GVAR j):) ):(CALL assert_expect ( 359 : 14 :(GVAR s):) ):(CALL assert_expect ( 361 : 9 : 9 :) ):(CALL assert_expect ( 362 : 4 :(+ (-  0   3 )  7 ):) ):(CALL assert_expect ( 363 : 21 :(- (+  5   20 )  4 ):) ):(CALL assert_expect ( 364 : 21 :(+  5  (*  4   4 )):) ):(CALL assert_expect ( 365 : 24 :(* (*  4  (-  5   2 )) (-  4   2 )):) ):(CALL assert_expect ( 366 : 13 :(- (+  6  (*  3   4 )) (/  15   3 )):) ):(CALL assert_expect ( 367 : 33 :(/ (* (+  6   3 ) (-  15   4 ))  3 ):) ):(CALL assert_expect ( 368 : 0 :(==  3  (+  3   1 )):) ):(CALL assert_expect ( 369 : 1 :(!=  4  (*  4   2 )):) ):(CALL assert_expect ( 370 : 0 :(!=  3  (*  1   3 )):) ):(CALL assert_expect ( 371 : 1 :(>=  5  (-  8   4 )):) ):(CALL assert_expect ( 372 : 1 :(>=  5  (-  7   2 )):) ):(CALL assert_expect ( 373 : 0 :(>= (-  11   8 )  5 ):) ):(CALL assert_expect ( 374 : 1 :(<= (*  2   30 )  3 ):) ):(CALL assert_expect ( 375 : 1 :(<= (/  9   3 )  3 ):) ):(CALL assert_expect ( 376 : 0 :(<= (-  20   18 )  3 ):) ):(CALL assert_expect ( 377 : 1 :(== (+ (* (-  0   5 )  2 )  10 )  0 ):) ):(CALL assert_expect ( 378 : 1 :(== (/  6   2 ) (/  9   3 )):) ):(CALL assert_expect ( 379 : 1 :(< (+  4   1 )  4 ):) ):(CALL assert_expect ( 380 : 1 :(> (+  1   4 )  4 ):) ):(CALL assert_expect ( 381 : 0 :(< (-  4   1 )  4 ):) ):(CALL assert_expect ( 382 : 0 :(> (-  1   4 )  4 ):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 384 : 0 :(&&  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 385 : 0 :(LVAR 12):) ):(CALL assert_expect ( 386 : 0 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 387 : 1 :(LVAR 12):) ):(CALL assert_expect ( 388 : 1 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 389 : 2 :(LVAR 12):) ):(CALL assert_expect ( 390 : 1 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 391 : 3 :(LVAR 12):) ):(CALL assert_expect ( 392 : 1 :(||  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 393 : 3 :(LVAR 12):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 395 : 0 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 396 : 1 :(LVAR 12):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 398 : 0 :(||  0  (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))):) ):(CALL assert_expect ( 399 : 1 :(LVAR 12):) ):(CALL assert_expect ( 400 : 1 :(|| (&&  1   1 ) (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 401 : 1 :(LVAR 12):) ):(CALL assert_expect ( 402 : 1 :(!  0 ):) ):(CALL assert_expect ( 403 : 0 :(!  1 ):) ):(CALL assert_expect ( 404 : 0 :(! (! (!  1 ))):) ):(= (LVAR 16)  10 ):(CALL assert_expect ( 409 : 15 :(= (LVAR 16) (+= (LVAR 16)  5 )):) ):(CALL assert_expect ( 410 : 15 :(LVAR 16):) ):(CALL assert_expect ( 411 : 8 :(= (LVAR 16) (-= (LVAR 16)  7 )):) ):(CALL assert_expect ( 412 : 8 :(LVAR 16):) ):(CALL assert_expect ( 413 : 40 :(= (LVAR 16) (*= (LVAR 16)  5 )):) ):(CALL assert_expect ( 414 : 40 :(LVAR 16):) ):(CALL assert_expect ( 415 : 4 :(= (LVAR 16) (/= (LVAR 16)  10 )):) ):(CALL assert_expect ( 416 : 4 :(LVAR 16):) ):(CALL assert_expect ( 419 : 4 :(++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ):) ):(CALL assert_expect ( 420 : 5 :(LVAR 16):) ):(CALL assert_expect ( 421 : 5 :(-- (= (LVAR 16) (-- (LVAR 16)  1 ))  1 ):) ):(CALL assert_expect ( 422 : 4 :(LVAR 16):) ):(= (LVAR 20) (/  100  (LVAR 16))):(CALL assert_expect ( 427 : 25 :(LVAR 20):) ):(= (LVAR 24)  77 ):(IF (== (LVAR 24)  77 ) (= (LVAR 24)  55 ) (= (LVAR 24)  66 )):(CALL assert_expect ( 435 : 55 :(LVAR 24):) ):(CALL assert_expect ( 436 : 1346269 :(CALL fibo ( 30 :) ):) ):(CALL array_global () ):(CALL array_local () ):(CALL string () ):(CALL block_scope () ):(CALL for_ () ):(CALL list_ () ):(CALL struct_ () ):(CALL assert_expect ( 449 : 11 :(CALL switch_ ( 1 :) ):) ):(CALL assert_expect ( 450 : 13 :(CALL switch_ ( 2 :) ):) ):(CALL assert_expect ( 451 : 13 :(CALL switch_ ( 3 :) ):) ):(CALL assert_expect ( 452 : 13 :(CALL switch_ ( 4 :) ):) ):(CALL assert_expect ( 453 : 15 :(CALL switch_ ( 5 :) ):) ):(CALL assert_expect ( 454 : 15 :(CALL switch_ ( 6 :) ):) ):(CALL assert_expect ( 457 : 11 :(CALL switch2_ ( 97 :) ):) ):(CALL assert_expect ( 458 : 12 :(CALL switch2_ ( 98 :) ):) ):(CALL assert_expect ( 459 : 12 :(CALL switch2_ ( 99 :) ):) ):(CALL assert_expect ( 460 : 15 :(CALL switch2_ ( 122 :) ):) ):(CALL assert_expect ( 463 : 92 :(CALL q8 () ):) ):(CALL assert_expect ( 466 : 0 : 0 :) ):(CALL assert_expect ( 467 : 1 : 1 :) ):(CALL assert_expect ( 468 : 2 : 2 :) ):(CALL assert_expect ( 469 : 3 : 3 :) ):(CALL assert_expect ( 471 : 15 :(|  13   7 ):) ):(CALL assert_expect ( 472 : 5115 :(|  938   5073 ):) ):(CALL assert_expect ( 473 : 5 :(&  13   7 ):) ):(CALL assert_expect ( 474 : 896 :(&  938   5073 ):) ):(CALL assert_expect ( 475 : 10 :(^  13   7 ):) ):(CALL assert_expect ( 476 : 4219 :(^  938   5073 ):) ):(CALL assert_expect ( 478 : 29 :(>>  938   5 ):) ):(CALL assert_expect ( 479 : 1664 :(<<  13   7 ):) ):(CALL printf_ ((ADDR  "passed tests.\n" ):) ):(RETURN  0 ):))
 //    i  offset:24  int 
 //    init  offset:20  int 
 //    z  offset:16  int 
@@ -5188,7 +5189,7 @@ fun:
 	.global main
 // Line 345 FDECL main func ( ) int 
 //    
-//    (BLOCK(= (LVAR 8) (CAST * void   0 )):(CALL assert_expect ( 350 : 1 : 1 :) ):(CALL assert_expect ( 351 : 0 : 0 :) ):(CALL assert_expect ( 352 : 0 :(CAST int  (CAST * void   0 )):) ):(CALL assert_expect ( 354 : 1979 :(GVAR i):) ):(CALL assert_expect ( 355 : 2015 :(GVAR j):) ):(CALL assert_expect ( 356 : 14 :(GVAR s):) ):(CALL assert_expect ( 358 : 9 : 9 :) ):(CALL assert_expect ( 359 : 4 :(+ (-  0   3 )  7 ):) ):(CALL assert_expect ( 360 : 21 :(- (+  5   20 )  4 ):) ):(CALL assert_expect ( 361 : 21 :(+  5  (*  4   4 )):) ):(CALL assert_expect ( 362 : 24 :(* (*  4  (-  5   2 )) (-  4   2 )):) ):(CALL assert_expect ( 363 : 13 :(- (+  6  (*  3   4 )) (/  15   3 )):) ):(CALL assert_expect ( 364 : 33 :(/ (* (+  6   3 ) (-  15   4 ))  3 ):) ):(CALL assert_expect ( 365 : 0 :(==  3  (+  3   1 )):) ):(CALL assert_expect ( 366 : 1 :(!=  4  (*  4   2 )):) ):(CALL assert_expect ( 367 : 0 :(!=  3  (*  1   3 )):) ):(CALL assert_expect ( 368 : 1 :(>=  5  (-  8   4 )):) ):(CALL assert_expect ( 369 : 1 :(>=  5  (-  7   2 )):) ):(CALL assert_expect ( 370 : 0 :(>= (-  11   8 )  5 ):) ):(CALL assert_expect ( 371 : 1 :(<= (*  2   30 )  3 ):) ):(CALL assert_expect ( 372 : 1 :(<= (/  9   3 )  3 ):) ):(CALL assert_expect ( 373 : 0 :(<= (-  20   18 )  3 ):) ):(CALL assert_expect ( 374 : 1 :(== (+ (* (-  0   5 )  2 )  10 )  0 ):) ):(CALL assert_expect ( 375 : 1 :(== (/  6   2 ) (/  9   3 )):) ):(CALL assert_expect ( 376 : 1 :(< (+  4   1 )  4 ):) ):(CALL assert_expect ( 377 : 1 :(> (+  1   4 )  4 ):) ):(CALL assert_expect ( 378 : 0 :(< (-  4   1 )  4 ):) ):(CALL assert_expect ( 379 : 0 :(> (-  1   4 )  4 ):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 381 : 0 :(&&  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 382 : 0 :(LVAR 12):) ):(CALL assert_expect ( 383 : 0 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 384 : 1 :(LVAR 12):) ):(CALL assert_expect ( 385 : 1 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 386 : 2 :(LVAR 12):) ):(CALL assert_expect ( 387 : 1 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 388 : 3 :(LVAR 12):) ):(CALL assert_expect ( 389 : 1 :(||  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 390 : 3 :(LVAR 12):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 392 : 0 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 393 : 1 :(LVAR 12):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 395 : 0 :(||  0  (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))):) ):(CALL assert_expect ( 396 : 1 :(LVAR 12):) ):(CALL assert_expect ( 397 : 1 :(|| (&&  1   1 ) (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 398 : 1 :(LVAR 12):) ):(CALL assert_expect ( 399 : 1 :(!  0 ):) ):(CALL assert_expect ( 400 : 0 :(!  1 ):) ):(CALL assert_expect ( 401 : 0 :(! (! (!  1 ))):) ):(= (LVAR 16)  10 ):(CALL assert_expect ( 406 : 15 :(= (LVAR 16) (+= (LVAR 16)  5 )):) ):(CALL assert_expect ( 407 : 15 :(LVAR 16):) ):(CALL assert_expect ( 408 : 8 :(= (LVAR 16) (-= (LVAR 16)  7 )):) ):(CALL assert_expect ( 409 : 8 :(LVAR 16):) ):(CALL assert_expect ( 410 : 40 :(= (LVAR 16) (*= (LVAR 16)  5 )):) ):(CALL assert_expect ( 411 : 40 :(LVAR 16):) ):(CALL assert_expect ( 412 : 4 :(= (LVAR 16) (/= (LVAR 16)  10 )):) ):(CALL assert_expect ( 413 : 4 :(LVAR 16):) ):(CALL assert_expect ( 416 : 4 :(++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ):) ):(CALL assert_expect ( 417 : 5 :(LVAR 16):) ):(CALL assert_expect ( 418 : 5 :(-- (= (LVAR 16) (-- (LVAR 16)  1 ))  1 ):) ):(CALL assert_expect ( 419 : 4 :(LVAR 16):) ):(= (LVAR 20) (/  100  (LVAR 16))):(CALL assert_expect ( 424 : 25 :(LVAR 20):) ):(= (LVAR 24)  77 ):(IF (== (LVAR 24)  77 ) (= (LVAR 24)  55 ) (= (LVAR 24)  66 )):(CALL assert_expect ( 432 : 55 :(LVAR 24):) ):(CALL assert_expect ( 433 : 1346269 :(CALL fibo ( 30 :) ):) ):(CALL array_global () ):(CALL array_local () ):(CALL string () ):(CALL block_scope () ):(CALL for_ () ):(CALL list_ () ):(CALL struct_ () ):(CALL assert_expect ( 446 : 11 :(CALL switch_ ( 1 :) ):) ):(CALL assert_expect ( 447 : 13 :(CALL switch_ ( 2 :) ):) ):(CALL assert_expect ( 448 : 13 :(CALL switch_ ( 3 :) ):) ):(CALL assert_expect ( 449 : 13 :(CALL switch_ ( 4 :) ):) ):(CALL assert_expect ( 450 : 15 :(CALL switch_ ( 5 :) ):) ):(CALL assert_expect ( 451 : 15 :(CALL switch_ ( 6 :) ):) ):(CALL assert_expect ( 454 : 11 :(CALL switch2_ ( 97 :) ):) ):(CALL assert_expect ( 455 : 12 :(CALL switch2_ ( 98 :) ):) ):(CALL assert_expect ( 456 : 12 :(CALL switch2_ ( 99 :) ):) ):(CALL assert_expect ( 457 : 15 :(CALL switch2_ ( 122 :) ):) ):(CALL assert_expect ( 460 : 92 :(CALL q8 () ):) ):(CALL assert_expect ( 463 : 0 : 0 :) ):(CALL assert_expect ( 464 : 1 : 1 :) ):(CALL assert_expect ( 465 : 2 : 2 :) ):(CALL assert_expect ( 466 : 3 : 3 :) ):(CALL assert_expect ( 468 : 15 :(|  13   7 ):) ):(CALL assert_expect ( 469 : 5115 :(|  938   5073 ):) ):(CALL assert_expect ( 470 : 5 :(&  13   7 ):) ):(CALL assert_expect ( 471 : 896 :(&  938   5073 ):) ):(CALL assert_expect ( 472 : 10 :(^  13   7 ):) ):(CALL assert_expect ( 473 : 4219 :(^  938   5073 ):) ):(CALL assert_expect ( 475 : 29 :(>>  938   5 ):) ):(CALL assert_expect ( 476 : 1664 :(<<  13   7 ):) ):(CALL printf_ ((ADDR  "passed tests.\n" ):) ):(RETURN  0 ):))
+//    (BLOCK(= (LVAR 8) (CAST * void   0 )):(CALL assert_expect ( 350 : 1 : 1 :) ):(CALL assert_expect ( 351 : 0 : 0 :) ):(CALL assert_expect ( 352 : 0 :(CAST int  (CAST * void   0 )):) ):(CALL assert_expect ( 355 : 4 : 4 :) ):(CALL assert_expect ( 357 : 1979 :(GVAR i):) ):(CALL assert_expect ( 358 : 2015 :(GVAR j):) ):(CALL assert_expect ( 359 : 14 :(GVAR s):) ):(CALL assert_expect ( 361 : 9 : 9 :) ):(CALL assert_expect ( 362 : 4 :(+ (-  0   3 )  7 ):) ):(CALL assert_expect ( 363 : 21 :(- (+  5   20 )  4 ):) ):(CALL assert_expect ( 364 : 21 :(+  5  (*  4   4 )):) ):(CALL assert_expect ( 365 : 24 :(* (*  4  (-  5   2 )) (-  4   2 )):) ):(CALL assert_expect ( 366 : 13 :(- (+  6  (*  3   4 )) (/  15   3 )):) ):(CALL assert_expect ( 367 : 33 :(/ (* (+  6   3 ) (-  15   4 ))  3 ):) ):(CALL assert_expect ( 368 : 0 :(==  3  (+  3   1 )):) ):(CALL assert_expect ( 369 : 1 :(!=  4  (*  4   2 )):) ):(CALL assert_expect ( 370 : 0 :(!=  3  (*  1   3 )):) ):(CALL assert_expect ( 371 : 1 :(>=  5  (-  8   4 )):) ):(CALL assert_expect ( 372 : 1 :(>=  5  (-  7   2 )):) ):(CALL assert_expect ( 373 : 0 :(>= (-  11   8 )  5 ):) ):(CALL assert_expect ( 374 : 1 :(<= (*  2   30 )  3 ):) ):(CALL assert_expect ( 375 : 1 :(<= (/  9   3 )  3 ):) ):(CALL assert_expect ( 376 : 0 :(<= (-  20   18 )  3 ):) ):(CALL assert_expect ( 377 : 1 :(== (+ (* (-  0   5 )  2 )  10 )  0 ):) ):(CALL assert_expect ( 378 : 1 :(== (/  6   2 ) (/  9   3 )):) ):(CALL assert_expect ( 379 : 1 :(< (+  4   1 )  4 ):) ):(CALL assert_expect ( 380 : 1 :(> (+  1   4 )  4 ):) ):(CALL assert_expect ( 381 : 0 :(< (-  4   1 )  4 ):) ):(CALL assert_expect ( 382 : 0 :(> (-  1   4 )  4 ):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 384 : 0 :(&&  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 385 : 0 :(LVAR 12):) ):(CALL assert_expect ( 386 : 0 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 387 : 1 :(LVAR 12):) ):(CALL assert_expect ( 388 : 1 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 389 : 2 :(LVAR 12):) ):(CALL assert_expect ( 390 : 1 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 391 : 3 :(LVAR 12):) ):(CALL assert_expect ( 392 : 1 :(||  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 393 : 3 :(LVAR 12):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 395 : 0 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 396 : 1 :(LVAR 12):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 398 : 0 :(||  0  (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))):) ):(CALL assert_expect ( 399 : 1 :(LVAR 12):) ):(CALL assert_expect ( 400 : 1 :(|| (&&  1   1 ) (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 401 : 1 :(LVAR 12):) ):(CALL assert_expect ( 402 : 1 :(!  0 ):) ):(CALL assert_expect ( 403 : 0 :(!  1 ):) ):(CALL assert_expect ( 404 : 0 :(! (! (!  1 ))):) ):(= (LVAR 16)  10 ):(CALL assert_expect ( 409 : 15 :(= (LVAR 16) (+= (LVAR 16)  5 )):) ):(CALL assert_expect ( 410 : 15 :(LVAR 16):) ):(CALL assert_expect ( 411 : 8 :(= (LVAR 16) (-= (LVAR 16)  7 )):) ):(CALL assert_expect ( 412 : 8 :(LVAR 16):) ):(CALL assert_expect ( 413 : 40 :(= (LVAR 16) (*= (LVAR 16)  5 )):) ):(CALL assert_expect ( 414 : 40 :(LVAR 16):) ):(CALL assert_expect ( 415 : 4 :(= (LVAR 16) (/= (LVAR 16)  10 )):) ):(CALL assert_expect ( 416 : 4 :(LVAR 16):) ):(CALL assert_expect ( 419 : 4 :(++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ):) ):(CALL assert_expect ( 420 : 5 :(LVAR 16):) ):(CALL assert_expect ( 421 : 5 :(-- (= (LVAR 16) (-- (LVAR 16)  1 ))  1 ):) ):(CALL assert_expect ( 422 : 4 :(LVAR 16):) ):(= (LVAR 20) (/  100  (LVAR 16))):(CALL assert_expect ( 427 : 25 :(LVAR 20):) ):(= (LVAR 24)  77 ):(IF (== (LVAR 24)  77 ) (= (LVAR 24)  55 ) (= (LVAR 24)  66 )):(CALL assert_expect ( 435 : 55 :(LVAR 24):) ):(CALL assert_expect ( 436 : 1346269 :(CALL fibo ( 30 :) ):) ):(CALL array_global () ):(CALL array_local () ):(CALL string () ):(CALL block_scope () ):(CALL for_ () ):(CALL list_ () ):(CALL struct_ () ):(CALL assert_expect ( 449 : 11 :(CALL switch_ ( 1 :) ):) ):(CALL assert_expect ( 450 : 13 :(CALL switch_ ( 2 :) ):) ):(CALL assert_expect ( 451 : 13 :(CALL switch_ ( 3 :) ):) ):(CALL assert_expect ( 452 : 13 :(CALL switch_ ( 4 :) ):) ):(CALL assert_expect ( 453 : 15 :(CALL switch_ ( 5 :) ):) ):(CALL assert_expect ( 454 : 15 :(CALL switch_ ( 6 :) ):) ):(CALL assert_expect ( 457 : 11 :(CALL switch2_ ( 97 :) ):) ):(CALL assert_expect ( 458 : 12 :(CALL switch2_ ( 98 :) ):) ):(CALL assert_expect ( 459 : 12 :(CALL switch2_ ( 99 :) ):) ):(CALL assert_expect ( 460 : 15 :(CALL switch2_ ( 122 :) ):) ):(CALL assert_expect ( 463 : 92 :(CALL q8 () ):) ):(CALL assert_expect ( 466 : 0 : 0 :) ):(CALL assert_expect ( 467 : 1 : 1 :) ):(CALL assert_expect ( 468 : 2 : 2 :) ):(CALL assert_expect ( 469 : 3 : 3 :) ):(CALL assert_expect ( 471 : 15 :(|  13   7 ):) ):(CALL assert_expect ( 472 : 5115 :(|  938   5073 ):) ):(CALL assert_expect ( 473 : 5 :(&  13   7 ):) ):(CALL assert_expect ( 474 : 896 :(&  938   5073 ):) ):(CALL assert_expect ( 475 : 10 :(^  13   7 ):) ):(CALL assert_expect ( 476 : 4219 :(^  938   5073 ):) ):(CALL assert_expect ( 478 : 29 :(>>  938   5 ):) ):(CALL assert_expect ( 479 : 1664 :(<<  13   7 ):) ):(CALL printf_ ((ADDR  "passed tests.\n" ):) ):(RETURN  0 ):))
 main:
 	push rbp
 	mov  rbp, rsp
@@ -5279,15 +5280,13 @@ main:
 .L000199:
 	push rax
 	pop  rax
-// Line 354 (CALL assert_expect ( 354 : 1979 :(GVAR i):) )
-// Line 354 (GVAR i)
-	lea  rax, i[rip]
-	mov  eax, [rax]
-	push rax
-// Line 354  1979 
-	push 1979
-// Line 354  354 
-	push 354
+// Line 355 (CALL assert_expect ( 355 : 4 : 4 :) )
+// Line 354  4 
+	push 4
+// Line 355  4 
+	push 4
+// Line 355  355 
+	push 355
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5305,15 +5304,15 @@ main:
 .L000201:
 	push rax
 	pop  rax
-// Line 355 (CALL assert_expect ( 355 : 2015 :(GVAR j):) )
-// Line 355 (GVAR j)
-	lea  rax, j[rip]
+// Line 357 (CALL assert_expect ( 357 : 1979 :(GVAR i):) )
+// Line 357 (GVAR i)
+	lea  rax, i[rip]
 	mov  eax, [rax]
 	push rax
-// Line 355  2015 
-	push 2015
-// Line 355  355 
-	push 355
+// Line 357  1979 
+	push 1979
+// Line 357  357 
+	push 357
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5331,15 +5330,15 @@ main:
 .L000203:
 	push rax
 	pop  rax
-// Line 356 (CALL assert_expect ( 356 : 14 :(GVAR s):) )
-// Line 356 (GVAR s)
-	lea  rax, s[rip]
-	movsx eax, BYTE PTR [rax]
+// Line 358 (CALL assert_expect ( 358 : 2015 :(GVAR j):) )
+// Line 358 (GVAR j)
+	lea  rax, j[rip]
+	mov  eax, [rax]
 	push rax
-// Line 356  14 
-	push 14
-// Line 356  356 
-	push 356
+// Line 358  2015 
+	push 2015
+// Line 358  358 
+	push 358
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5357,13 +5356,15 @@ main:
 .L000205:
 	push rax
 	pop  rax
-// Line 358 (CALL assert_expect ( 358 : 9 : 9 :) )
-// Line 358  9 
-	push 9
-// Line 358  9 
-	push 9
-// Line 358  358 
-	push 358
+// Line 359 (CALL assert_expect ( 359 : 14 :(GVAR s):) )
+// Line 359 (GVAR s)
+	lea  rax, s[rip]
+	movsx eax, BYTE PTR [rax]
+	push rax
+// Line 359  14 
+	push 14
+// Line 359  359 
+	push 359
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5381,27 +5382,13 @@ main:
 .L000207:
 	push rax
 	pop  rax
-// Line 359 (CALL assert_expect ( 359 : 4 :(+ (-  0   3 )  7 ):) )
-// Line 359 (+ (-  0   3 )  7 )
-// Line 359 (-  0   3 )
-// Line 359  0 
-	push 0
-// Line 359  3 
-	push 3
-	pop  rdi
-	pop  rax
-	sub  rax, rdi
-	push rax
-// Line 359  7 
-	push 7
-	pop  rdi
-	pop  rax
-	add  rax, rdi
-	push rax
-// Line 359  4 
-	push 4
-// Line 359  359 
-	push 359
+// Line 361 (CALL assert_expect ( 361 : 9 : 9 :) )
+// Line 361  9 
+	push 9
+// Line 361  9 
+	push 9
+// Line 361  361 
+	push 361
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5419,27 +5406,27 @@ main:
 .L000209:
 	push rax
 	pop  rax
-// Line 360 (CALL assert_expect ( 360 : 21 :(- (+  5   20 )  4 ):) )
-// Line 360 (- (+  5   20 )  4 )
-// Line 360 (+  5   20 )
-// Line 360  5 
-	push 5
-// Line 360  20 
-	push 20
-	pop  rdi
-	pop  rax
-	add  rax, rdi
-	push rax
-// Line 360  4 
-	push 4
+// Line 362 (CALL assert_expect ( 362 : 4 :(+ (-  0   3 )  7 ):) )
+// Line 362 (+ (-  0   3 )  7 )
+// Line 362 (-  0   3 )
+// Line 362  0 
+	push 0
+// Line 362  3 
+	push 3
 	pop  rdi
 	pop  rax
 	sub  rax, rdi
 	push rax
-// Line 360  21 
-	push 21
-// Line 360  360 
-	push 360
+// Line 362  7 
+	push 7
+	pop  rdi
+	pop  rax
+	add  rax, rdi
+	push rax
+// Line 362  4 
+	push 4
+// Line 362  362 
+	push 362
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5457,27 +5444,27 @@ main:
 .L000211:
 	push rax
 	pop  rax
-// Line 361 (CALL assert_expect ( 361 : 21 :(+  5  (*  4   4 )):) )
-// Line 361 (+  5  (*  4   4 ))
-// Line 361  5 
+// Line 363 (CALL assert_expect ( 363 : 21 :(- (+  5   20 )  4 ):) )
+// Line 363 (- (+  5   20 )  4 )
+// Line 363 (+  5   20 )
+// Line 363  5 
 	push 5
-// Line 361 (*  4   4 )
-// Line 361  4 
-	push 4
-// Line 361  4 
-	push 4
-	pop  rdi
-	pop  rax
-	imul rax, rdi
-	push rax
+// Line 363  20 
+	push 20
 	pop  rdi
 	pop  rax
 	add  rax, rdi
 	push rax
-// Line 361  21 
+// Line 363  4 
+	push 4
+	pop  rdi
+	pop  rax
+	sub  rax, rdi
+	push rax
+// Line 363  21 
 	push 21
-// Line 361  361 
-	push 361
+// Line 363  363 
+	push 363
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5495,41 +5482,27 @@ main:
 .L000213:
 	push rax
 	pop  rax
-// Line 362 (CALL assert_expect ( 362 : 24 :(* (*  4  (-  5   2 )) (-  4   2 )):) )
-// Line 362 (* (*  4  (-  5   2 )) (-  4   2 ))
-// Line 362 (*  4  (-  5   2 ))
-// Line 362  4 
-	push 4
-// Line 362 (-  5   2 )
-// Line 362  5 
+// Line 364 (CALL assert_expect ( 364 : 21 :(+  5  (*  4   4 )):) )
+// Line 364 (+  5  (*  4   4 ))
+// Line 364  5 
 	push 5
-// Line 362  2 
-	push 2
-	pop  rdi
-	pop  rax
-	sub  rax, rdi
-	push rax
-	pop  rdi
-	pop  rax
-	imul rax, rdi
-	push rax
-// Line 362 (-  4   2 )
-// Line 362  4 
+// Line 364 (*  4   4 )
+// Line 364  4 
 	push 4
-// Line 362  2 
-	push 2
-	pop  rdi
-	pop  rax
-	sub  rax, rdi
-	push rax
+// Line 364  4 
+	push 4
 	pop  rdi
 	pop  rax
 	imul rax, rdi
 	push rax
-// Line 362  24 
-	push 24
-// Line 362  362 
-	push 362
+	pop  rdi
+	pop  rax
+	add  rax, rdi
+	push rax
+// Line 364  21 
+	push 21
+// Line 364  364 
+	push 364
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5547,42 +5520,41 @@ main:
 .L000215:
 	push rax
 	pop  rax
-// Line 363 (CALL assert_expect ( 363 : 13 :(- (+  6  (*  3   4 )) (/  15   3 )):) )
-// Line 363 (- (+  6  (*  3   4 )) (/  15   3 ))
-// Line 363 (+  6  (*  3   4 ))
-// Line 363  6 
-	push 6
-// Line 363 (*  3   4 )
-// Line 363  3 
-	push 3
-// Line 363  4 
+// Line 365 (CALL assert_expect ( 365 : 24 :(* (*  4  (-  5   2 )) (-  4   2 )):) )
+// Line 365 (* (*  4  (-  5   2 )) (-  4   2 ))
+// Line 365 (*  4  (-  5   2 ))
+// Line 365  4 
 	push 4
-	pop  rdi
-	pop  rax
-	imul rax, rdi
-	push rax
-	pop  rdi
-	pop  rax
-	add  rax, rdi
-	push rax
-// Line 363 (/  15   3 )
-// Line 363  15 
-	push 15
-// Line 363  3 
-	push 3
-	pop  rdi
-	pop  rax
-	cqo
-	idiv rax, rdi
-	push rax
+// Line 365 (-  5   2 )
+// Line 365  5 
+	push 5
+// Line 365  2 
+	push 2
 	pop  rdi
 	pop  rax
 	sub  rax, rdi
 	push rax
-// Line 363  13 
-	push 13
-// Line 363  363 
-	push 363
+	pop  rdi
+	pop  rax
+	imul rax, rdi
+	push rax
+// Line 365 (-  4   2 )
+// Line 365  4 
+	push 4
+// Line 365  2 
+	push 2
+	pop  rdi
+	pop  rax
+	sub  rax, rdi
+	push rax
+	pop  rdi
+	pop  rax
+	imul rax, rdi
+	push rax
+// Line 365  24 
+	push 24
+// Line 365  365 
+	push 365
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5600,42 +5572,42 @@ main:
 .L000217:
 	push rax
 	pop  rax
-// Line 364 (CALL assert_expect ( 364 : 33 :(/ (* (+  6   3 ) (-  15   4 ))  3 ):) )
-// Line 364 (/ (* (+  6   3 ) (-  15   4 ))  3 )
-// Line 364 (* (+  6   3 ) (-  15   4 ))
-// Line 364 (+  6   3 )
-// Line 364  6 
+// Line 366 (CALL assert_expect ( 366 : 13 :(- (+  6  (*  3   4 )) (/  15   3 )):) )
+// Line 366 (- (+  6  (*  3   4 )) (/  15   3 ))
+// Line 366 (+  6  (*  3   4 ))
+// Line 366  6 
 	push 6
-// Line 364  3 
+// Line 366 (*  3   4 )
+// Line 366  3 
 	push 3
-	pop  rdi
-	pop  rax
-	add  rax, rdi
-	push rax
-// Line 364 (-  15   4 )
-// Line 364  15 
-	push 15
-// Line 364  4 
+// Line 366  4 
 	push 4
-	pop  rdi
-	pop  rax
-	sub  rax, rdi
-	push rax
 	pop  rdi
 	pop  rax
 	imul rax, rdi
 	push rax
-// Line 364  3 
+	pop  rdi
+	pop  rax
+	add  rax, rdi
+	push rax
+// Line 366 (/  15   3 )
+// Line 366  15 
+	push 15
+// Line 366  3 
 	push 3
 	pop  rdi
 	pop  rax
 	cqo
 	idiv rax, rdi
 	push rax
-// Line 364  33 
-	push 33
-// Line 364  364 
-	push 364
+	pop  rdi
+	pop  rax
+	sub  rax, rdi
+	push rax
+// Line 366  13 
+	push 13
+// Line 366  366 
+	push 366
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5653,29 +5625,42 @@ main:
 .L000219:
 	push rax
 	pop  rax
-// Line 365 (CALL assert_expect ( 365 : 0 :(==  3  (+  3   1 )):) )
-// Line 365 (==  3  (+  3   1 ))
-// Line 365  3 
+// Line 367 (CALL assert_expect ( 367 : 33 :(/ (* (+  6   3 ) (-  15   4 ))  3 ):) )
+// Line 367 (/ (* (+  6   3 ) (-  15   4 ))  3 )
+// Line 367 (* (+  6   3 ) (-  15   4 ))
+// Line 367 (+  6   3 )
+// Line 367  6 
+	push 6
+// Line 367  3 
 	push 3
-// Line 365 (+  3   1 )
-// Line 365  3 
-	push 3
-// Line 365  1 
-	push 1
 	pop  rdi
 	pop  rax
 	add  rax, rdi
 	push rax
+// Line 367 (-  15   4 )
+// Line 367  15 
+	push 15
+// Line 367  4 
+	push 4
 	pop  rdi
 	pop  rax
-	cmp  eax, edi
-	sete al
-	movzb eax, al
+	sub  rax, rdi
 	push rax
-// Line 365  0 
-	push 0
-// Line 365  365 
-	push 365
+	pop  rdi
+	pop  rax
+	imul rax, rdi
+	push rax
+// Line 367  3 
+	push 3
+	pop  rdi
+	pop  rax
+	cqo
+	idiv rax, rdi
+	push rax
+// Line 367  33 
+	push 33
+// Line 367  367 
+	push 367
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5693,29 +5678,29 @@ main:
 .L000221:
 	push rax
 	pop  rax
-// Line 366 (CALL assert_expect ( 366 : 1 :(!=  4  (*  4   2 )):) )
-// Line 366 (!=  4  (*  4   2 ))
-// Line 366  4 
-	push 4
-// Line 366 (*  4   2 )
-// Line 366  4 
-	push 4
-// Line 366  2 
-	push 2
+// Line 368 (CALL assert_expect ( 368 : 0 :(==  3  (+  3   1 )):) )
+// Line 368 (==  3  (+  3   1 ))
+// Line 368  3 
+	push 3
+// Line 368 (+  3   1 )
+// Line 368  3 
+	push 3
+// Line 368  1 
+	push 1
 	pop  rdi
 	pop  rax
-	imul rax, rdi
+	add  rax, rdi
 	push rax
 	pop  rdi
 	pop  rax
 	cmp  eax, edi
-	setne al
+	sete al
 	movzb eax, al
 	push rax
-// Line 366  1 
-	push 1
-// Line 366  366 
-	push 366
+// Line 368  0 
+	push 0
+// Line 368  368 
+	push 368
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5733,15 +5718,15 @@ main:
 .L000223:
 	push rax
 	pop  rax
-// Line 367 (CALL assert_expect ( 367 : 0 :(!=  3  (*  1   3 )):) )
-// Line 367 (!=  3  (*  1   3 ))
-// Line 367  3 
-	push 3
-// Line 367 (*  1   3 )
-// Line 367  1 
-	push 1
-// Line 367  3 
-	push 3
+// Line 369 (CALL assert_expect ( 369 : 1 :(!=  4  (*  4   2 )):) )
+// Line 369 (!=  4  (*  4   2 ))
+// Line 369  4 
+	push 4
+// Line 369 (*  4   2 )
+// Line 369  4 
+	push 4
+// Line 369  2 
+	push 2
 	pop  rdi
 	pop  rax
 	imul rax, rdi
@@ -5752,10 +5737,10 @@ main:
 	setne al
 	movzb eax, al
 	push rax
-// Line 367  0 
-	push 0
-// Line 367  367 
-	push 367
+// Line 369  1 
+	push 1
+// Line 369  369 
+	push 369
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5773,29 +5758,29 @@ main:
 .L000225:
 	push rax
 	pop  rax
-// Line 368 (CALL assert_expect ( 368 : 1 :(>=  5  (-  8   4 )):) )
-// Line 368 (>=  5  (-  8   4 ))
-// Line 368  5 
-	push 5
-// Line 368 (-  8   4 )
-// Line 368  8 
-	push 8
-// Line 368  4 
-	push 4
+// Line 370 (CALL assert_expect ( 370 : 0 :(!=  3  (*  1   3 )):) )
+// Line 370 (!=  3  (*  1   3 ))
+// Line 370  3 
+	push 3
+// Line 370 (*  1   3 )
+// Line 370  1 
+	push 1
+// Line 370  3 
+	push 3
 	pop  rdi
 	pop  rax
-	sub  rax, rdi
+	imul rax, rdi
 	push rax
 	pop  rdi
 	pop  rax
 	cmp  eax, edi
-	setge al
+	setne al
 	movzb eax, al
 	push rax
-// Line 368  1 
-	push 1
-// Line 368  368 
-	push 368
+// Line 370  0 
+	push 0
+// Line 370  370 
+	push 370
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5813,15 +5798,15 @@ main:
 .L000227:
 	push rax
 	pop  rax
-// Line 369 (CALL assert_expect ( 369 : 1 :(>=  5  (-  7   2 )):) )
-// Line 369 (>=  5  (-  7   2 ))
-// Line 369  5 
+// Line 371 (CALL assert_expect ( 371 : 1 :(>=  5  (-  8   4 )):) )
+// Line 371 (>=  5  (-  8   4 ))
+// Line 371  5 
 	push 5
-// Line 369 (-  7   2 )
-// Line 369  7 
-	push 7
-// Line 369  2 
-	push 2
+// Line 371 (-  8   4 )
+// Line 371  8 
+	push 8
+// Line 371  4 
+	push 4
 	pop  rdi
 	pop  rax
 	sub  rax, rdi
@@ -5832,10 +5817,10 @@ main:
 	setge al
 	movzb eax, al
 	push rax
-// Line 369  1 
+// Line 371  1 
 	push 1
-// Line 369  369 
-	push 369
+// Line 371  371 
+	push 371
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5853,29 +5838,29 @@ main:
 .L000229:
 	push rax
 	pop  rax
-// Line 370 (CALL assert_expect ( 370 : 0 :(>= (-  11   8 )  5 ):) )
-// Line 370 (>= (-  11   8 )  5 )
-// Line 370 (-  11   8 )
-// Line 370  11 
-	push 11
-// Line 370  8 
-	push 8
+// Line 372 (CALL assert_expect ( 372 : 1 :(>=  5  (-  7   2 )):) )
+// Line 372 (>=  5  (-  7   2 ))
+// Line 372  5 
+	push 5
+// Line 372 (-  7   2 )
+// Line 372  7 
+	push 7
+// Line 372  2 
+	push 2
 	pop  rdi
 	pop  rax
 	sub  rax, rdi
 	push rax
-// Line 370  5 
-	push 5
 	pop  rdi
 	pop  rax
 	cmp  eax, edi
 	setge al
 	movzb eax, al
 	push rax
-// Line 370  0 
-	push 0
-// Line 370  370 
-	push 370
+// Line 372  1 
+	push 1
+// Line 372  372 
+	push 372
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5893,29 +5878,29 @@ main:
 .L000231:
 	push rax
 	pop  rax
-// Line 371 (CALL assert_expect ( 371 : 1 :(<= (*  2   30 )  3 ):) )
-// Line 371 (<= (*  2   30 )  3 )
-// Line 371 (*  2   30 )
-// Line 371  2 
-	push 2
-// Line 371  30 
-	push 30
+// Line 373 (CALL assert_expect ( 373 : 0 :(>= (-  11   8 )  5 ):) )
+// Line 373 (>= (-  11   8 )  5 )
+// Line 373 (-  11   8 )
+// Line 373  11 
+	push 11
+// Line 373  8 
+	push 8
 	pop  rdi
 	pop  rax
-	imul rax, rdi
+	sub  rax, rdi
 	push rax
-// Line 371  3 
-	push 3
+// Line 373  5 
+	push 5
 	pop  rdi
 	pop  rax
 	cmp  eax, edi
 	setge al
 	movzb eax, al
 	push rax
-// Line 371  1 
-	push 1
-// Line 371  371 
-	push 371
+// Line 373  0 
+	push 0
+// Line 373  373 
+	push 373
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5933,19 +5918,18 @@ main:
 .L000233:
 	push rax
 	pop  rax
-// Line 372 (CALL assert_expect ( 372 : 1 :(<= (/  9   3 )  3 ):) )
-// Line 372 (<= (/  9   3 )  3 )
-// Line 372 (/  9   3 )
-// Line 372  9 
-	push 9
-// Line 372  3 
-	push 3
+// Line 374 (CALL assert_expect ( 374 : 1 :(<= (*  2   30 )  3 ):) )
+// Line 374 (<= (*  2   30 )  3 )
+// Line 374 (*  2   30 )
+// Line 374  2 
+	push 2
+// Line 374  30 
+	push 30
 	pop  rdi
 	pop  rax
-	cqo
-	idiv rax, rdi
+	imul rax, rdi
 	push rax
-// Line 372  3 
+// Line 374  3 
 	push 3
 	pop  rdi
 	pop  rax
@@ -5953,10 +5937,10 @@ main:
 	setge al
 	movzb eax, al
 	push rax
-// Line 372  1 
+// Line 374  1 
 	push 1
-// Line 372  372 
-	push 372
+// Line 374  374 
+	push 374
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -5974,18 +5958,19 @@ main:
 .L000235:
 	push rax
 	pop  rax
-// Line 373 (CALL assert_expect ( 373 : 0 :(<= (-  20   18 )  3 ):) )
-// Line 373 (<= (-  20   18 )  3 )
-// Line 373 (-  20   18 )
-// Line 373  20 
-	push 20
-// Line 373  18 
-	push 18
+// Line 375 (CALL assert_expect ( 375 : 1 :(<= (/  9   3 )  3 ):) )
+// Line 375 (<= (/  9   3 )  3 )
+// Line 375 (/  9   3 )
+// Line 375  9 
+	push 9
+// Line 375  3 
+	push 3
 	pop  rdi
 	pop  rax
-	sub  rax, rdi
+	cqo
+	idiv rax, rdi
 	push rax
-// Line 373  3 
+// Line 375  3 
 	push 3
 	pop  rdi
 	pop  rax
@@ -5993,10 +5978,10 @@ main:
 	setge al
 	movzb eax, al
 	push rax
-// Line 373  0 
-	push 0
-// Line 373  373 
-	push 373
+// Line 375  1 
+	push 1
+// Line 375  375 
+	push 375
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -6014,43 +5999,29 @@ main:
 .L000237:
 	push rax
 	pop  rax
-// Line 374 (CALL assert_expect ( 374 : 1 :(== (+ (* (-  0   5 )  2 )  10 )  0 ):) )
-// Line 374 (== (+ (* (-  0   5 )  2 )  10 )  0 )
-// Line 374 (+ (* (-  0   5 )  2 )  10 )
-// Line 374 (* (-  0   5 )  2 )
-// Line 374 (-  0   5 )
-// Line 374  0 
-	push 0
-// Line 374  5 
-	push 5
+// Line 376 (CALL assert_expect ( 376 : 0 :(<= (-  20   18 )  3 ):) )
+// Line 376 (<= (-  20   18 )  3 )
+// Line 376 (-  20   18 )
+// Line 376  20 
+	push 20
+// Line 376  18 
+	push 18
 	pop  rdi
 	pop  rax
 	sub  rax, rdi
 	push rax
-// Line 374  2 
-	push 2
-	pop  rdi
-	pop  rax
-	imul rax, rdi
-	push rax
-// Line 374  10 
-	push 10
-	pop  rdi
-	pop  rax
-	add  rax, rdi
-	push rax
-// Line 374  0 
-	push 0
+// Line 376  3 
+	push 3
 	pop  rdi
 	pop  rax
 	cmp  eax, edi
-	sete al
+	setge al
 	movzb eax, al
 	push rax
-// Line 374  1 
-	push 1
-// Line 374  374 
-	push 374
+// Line 376  0 
+	push 0
+// Line 376  376 
+	push 376
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -6068,38 +6039,43 @@ main:
 .L000239:
 	push rax
 	pop  rax
-// Line 375 (CALL assert_expect ( 375 : 1 :(== (/  6   2 ) (/  9   3 )):) )
-// Line 375 (== (/  6   2 ) (/  9   3 ))
-// Line 375 (/  6   2 )
-// Line 375  6 
-	push 6
-// Line 375  2 
+// Line 377 (CALL assert_expect ( 377 : 1 :(== (+ (* (-  0   5 )  2 )  10 )  0 ):) )
+// Line 377 (== (+ (* (-  0   5 )  2 )  10 )  0 )
+// Line 377 (+ (* (-  0   5 )  2 )  10 )
+// Line 377 (* (-  0   5 )  2 )
+// Line 377 (-  0   5 )
+// Line 377  0 
+	push 0
+// Line 377  5 
+	push 5
+	pop  rdi
+	pop  rax
+	sub  rax, rdi
+	push rax
+// Line 377  2 
 	push 2
 	pop  rdi
 	pop  rax
-	cqo
-	idiv rax, rdi
+	imul rax, rdi
 	push rax
-// Line 375 (/  9   3 )
-// Line 375  9 
-	push 9
-// Line 375  3 
-	push 3
+// Line 377  10 
+	push 10
 	pop  rdi
 	pop  rax
-	cqo
-	idiv rax, rdi
+	add  rax, rdi
 	push rax
+// Line 377  0 
+	push 0
 	pop  rdi
 	pop  rax
 	cmp  eax, edi
 	sete al
 	movzb eax, al
 	push rax
-// Line 375  1 
+// Line 377  1 
 	push 1
-// Line 375  375 
-	push 375
+// Line 377  377 
+	push 377
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -6117,29 +6093,38 @@ main:
 .L000241:
 	push rax
 	pop  rax
-// Line 376 (CALL assert_expect ( 376 : 1 :(< (+  4   1 )  4 ):) )
-// Line 376 (< (+  4   1 )  4 )
-// Line 376 (+  4   1 )
-// Line 376  4 
-	push 4
-// Line 376  1 
-	push 1
+// Line 378 (CALL assert_expect ( 378 : 1 :(== (/  6   2 ) (/  9   3 )):) )
+// Line 378 (== (/  6   2 ) (/  9   3 ))
+// Line 378 (/  6   2 )
+// Line 378  6 
+	push 6
+// Line 378  2 
+	push 2
 	pop  rdi
 	pop  rax
-	add  rax, rdi
+	cqo
+	idiv rax, rdi
 	push rax
-// Line 376  4 
-	push 4
+// Line 378 (/  9   3 )
+// Line 378  9 
+	push 9
+// Line 378  3 
+	push 3
+	pop  rdi
+	pop  rax
+	cqo
+	idiv rax, rdi
+	push rax
 	pop  rdi
 	pop  rax
 	cmp  eax, edi
-	setg al
+	sete al
 	movzb eax, al
 	push rax
-// Line 376  1 
+// Line 378  1 
 	push 1
-// Line 376  376 
-	push 376
+// Line 378  378 
+	push 378
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -6157,18 +6142,18 @@ main:
 .L000243:
 	push rax
 	pop  rax
-// Line 377 (CALL assert_expect ( 377 : 1 :(> (+  1   4 )  4 ):) )
-// Line 377 (> (+  1   4 )  4 )
-// Line 377 (+  1   4 )
-// Line 377  1 
-	push 1
-// Line 377  4 
+// Line 379 (CALL assert_expect ( 379 : 1 :(< (+  4   1 )  4 ):) )
+// Line 379 (< (+  4   1 )  4 )
+// Line 379 (+  4   1 )
+// Line 379  4 
 	push 4
+// Line 379  1 
+	push 1
 	pop  rdi
 	pop  rax
 	add  rax, rdi
 	push rax
-// Line 377  4 
+// Line 379  4 
 	push 4
 	pop  rdi
 	pop  rax
@@ -6176,10 +6161,10 @@ main:
 	setg al
 	movzb eax, al
 	push rax
-// Line 377  1 
+// Line 379  1 
 	push 1
-// Line 377  377 
-	push 377
+// Line 379  379 
+	push 379
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -6197,18 +6182,18 @@ main:
 .L000245:
 	push rax
 	pop  rax
-// Line 378 (CALL assert_expect ( 378 : 0 :(< (-  4   1 )  4 ):) )
-// Line 378 (< (-  4   1 )  4 )
-// Line 378 (-  4   1 )
-// Line 378  4 
-	push 4
-// Line 378  1 
+// Line 380 (CALL assert_expect ( 380 : 1 :(> (+  1   4 )  4 ):) )
+// Line 380 (> (+  1   4 )  4 )
+// Line 380 (+  1   4 )
+// Line 380  1 
 	push 1
+// Line 380  4 
+	push 4
 	pop  rdi
 	pop  rax
-	sub  rax, rdi
+	add  rax, rdi
 	push rax
-// Line 378  4 
+// Line 380  4 
 	push 4
 	pop  rdi
 	pop  rax
@@ -6216,10 +6201,10 @@ main:
 	setg al
 	movzb eax, al
 	push rax
-// Line 378  0 
-	push 0
-// Line 378  378 
-	push 378
+// Line 380  1 
+	push 1
+// Line 380  380 
+	push 380
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -6237,18 +6222,18 @@ main:
 .L000247:
 	push rax
 	pop  rax
-// Line 379 (CALL assert_expect ( 379 : 0 :(> (-  1   4 )  4 ):) )
-// Line 379 (> (-  1   4 )  4 )
-// Line 379 (-  1   4 )
-// Line 379  1 
-	push 1
-// Line 379  4 
+// Line 381 (CALL assert_expect ( 381 : 0 :(< (-  4   1 )  4 ):) )
+// Line 381 (< (-  4   1 )  4 )
+// Line 381 (-  4   1 )
+// Line 381  4 
 	push 4
+// Line 381  1 
+	push 1
 	pop  rdi
 	pop  rax
 	sub  rax, rdi
 	push rax
-// Line 379  4 
+// Line 381  4 
 	push 4
 	pop  rdi
 	pop  rax
@@ -6256,10 +6241,10 @@ main:
 	setg al
 	movzb eax, al
 	push rax
-// Line 379  0 
+// Line 381  0 
 	push 0
-// Line 379  379 
-	push 379
+// Line 381  381 
+	push 381
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -6277,36 +6262,76 @@ main:
 .L000249:
 	push rax
 	pop  rax
-// Line 380 (= (LVAR 12)  0 )
+// Line 382 (CALL assert_expect ( 382 : 0 :(> (-  1   4 )  4 ):) )
+// Line 382 (> (-  1   4 )  4 )
+// Line 382 (-  1   4 )
+// Line 382  1 
+	push 1
+// Line 382  4 
+	push 4
+	pop  rdi
+	pop  rax
+	sub  rax, rdi
+	push rax
+// Line 382  4 
+	push 4
+	pop  rdi
+	pop  rax
+	cmp  eax, edi
+	setg al
+	movzb eax, al
+	push rax
+// Line 382  0 
+	push 0
+// Line 382  382 
+	push 382
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000250
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000251
+.L000250:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000251:
+	push rax
+	pop  rax
+// Line 383 (= (LVAR 12)  0 )
 	mov  rax, rbp
 	sub  rax, 12
 	push rax
-// Line 380  0 
+// Line 383  0 
 	push 0
 	pop  rdi
 	pop  rax
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 381 (CALL assert_expect ( 381 : 0 :(&&  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
-// Line 381 (&&  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
-// Line 381  0 
+// Line 384 (CALL assert_expect ( 384 : 0 :(&&  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 384 (&&  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 384  0 
 	push 0
 	pop  rax
 	cmp  eax, 0
-	je   .L000250
-// Line 381 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
-// Line 381 (= (LVAR 12) (++ (LVAR 12)  1 ))
+	je   .L000252
+// Line 384 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 384 (= (LVAR 12) (++ (LVAR 12)  1 ))
 	mov  rax, rbp
 	sub  rax, 12
 	push rax
-// Line 381 (++ (LVAR 12)  1 )
-// Line 381 (LVAR 12)
+// Line 384 (++ (LVAR 12)  1 )
+// Line 384 (LVAR 12)
 	mov  rax, rbp
 	sub  rax, 12
 	mov  eax, [rax]
 	push rax
-// Line 381  1 
+// Line 384  1 
 	push 1
 	pop  rdi
 	pop  rax
@@ -6316,7 +6341,7 @@ main:
 	pop  rax
 	mov  [rax], edi
 	push rdi
-// Line 381  1 
+// Line 384  1 
 	push 1
 	pop  rdi
 	pop  rax
@@ -6324,44 +6349,17 @@ main:
 	push rax
 	pop  rax
 	cmp  eax, 0
-	je   .L000250
+	je   .L000252
 	mov  rax, 1
-	jmp  .L000251
-.L000250:
-	mov  rax, 0
-.L000251:
-	push  rax
-// Line 381  0 
-	push 0
-// Line 381  381 
-	push 381
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000252
-	mov  rax, 0
-	call assert_expect
 	jmp  .L000253
 .L000252:
-	sub  rsp, 8
 	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
 .L000253:
-	push rax
-	pop  rax
-// Line 382 (CALL assert_expect ( 382 : 0 :(LVAR 12):) )
-// Line 382 (LVAR 12)
-	mov  rax, rbp
-	sub  rax, 12
-	mov  eax, [rax]
-	push rax
-// Line 382  0 
+	push  rax
+// Line 384  0 
 	push 0
-// Line 382  382 
-	push 382
+// Line 384  384 
+	push 384
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -6379,25 +6377,52 @@ main:
 .L000255:
 	push rax
 	pop  rax
-// Line 383 (CALL assert_expect ( 383 : 0 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
-// Line 383 (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
-// Line 383  1 
-	push 1
-	pop  rax
-	cmp  eax, 0
-	je   .L000256
-// Line 383 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
-// Line 383 (= (LVAR 12) (++ (LVAR 12)  1 ))
-	mov  rax, rbp
-	sub  rax, 12
-	push rax
-// Line 383 (++ (LVAR 12)  1 )
-// Line 383 (LVAR 12)
+// Line 385 (CALL assert_expect ( 385 : 0 :(LVAR 12):) )
+// Line 385 (LVAR 12)
 	mov  rax, rbp
 	sub  rax, 12
 	mov  eax, [rax]
 	push rax
-// Line 383  1 
+// Line 385  0 
+	push 0
+// Line 385  385 
+	push 385
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000256
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000257
+.L000256:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000257:
+	push rax
+	pop  rax
+// Line 386 (CALL assert_expect ( 386 : 0 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 386 (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 386  1 
+	push 1
+	pop  rax
+	cmp  eax, 0
+	je   .L000258
+// Line 386 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 386 (= (LVAR 12) (++ (LVAR 12)  1 ))
+	mov  rax, rbp
+	sub  rax, 12
+	push rax
+// Line 386 (++ (LVAR 12)  1 )
+// Line 386 (LVAR 12)
+	mov  rax, rbp
+	sub  rax, 12
+	mov  eax, [rax]
+	push rax
+// Line 386  1 
 	push 1
 	pop  rdi
 	pop  rax
@@ -6407,7 +6432,7 @@ main:
 	pop  rax
 	mov  [rax], edi
 	push rdi
-// Line 383  1 
+// Line 386  1 
 	push 1
 	pop  rdi
 	pop  rax
@@ -6415,44 +6440,17 @@ main:
 	push rax
 	pop  rax
 	cmp  eax, 0
-	je   .L000256
+	je   .L000258
 	mov  rax, 1
-	jmp  .L000257
-.L000256:
-	mov  rax, 0
-.L000257:
-	push  rax
-// Line 383  0 
-	push 0
-// Line 383  383 
-	push 383
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000258
-	mov  rax, 0
-	call assert_expect
 	jmp  .L000259
 .L000258:
-	sub  rsp, 8
 	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
 .L000259:
-	push rax
-	pop  rax
-// Line 384 (CALL assert_expect ( 384 : 1 :(LVAR 12):) )
-// Line 384 (LVAR 12)
-	mov  rax, rbp
-	sub  rax, 12
-	mov  eax, [rax]
-	push rax
-// Line 384  1 
-	push 1
-// Line 384  384 
-	push 384
+	push  rax
+// Line 386  0 
+	push 0
+// Line 386  386 
+	push 386
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -6470,25 +6468,52 @@ main:
 .L000261:
 	push rax
 	pop  rax
-// Line 385 (CALL assert_expect ( 385 : 1 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
-// Line 385 (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
-// Line 385  1 
-	push 1
-	pop  rax
-	cmp  eax, 0
-	je   .L000262
-// Line 385 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
-// Line 385 (= (LVAR 12) (++ (LVAR 12)  1 ))
-	mov  rax, rbp
-	sub  rax, 12
-	push rax
-// Line 385 (++ (LVAR 12)  1 )
-// Line 385 (LVAR 12)
+// Line 387 (CALL assert_expect ( 387 : 1 :(LVAR 12):) )
+// Line 387 (LVAR 12)
 	mov  rax, rbp
 	sub  rax, 12
 	mov  eax, [rax]
 	push rax
-// Line 385  1 
+// Line 387  1 
+	push 1
+// Line 387  387 
+	push 387
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000262
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000263
+.L000262:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000263:
+	push rax
+	pop  rax
+// Line 388 (CALL assert_expect ( 388 : 1 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 388 (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 388  1 
+	push 1
+	pop  rax
+	cmp  eax, 0
+	je   .L000264
+// Line 388 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 388 (= (LVAR 12) (++ (LVAR 12)  1 ))
+	mov  rax, rbp
+	sub  rax, 12
+	push rax
+// Line 388 (++ (LVAR 12)  1 )
+// Line 388 (LVAR 12)
+	mov  rax, rbp
+	sub  rax, 12
+	mov  eax, [rax]
+	push rax
+// Line 388  1 
 	push 1
 	pop  rdi
 	pop  rax
@@ -6498,7 +6523,7 @@ main:
 	pop  rax
 	mov  [rax], edi
 	push rdi
-// Line 385  1 
+// Line 388  1 
 	push 1
 	pop  rdi
 	pop  rax
@@ -6506,44 +6531,17 @@ main:
 	push rax
 	pop  rax
 	cmp  eax, 0
-	je   .L000262
+	je   .L000264
 	mov  rax, 1
-	jmp  .L000263
-.L000262:
-	mov  rax, 0
-.L000263:
-	push  rax
-// Line 385  1 
-	push 1
-// Line 385  385 
-	push 385
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000264
-	mov  rax, 0
-	call assert_expect
 	jmp  .L000265
 .L000264:
-	sub  rsp, 8
 	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
 .L000265:
-	push rax
-	pop  rax
-// Line 386 (CALL assert_expect ( 386 : 2 :(LVAR 12):) )
-// Line 386 (LVAR 12)
-	mov  rax, rbp
-	sub  rax, 12
-	mov  eax, [rax]
-	push rax
-// Line 386  2 
-	push 2
-// Line 386  386 
-	push 386
+	push  rax
+// Line 388  1 
+	push 1
+// Line 388  388 
+	push 388
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -6561,25 +6559,52 @@ main:
 .L000267:
 	push rax
 	pop  rax
-// Line 387 (CALL assert_expect ( 387 : 1 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
-// Line 387 (||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
-// Line 387  0 
-	push 0
-	pop  rax
-	cmp  eax, 0
-	jne  .L000268
-// Line 387 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
-// Line 387 (= (LVAR 12) (++ (LVAR 12)  1 ))
-	mov  rax, rbp
-	sub  rax, 12
-	push rax
-// Line 387 (++ (LVAR 12)  1 )
-// Line 387 (LVAR 12)
+// Line 389 (CALL assert_expect ( 389 : 2 :(LVAR 12):) )
+// Line 389 (LVAR 12)
 	mov  rax, rbp
 	sub  rax, 12
 	mov  eax, [rax]
 	push rax
-// Line 387  1 
+// Line 389  2 
+	push 2
+// Line 389  389 
+	push 389
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000268
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000269
+.L000268:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000269:
+	push rax
+	pop  rax
+// Line 390 (CALL assert_expect ( 390 : 1 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 390 (||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 390  0 
+	push 0
+	pop  rax
+	cmp  eax, 0
+	jne  .L000270
+// Line 390 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 390 (= (LVAR 12) (++ (LVAR 12)  1 ))
+	mov  rax, rbp
+	sub  rax, 12
+	push rax
+// Line 390 (++ (LVAR 12)  1 )
+// Line 390 (LVAR 12)
+	mov  rax, rbp
+	sub  rax, 12
+	mov  eax, [rax]
+	push rax
+// Line 390  1 
 	push 1
 	pop  rdi
 	pop  rax
@@ -6589,7 +6614,7 @@ main:
 	pop  rax
 	mov  [rax], edi
 	push rdi
-// Line 387  1 
+// Line 390  1 
 	push 1
 	pop  rdi
 	pop  rax
@@ -6597,44 +6622,17 @@ main:
 	push rax
 	pop  rax
 	cmp  eax, 0
-	jne  .L000268
+	jne  .L000270
 	mov  rax, 0
-	jmp  .L000269
-.L000268:
-	mov  rax, 1
-.L000269:
-	push  rax
-// Line 387  1 
-	push 1
-// Line 387  387 
-	push 387
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000270
-	mov  rax, 0
-	call assert_expect
 	jmp  .L000271
 .L000270:
-	sub  rsp, 8
-	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
+	mov  rax, 1
 .L000271:
-	push rax
-	pop  rax
-// Line 388 (CALL assert_expect ( 388 : 3 :(LVAR 12):) )
-// Line 388 (LVAR 12)
-	mov  rax, rbp
-	sub  rax, 12
-	mov  eax, [rax]
-	push rax
-// Line 388  3 
-	push 3
-// Line 388  388 
-	push 388
+	push  rax
+// Line 390  1 
+	push 1
+// Line 390  390 
+	push 390
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -6652,115 +6650,40 @@ main:
 .L000273:
 	push rax
 	pop  rax
-// Line 389 (CALL assert_expect ( 389 : 1 :(||  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
-// Line 389 (||  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
-// Line 389  1 
-	push 1
-	pop  rax
-	cmp  eax, 0
-	jne  .L000274
-// Line 389 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
-// Line 389 (= (LVAR 12) (++ (LVAR 12)  1 ))
-	mov  rax, rbp
-	sub  rax, 12
-	push rax
-// Line 389 (++ (LVAR 12)  1 )
-// Line 389 (LVAR 12)
+// Line 391 (CALL assert_expect ( 391 : 3 :(LVAR 12):) )
+// Line 391 (LVAR 12)
 	mov  rax, rbp
 	sub  rax, 12
 	mov  eax, [rax]
 	push rax
-// Line 389  1 
-	push 1
+// Line 391  3 
+	push 3
+// Line 391  391 
+	push 391
 	pop  rdi
-	pop  rax
-	add  rax, rdi
-	push rax
-	pop  rdi
-	pop  rax
-	mov  [rax], edi
-	push rdi
-// Line 389  1 
-	push 1
-	pop  rdi
-	pop  rax
-	sub  rax, rdi
-	push rax
-	pop  rax
-	cmp  eax, 0
-	jne  .L000274
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000274
 	mov  rax, 0
+	call assert_expect
 	jmp  .L000275
 .L000274:
-	mov  rax, 1
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
 .L000275:
-	push  rax
-// Line 389  1 
+	push rax
+	pop  rax
+// Line 392 (CALL assert_expect ( 392 : 1 :(||  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 392 (||  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 392  1 
 	push 1
-// Line 389  389 
-	push 389
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000276
-	mov  rax, 0
-	call assert_expect
-	jmp  .L000277
-.L000276:
-	sub  rsp, 8
-	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
-.L000277:
-	push rax
-	pop  rax
-// Line 390 (CALL assert_expect ( 390 : 3 :(LVAR 12):) )
-// Line 390 (LVAR 12)
-	mov  rax, rbp
-	sub  rax, 12
-	mov  eax, [rax]
-	push rax
-// Line 390  3 
-	push 3
-// Line 390  390 
-	push 390
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000278
-	mov  rax, 0
-	call assert_expect
-	jmp  .L000279
-.L000278:
-	sub  rsp, 8
-	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
-.L000279:
-	push rax
-	pop  rax
-// Line 391 (= (LVAR 12)  0 )
-	mov  rax, rbp
-	sub  rax, 12
-	push rax
-// Line 391  0 
-	push 0
-	pop  rdi
-	pop  rax
-	mov  [rax], edi
-	push rdi
-	pop  rax
-// Line 392 (CALL assert_expect ( 392 : 0 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
-// Line 392 (||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
-// Line 392  0 
-	push 0
 	pop  rax
 	cmp  eax, 0
-	jne  .L000280
+	jne  .L000276
 // Line 392 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
 // Line 392 (= (LVAR 12) (++ (LVAR 12)  1 ))
 	mov  rax, rbp
@@ -6790,15 +6713,15 @@ main:
 	push rax
 	pop  rax
 	cmp  eax, 0
-	jne  .L000280
+	jne  .L000276
 	mov  rax, 0
-	jmp  .L000281
-.L000280:
+	jmp  .L000277
+.L000276:
 	mov  rax, 1
-.L000281:
+.L000277:
 	push  rax
-// Line 392  0 
-	push 0
+// Line 392  1 
+	push 1
 // Line 392  392 
 	push 392
 	pop  rdi
@@ -6806,26 +6729,26 @@ main:
 	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
-	jnz  .L000282
+	jnz  .L000278
 	mov  rax, 0
 	call assert_expect
-	jmp  .L000283
-.L000282:
+	jmp  .L000279
+.L000278:
 	sub  rsp, 8
 	mov  rax, 0
 	call assert_expect
 	add  rsp, 8
-.L000283:
+.L000279:
 	push rax
 	pop  rax
-// Line 393 (CALL assert_expect ( 393 : 1 :(LVAR 12):) )
+// Line 393 (CALL assert_expect ( 393 : 3 :(LVAR 12):) )
 // Line 393 (LVAR 12)
 	mov  rax, rbp
 	sub  rax, 12
 	mov  eax, [rax]
 	push rax
-// Line 393  1 
-	push 1
+// Line 393  3 
+	push 3
 // Line 393  393 
 	push 393
 	pop  rdi
@@ -6833,16 +6756,16 @@ main:
 	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
-	jnz  .L000284
+	jnz  .L000280
 	mov  rax, 0
 	call assert_expect
-	jmp  .L000285
-.L000284:
+	jmp  .L000281
+.L000280:
 	sub  rsp, 8
 	mov  rax, 0
 	call assert_expect
 	add  rsp, 8
-.L000285:
+.L000281:
 	push rax
 	pop  rax
 // Line 394 (= (LVAR 12)  0 )
@@ -6856,19 +6779,13 @@ main:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 395 (CALL assert_expect ( 395 : 0 :(||  0  (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))):) )
-// Line 395 (||  0  (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )))
+// Line 395 (CALL assert_expect ( 395 : 0 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 395 (||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
 // Line 395  0 
 	push 0
 	pop  rax
 	cmp  eax, 0
-	jne  .L000286
-// Line 395 (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
-// Line 395  1 
-	push 1
-	pop  rax
-	cmp  eax, 0
-	je   .L000288
+	jne  .L000282
 // Line 395 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
 // Line 395 (= (LVAR 12) (++ (LVAR 12)  1 ))
 	mov  rax, rbp
@@ -6898,21 +6815,12 @@ main:
 	push rax
 	pop  rax
 	cmp  eax, 0
-	je   .L000288
-	mov  rax, 1
-	jmp  .L000289
-.L000288:
+	jne  .L000282
 	mov  rax, 0
-.L000289:
-	push  rax
-	pop  rax
-	cmp  eax, 0
-	jne  .L000286
-	mov  rax, 0
-	jmp  .L000287
-.L000286:
+	jmp  .L000283
+.L000282:
 	mov  rax, 1
-.L000287:
+.L000283:
 	push  rax
 // Line 395  0 
 	push 0
@@ -6923,16 +6831,16 @@ main:
 	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
-	jnz  .L000290
+	jnz  .L000284
 	mov  rax, 0
 	call assert_expect
-	jmp  .L000291
-.L000290:
+	jmp  .L000285
+.L000284:
 	sub  rsp, 8
 	mov  rax, 0
 	call assert_expect
 	add  rsp, 8
-.L000291:
+.L000285:
 	push rax
 	pop  rax
 // Line 396 (CALL assert_expect ( 396 : 1 :(LVAR 12):) )
@@ -6950,6 +6858,96 @@ main:
 	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
+	jnz  .L000286
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000287
+.L000286:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000287:
+	push rax
+	pop  rax
+// Line 397 (= (LVAR 12)  0 )
+	mov  rax, rbp
+	sub  rax, 12
+	push rax
+// Line 397  0 
+	push 0
+	pop  rdi
+	pop  rax
+	mov  [rax], edi
+	push rdi
+	pop  rax
+// Line 398 (CALL assert_expect ( 398 : 0 :(||  0  (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))):) )
+// Line 398 (||  0  (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )))
+// Line 398  0 
+	push 0
+	pop  rax
+	cmp  eax, 0
+	jne  .L000288
+// Line 398 (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 398  1 
+	push 1
+	pop  rax
+	cmp  eax, 0
+	je   .L000290
+// Line 398 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 398 (= (LVAR 12) (++ (LVAR 12)  1 ))
+	mov  rax, rbp
+	sub  rax, 12
+	push rax
+// Line 398 (++ (LVAR 12)  1 )
+// Line 398 (LVAR 12)
+	mov  rax, rbp
+	sub  rax, 12
+	mov  eax, [rax]
+	push rax
+// Line 398  1 
+	push 1
+	pop  rdi
+	pop  rax
+	add  rax, rdi
+	push rax
+	pop  rdi
+	pop  rax
+	mov  [rax], edi
+	push rdi
+// Line 398  1 
+	push 1
+	pop  rdi
+	pop  rax
+	sub  rax, rdi
+	push rax
+	pop  rax
+	cmp  eax, 0
+	je   .L000290
+	mov  rax, 1
+	jmp  .L000291
+.L000290:
+	mov  rax, 0
+.L000291:
+	push  rax
+	pop  rax
+	cmp  eax, 0
+	jne  .L000288
+	mov  rax, 0
+	jmp  .L000289
+.L000288:
+	mov  rax, 1
+.L000289:
+	push  rax
+// Line 398  0 
+	push 0
+// Line 398  398 
+	push 398
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
 	jnz  .L000292
 	mov  rax, 0
 	call assert_expect
@@ -6962,40 +6960,67 @@ main:
 .L000293:
 	push rax
 	pop  rax
-// Line 397 (CALL assert_expect ( 397 : 1 :(|| (&&  1   1 ) (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
-// Line 397 (|| (&&  1   1 ) (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
-// Line 397 (&&  1   1 )
-// Line 397  1 
-	push 1
-	pop  rax
-	cmp  eax, 0
-	je   .L000296
-// Line 397  1 
-	push 1
-	pop  rax
-	cmp  eax, 0
-	je   .L000296
-	mov  rax, 1
-	jmp  .L000297
-.L000296:
-	mov  rax, 0
-.L000297:
-	push  rax
-	pop  rax
-	cmp  eax, 0
-	jne  .L000294
-// Line 397 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
-// Line 397 (= (LVAR 12) (++ (LVAR 12)  1 ))
-	mov  rax, rbp
-	sub  rax, 12
-	push rax
-// Line 397 (++ (LVAR 12)  1 )
-// Line 397 (LVAR 12)
+// Line 399 (CALL assert_expect ( 399 : 1 :(LVAR 12):) )
+// Line 399 (LVAR 12)
 	mov  rax, rbp
 	sub  rax, 12
 	mov  eax, [rax]
 	push rax
-// Line 397  1 
+// Line 399  1 
+	push 1
+// Line 399  399 
+	push 399
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000294
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000295
+.L000294:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000295:
+	push rax
+	pop  rax
+// Line 400 (CALL assert_expect ( 400 : 1 :(|| (&&  1   1 ) (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 400 (|| (&&  1   1 ) (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 400 (&&  1   1 )
+// Line 400  1 
+	push 1
+	pop  rax
+	cmp  eax, 0
+	je   .L000298
+// Line 400  1 
+	push 1
+	pop  rax
+	cmp  eax, 0
+	je   .L000298
+	mov  rax, 1
+	jmp  .L000299
+.L000298:
+	mov  rax, 0
+.L000299:
+	push  rax
+	pop  rax
+	cmp  eax, 0
+	jne  .L000296
+// Line 400 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 400 (= (LVAR 12) (++ (LVAR 12)  1 ))
+	mov  rax, rbp
+	sub  rax, 12
+	push rax
+// Line 400 (++ (LVAR 12)  1 )
+// Line 400 (LVAR 12)
+	mov  rax, rbp
+	sub  rax, 12
+	mov  eax, [rax]
+	push rax
+// Line 400  1 
 	push 1
 	pop  rdi
 	pop  rax
@@ -7005,7 +7030,7 @@ main:
 	pop  rax
 	mov  [rax], edi
 	push rdi
-// Line 397  1 
+// Line 400  1 
 	push 1
 	pop  rdi
 	pop  rax
@@ -7013,44 +7038,17 @@ main:
 	push rax
 	pop  rax
 	cmp  eax, 0
-	jne  .L000294
+	jne  .L000296
 	mov  rax, 0
-	jmp  .L000295
-.L000294:
+	jmp  .L000297
+.L000296:
 	mov  rax, 1
-.L000295:
+.L000297:
 	push  rax
-// Line 397  1 
+// Line 400  1 
 	push 1
-// Line 397  397 
-	push 397
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000298
-	mov  rax, 0
-	call assert_expect
-	jmp  .L000299
-.L000298:
-	sub  rsp, 8
-	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
-.L000299:
-	push rax
-	pop  rax
-// Line 398 (CALL assert_expect ( 398 : 1 :(LVAR 12):) )
-// Line 398 (LVAR 12)
-	mov  rax, rbp
-	sub  rax, 12
-	mov  eax, [rax]
-	push rax
-// Line 398  1 
-	push 1
-// Line 398  398 
-	push 398
+// Line 400  400 
+	push 400
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7068,80 +7066,116 @@ main:
 .L000301:
 	push rax
 	pop  rax
-// Line 399 (CALL assert_expect ( 399 : 1 :(!  0 ):) )
-// Line 399 (!  0 )
-// Line 399  0 
-	push 0
-	pop  rax
-	cmp  eax, 0
-	jne  .L000302
-	mov  rax, 1
-	jmp  .L000303
-.L000302:
-	mov  rax, 0
-.L000303:
+// Line 401 (CALL assert_expect ( 401 : 1 :(LVAR 12):) )
+// Line 401 (LVAR 12)
+	mov  rax, rbp
+	sub  rax, 12
+	mov  eax, [rax]
 	push rax
-// Line 399  1 
-	push 1
-// Line 399  399 
-	push 399
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000304
-	mov  rax, 0
-	call assert_expect
-	jmp  .L000305
-.L000304:
-	sub  rsp, 8
-	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
-.L000305:
-	push rax
-	pop  rax
-// Line 400 (CALL assert_expect ( 400 : 0 :(!  1 ):) )
-// Line 400 (!  1 )
-// Line 400  1 
-	push 1
-	pop  rax
-	cmp  eax, 0
-	jne  .L000306
-	mov  rax, 1
-	jmp  .L000307
-.L000306:
-	mov  rax, 0
-.L000307:
-	push rax
-// Line 400  0 
-	push 0
-// Line 400  400 
-	push 400
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000308
-	mov  rax, 0
-	call assert_expect
-	jmp  .L000309
-.L000308:
-	sub  rsp, 8
-	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
-.L000309:
-	push rax
-	pop  rax
-// Line 401 (CALL assert_expect ( 401 : 0 :(! (! (!  1 ))):) )
-// Line 401 (! (! (!  1 )))
-// Line 401 (! (!  1 ))
-// Line 401 (!  1 )
 // Line 401  1 
 	push 1
+// Line 401  401 
+	push 401
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000302
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000303
+.L000302:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000303:
+	push rax
+	pop  rax
+// Line 402 (CALL assert_expect ( 402 : 1 :(!  0 ):) )
+// Line 402 (!  0 )
+// Line 402  0 
+	push 0
+	pop  rax
+	cmp  eax, 0
+	jne  .L000304
+	mov  rax, 1
+	jmp  .L000305
+.L000304:
+	mov  rax, 0
+.L000305:
+	push rax
+// Line 402  1 
+	push 1
+// Line 402  402 
+	push 402
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000306
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000307
+.L000306:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000307:
+	push rax
+	pop  rax
+// Line 403 (CALL assert_expect ( 403 : 0 :(!  1 ):) )
+// Line 403 (!  1 )
+// Line 403  1 
+	push 1
+	pop  rax
+	cmp  eax, 0
+	jne  .L000308
+	mov  rax, 1
+	jmp  .L000309
+.L000308:
+	mov  rax, 0
+.L000309:
+	push rax
+// Line 403  0 
+	push 0
+// Line 403  403 
+	push 403
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000310
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000311
+.L000310:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000311:
+	push rax
+	pop  rax
+// Line 404 (CALL assert_expect ( 404 : 0 :(! (! (!  1 ))):) )
+// Line 404 (! (! (!  1 )))
+// Line 404 (! (!  1 ))
+// Line 404 (!  1 )
+// Line 404  1 
+	push 1
+	pop  rax
+	cmp  eax, 0
+	jne  .L000316
+	mov  rax, 1
+	jmp  .L000317
+.L000316:
+	mov  rax, 0
+.L000317:
+	push rax
 	pop  rax
 	cmp  eax, 0
 	jne  .L000314
@@ -7160,72 +7194,10 @@ main:
 	mov  rax, 0
 .L000313:
 	push rax
-	pop  rax
-	cmp  eax, 0
-	jne  .L000310
-	mov  rax, 1
-	jmp  .L000311
-.L000310:
-	mov  rax, 0
-.L000311:
-	push rax
-// Line 401  0 
+// Line 404  0 
 	push 0
-// Line 401  401 
-	push 401
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000316
-	mov  rax, 0
-	call assert_expect
-	jmp  .L000317
-.L000316:
-	sub  rsp, 8
-	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
-.L000317:
-	push rax
-	pop  rax
-// Line 405 (= (LVAR 16)  10 )
-	mov  rax, rbp
-	sub  rax, 16
-	push rax
-// Line 405  10 
-	push 10
-	pop  rdi
-	pop  rax
-	mov  [rax], edi
-	push rdi
-	pop  rax
-// Line 406 (CALL assert_expect ( 406 : 15 :(= (LVAR 16) (+= (LVAR 16)  5 )):) )
-// Line 406 (= (LVAR 16) (+= (LVAR 16)  5 ))
-	mov  rax, rbp
-	sub  rax, 16
-	push rax
-// Line 406 (+= (LVAR 16)  5 )
-// Line 406 (LVAR 16)
-	mov  rax, rbp
-	sub  rax, 16
-	mov  eax, [rax]
-	push rax
-// Line 406  5 
-	push 5
-	pop  rdi
-	pop  rax
-	add  rax, rdi
-	push rax
-	pop  rdi
-	pop  rax
-	mov  [rax], edi
-	push rdi
-// Line 406  15 
-	push 15
-// Line 406  406 
-	push 406
+// Line 404  404 
+	push 404
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7243,16 +7215,42 @@ main:
 .L000319:
 	push rax
 	pop  rax
-// Line 407 (CALL assert_expect ( 407 : 15 :(LVAR 16):) )
-// Line 407 (LVAR 16)
+// Line 408 (= (LVAR 16)  10 )
+	mov  rax, rbp
+	sub  rax, 16
+	push rax
+// Line 408  10 
+	push 10
+	pop  rdi
+	pop  rax
+	mov  [rax], edi
+	push rdi
+	pop  rax
+// Line 409 (CALL assert_expect ( 409 : 15 :(= (LVAR 16) (+= (LVAR 16)  5 )):) )
+// Line 409 (= (LVAR 16) (+= (LVAR 16)  5 ))
+	mov  rax, rbp
+	sub  rax, 16
+	push rax
+// Line 409 (+= (LVAR 16)  5 )
+// Line 409 (LVAR 16)
 	mov  rax, rbp
 	sub  rax, 16
 	mov  eax, [rax]
 	push rax
-// Line 407  15 
+// Line 409  5 
+	push 5
+	pop  rdi
+	pop  rax
+	add  rax, rdi
+	push rax
+	pop  rdi
+	pop  rax
+	mov  [rax], edi
+	push rdi
+// Line 409  15 
 	push 15
-// Line 407  407 
-	push 407
+// Line 409  409 
+	push 409
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7270,31 +7268,16 @@ main:
 .L000321:
 	push rax
 	pop  rax
-// Line 408 (CALL assert_expect ( 408 : 8 :(= (LVAR 16) (-= (LVAR 16)  7 )):) )
-// Line 408 (= (LVAR 16) (-= (LVAR 16)  7 ))
-	mov  rax, rbp
-	sub  rax, 16
-	push rax
-// Line 408 (-= (LVAR 16)  7 )
-// Line 408 (LVAR 16)
+// Line 410 (CALL assert_expect ( 410 : 15 :(LVAR 16):) )
+// Line 410 (LVAR 16)
 	mov  rax, rbp
 	sub  rax, 16
 	mov  eax, [rax]
 	push rax
-// Line 408  7 
-	push 7
-	pop  rdi
-	pop  rax
-	sub  rax, rdi
-	push rax
-	pop  rdi
-	pop  rax
-	mov  [rax], edi
-	push rdi
-// Line 408  8 
-	push 8
-// Line 408  408 
-	push 408
+// Line 410  15 
+	push 15
+// Line 410  410 
+	push 410
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7312,16 +7295,31 @@ main:
 .L000323:
 	push rax
 	pop  rax
-// Line 409 (CALL assert_expect ( 409 : 8 :(LVAR 16):) )
-// Line 409 (LVAR 16)
+// Line 411 (CALL assert_expect ( 411 : 8 :(= (LVAR 16) (-= (LVAR 16)  7 )):) )
+// Line 411 (= (LVAR 16) (-= (LVAR 16)  7 ))
+	mov  rax, rbp
+	sub  rax, 16
+	push rax
+// Line 411 (-= (LVAR 16)  7 )
+// Line 411 (LVAR 16)
 	mov  rax, rbp
 	sub  rax, 16
 	mov  eax, [rax]
 	push rax
-// Line 409  8 
+// Line 411  7 
+	push 7
+	pop  rdi
+	pop  rax
+	sub  rax, rdi
+	push rax
+	pop  rdi
+	pop  rax
+	mov  [rax], edi
+	push rdi
+// Line 411  8 
 	push 8
-// Line 409  409 
-	push 409
+// Line 411  411 
+	push 411
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7339,31 +7337,16 @@ main:
 .L000325:
 	push rax
 	pop  rax
-// Line 410 (CALL assert_expect ( 410 : 40 :(= (LVAR 16) (*= (LVAR 16)  5 )):) )
-// Line 410 (= (LVAR 16) (*= (LVAR 16)  5 ))
-	mov  rax, rbp
-	sub  rax, 16
-	push rax
-// Line 410 (*= (LVAR 16)  5 )
-// Line 410 (LVAR 16)
+// Line 412 (CALL assert_expect ( 412 : 8 :(LVAR 16):) )
+// Line 412 (LVAR 16)
 	mov  rax, rbp
 	sub  rax, 16
 	mov  eax, [rax]
 	push rax
-// Line 410  5 
-	push 5
-	pop  rdi
-	pop  rax
-	imul rax, rdi
-	push rax
-	pop  rdi
-	pop  rax
-	mov  [rax], edi
-	push rdi
-// Line 410  40 
-	push 40
-// Line 410  410 
-	push 410
+// Line 412  8 
+	push 8
+// Line 412  412 
+	push 412
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7381,16 +7364,31 @@ main:
 .L000327:
 	push rax
 	pop  rax
-// Line 411 (CALL assert_expect ( 411 : 40 :(LVAR 16):) )
-// Line 411 (LVAR 16)
+// Line 413 (CALL assert_expect ( 413 : 40 :(= (LVAR 16) (*= (LVAR 16)  5 )):) )
+// Line 413 (= (LVAR 16) (*= (LVAR 16)  5 ))
+	mov  rax, rbp
+	sub  rax, 16
+	push rax
+// Line 413 (*= (LVAR 16)  5 )
+// Line 413 (LVAR 16)
 	mov  rax, rbp
 	sub  rax, 16
 	mov  eax, [rax]
 	push rax
-// Line 411  40 
+// Line 413  5 
+	push 5
+	pop  rdi
+	pop  rax
+	imul rax, rdi
+	push rax
+	pop  rdi
+	pop  rax
+	mov  [rax], edi
+	push rdi
+// Line 413  40 
 	push 40
-// Line 411  411 
-	push 411
+// Line 413  413 
+	push 413
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7408,32 +7406,16 @@ main:
 .L000329:
 	push rax
 	pop  rax
-// Line 412 (CALL assert_expect ( 412 : 4 :(= (LVAR 16) (/= (LVAR 16)  10 )):) )
-// Line 412 (= (LVAR 16) (/= (LVAR 16)  10 ))
-	mov  rax, rbp
-	sub  rax, 16
-	push rax
-// Line 412 (/= (LVAR 16)  10 )
-// Line 412 (LVAR 16)
+// Line 414 (CALL assert_expect ( 414 : 40 :(LVAR 16):) )
+// Line 414 (LVAR 16)
 	mov  rax, rbp
 	sub  rax, 16
 	mov  eax, [rax]
 	push rax
-// Line 412  10 
-	push 10
-	pop  rdi
-	pop  rax
-	cqo
-	idiv rax, rdi
-	push rax
-	pop  rdi
-	pop  rax
-	mov  [rax], edi
-	push rdi
-// Line 412  4 
-	push 4
-// Line 412  412 
-	push 412
+// Line 414  40 
+	push 40
+// Line 414  414 
+	push 414
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7451,16 +7433,32 @@ main:
 .L000331:
 	push rax
 	pop  rax
-// Line 413 (CALL assert_expect ( 413 : 4 :(LVAR 16):) )
-// Line 413 (LVAR 16)
+// Line 415 (CALL assert_expect ( 415 : 4 :(= (LVAR 16) (/= (LVAR 16)  10 )):) )
+// Line 415 (= (LVAR 16) (/= (LVAR 16)  10 ))
+	mov  rax, rbp
+	sub  rax, 16
+	push rax
+// Line 415 (/= (LVAR 16)  10 )
+// Line 415 (LVAR 16)
 	mov  rax, rbp
 	sub  rax, 16
 	mov  eax, [rax]
 	push rax
-// Line 413  4 
+// Line 415  10 
+	push 10
+	pop  rdi
+	pop  rax
+	cqo
+	idiv rax, rdi
+	push rax
+	pop  rdi
+	pop  rax
+	mov  [rax], edi
+	push rdi
+// Line 415  4 
 	push 4
-// Line 413  413 
-	push 413
+// Line 415  415 
+	push 415
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7478,33 +7476,11 @@ main:
 .L000333:
 	push rax
 	pop  rax
-// Line 416 (CALL assert_expect ( 416 : 4 :(++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ):) )
-// Line 416 (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 )
-// Line 416 (= (LVAR 16) (++ (LVAR 16)  1 ))
-	mov  rax, rbp
-	sub  rax, 16
-	push rax
-// Line 416 (++ (LVAR 16)  1 )
+// Line 416 (CALL assert_expect ( 416 : 4 :(LVAR 16):) )
 // Line 416 (LVAR 16)
 	mov  rax, rbp
 	sub  rax, 16
 	mov  eax, [rax]
-	push rax
-// Line 416  1 
-	push 1
-	pop  rdi
-	pop  rax
-	add  rax, rdi
-	push rax
-	pop  rdi
-	pop  rax
-	mov  [rax], edi
-	push rdi
-// Line 416  1 
-	push 1
-	pop  rdi
-	pop  rax
-	sub  rax, rdi
 	push rax
 // Line 416  4 
 	push 4
@@ -7527,16 +7503,38 @@ main:
 .L000335:
 	push rax
 	pop  rax
-// Line 417 (CALL assert_expect ( 417 : 5 :(LVAR 16):) )
-// Line 417 (LVAR 16)
+// Line 419 (CALL assert_expect ( 419 : 4 :(++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ):) )
+// Line 419 (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 )
+// Line 419 (= (LVAR 16) (++ (LVAR 16)  1 ))
+	mov  rax, rbp
+	sub  rax, 16
+	push rax
+// Line 419 (++ (LVAR 16)  1 )
+// Line 419 (LVAR 16)
 	mov  rax, rbp
 	sub  rax, 16
 	mov  eax, [rax]
 	push rax
-// Line 417  5 
-	push 5
-// Line 417  417 
-	push 417
+// Line 419  1 
+	push 1
+	pop  rdi
+	pop  rax
+	add  rax, rdi
+	push rax
+	pop  rdi
+	pop  rax
+	mov  [rax], edi
+	push rdi
+// Line 419  1 
+	push 1
+	pop  rdi
+	pop  rax
+	sub  rax, rdi
+	push rax
+// Line 419  4 
+	push 4
+// Line 419  419 
+	push 419
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7554,38 +7552,16 @@ main:
 .L000337:
 	push rax
 	pop  rax
-// Line 418 (CALL assert_expect ( 418 : 5 :(-- (= (LVAR 16) (-- (LVAR 16)  1 ))  1 ):) )
-// Line 418 (-- (= (LVAR 16) (-- (LVAR 16)  1 ))  1 )
-// Line 418 (= (LVAR 16) (-- (LVAR 16)  1 ))
-	mov  rax, rbp
-	sub  rax, 16
-	push rax
-// Line 418 (-- (LVAR 16)  1 )
-// Line 418 (LVAR 16)
+// Line 420 (CALL assert_expect ( 420 : 5 :(LVAR 16):) )
+// Line 420 (LVAR 16)
 	mov  rax, rbp
 	sub  rax, 16
 	mov  eax, [rax]
 	push rax
-// Line 418  1 
-	push 1
-	pop  rdi
-	pop  rax
-	sub  rax, rdi
-	push rax
-	pop  rdi
-	pop  rax
-	mov  [rax], edi
-	push rdi
-// Line 418  1 
-	push 1
-	pop  rdi
-	pop  rax
-	add  rax, rdi
-	push rax
-// Line 418  5 
+// Line 420  5 
 	push 5
-// Line 418  418 
-	push 418
+// Line 420  420 
+	push 420
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7603,16 +7579,38 @@ main:
 .L000339:
 	push rax
 	pop  rax
-// Line 419 (CALL assert_expect ( 419 : 4 :(LVAR 16):) )
-// Line 419 (LVAR 16)
+// Line 421 (CALL assert_expect ( 421 : 5 :(-- (= (LVAR 16) (-- (LVAR 16)  1 ))  1 ):) )
+// Line 421 (-- (= (LVAR 16) (-- (LVAR 16)  1 ))  1 )
+// Line 421 (= (LVAR 16) (-- (LVAR 16)  1 ))
+	mov  rax, rbp
+	sub  rax, 16
+	push rax
+// Line 421 (-- (LVAR 16)  1 )
+// Line 421 (LVAR 16)
 	mov  rax, rbp
 	sub  rax, 16
 	mov  eax, [rax]
 	push rax
-// Line 419  4 
-	push 4
-// Line 419  419 
-	push 419
+// Line 421  1 
+	push 1
+	pop  rdi
+	pop  rax
+	sub  rax, rdi
+	push rax
+	pop  rdi
+	pop  rax
+	mov  [rax], edi
+	push rdi
+// Line 421  1 
+	push 1
+	pop  rdi
+	pop  rax
+	add  rax, rdi
+	push rax
+// Line 421  5 
+	push 5
+// Line 421  421 
+	push 421
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7630,38 +7628,16 @@ main:
 .L000341:
 	push rax
 	pop  rax
-// Line 423 (= (LVAR 20) (/  100  (LVAR 16)))
-	mov  rax, rbp
-	sub  rax, 20
-	push rax
-// Line 423 (/  100  (LVAR 16))
-// Line 423  100 
-	push 100
-// Line 423 (LVAR 16)
+// Line 422 (CALL assert_expect ( 422 : 4 :(LVAR 16):) )
+// Line 422 (LVAR 16)
 	mov  rax, rbp
 	sub  rax, 16
 	mov  eax, [rax]
 	push rax
-	pop  rdi
-	pop  rax
-	cqo
-	idiv rax, rdi
-	push rax
-	pop  rdi
-	pop  rax
-	mov  [rax], edi
-	push rdi
-	pop  rax
-// Line 424 (CALL assert_expect ( 424 : 25 :(LVAR 20):) )
-// Line 424 (LVAR 20)
-	mov  rax, rbp
-	sub  rax, 20
-	mov  eax, [rax]
-	push rax
-// Line 424  25 
-	push 25
-// Line 424  424 
-	push 424
+// Line 422  4 
+	push 4
+// Line 422  422 
+	push 422
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -7679,25 +7655,74 @@ main:
 .L000343:
 	push rax
 	pop  rax
-// Line 427 (= (LVAR 24)  77 )
+// Line 426 (= (LVAR 20) (/  100  (LVAR 16)))
+	mov  rax, rbp
+	sub  rax, 20
+	push rax
+// Line 426 (/  100  (LVAR 16))
+// Line 426  100 
+	push 100
+// Line 426 (LVAR 16)
+	mov  rax, rbp
+	sub  rax, 16
+	mov  eax, [rax]
+	push rax
+	pop  rdi
+	pop  rax
+	cqo
+	idiv rax, rdi
+	push rax
+	pop  rdi
+	pop  rax
+	mov  [rax], edi
+	push rdi
+	pop  rax
+// Line 427 (CALL assert_expect ( 427 : 25 :(LVAR 20):) )
+// Line 427 (LVAR 20)
+	mov  rax, rbp
+	sub  rax, 20
+	mov  eax, [rax]
+	push rax
+// Line 427  25 
+	push 25
+// Line 427  427 
+	push 427
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000344
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000345
+.L000344:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000345:
+	push rax
+	pop  rax
+// Line 430 (= (LVAR 24)  77 )
 	mov  rax, rbp
 	sub  rax, 24
 	push rax
-// Line 427  77 
+// Line 430  77 
 	push 77
 	pop  rdi
 	pop  rax
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 432 (IF (== (LVAR 24)  77 ) (= (LVAR 24)  55 ) (= (LVAR 24)  66 ))
-// Line 428 (== (LVAR 24)  77 )
-// Line 428 (LVAR 24)
+// Line 435 (IF (== (LVAR 24)  77 ) (= (LVAR 24)  55 ) (= (LVAR 24)  66 ))
+// Line 431 (== (LVAR 24)  77 )
+// Line 431 (LVAR 24)
 	mov  rax, rbp
 	sub  rax, 24
 	mov  eax, [rax]
 	push rax
-// Line 428  77 
+// Line 431  77 
 	push 77
 	pop  rdi
 	pop  rax
@@ -7707,340 +7732,223 @@ main:
 	push rax
 	pop  rax
 	cmp  rax, 0
-	je   .L000344
-// Line 429 (= (LVAR 24)  55 )
+	je   .L000346
+// Line 432 (= (LVAR 24)  55 )
 	mov  rax, rbp
 	sub  rax, 24
 	push rax
-// Line 429  55 
+// Line 432  55 
 	push 55
 	pop  rdi
 	pop  rax
 	mov  [rax], edi
 	push rdi
 	pop  rax
-	jmp  .L000345
-.L000344:
-// Line 431 (= (LVAR 24)  66 )
+	jmp  .L000347
+.L000346:
+// Line 434 (= (LVAR 24)  66 )
 	mov  rax, rbp
 	sub  rax, 24
 	push rax
-// Line 431  66 
+// Line 434  66 
 	push 66
 	pop  rdi
 	pop  rax
 	mov  [rax], edi
 	push rdi
 	pop  rax
-.L000345:
-// Line 432 (CALL assert_expect ( 432 : 55 :(LVAR 24):) )
-// Line 432 (LVAR 24)
+.L000347:
+// Line 435 (CALL assert_expect ( 435 : 55 :(LVAR 24):) )
+// Line 435 (LVAR 24)
 	mov  rax, rbp
 	sub  rax, 24
 	mov  eax, [rax]
 	push rax
-// Line 432  55 
+// Line 435  55 
 	push 55
-// Line 432  432 
-	push 432
+// Line 435  435 
+	push 435
 	pop  rdi
 	pop  rsi
 	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000346
-	mov  rax, 0
-	call assert_expect
-	jmp  .L000347
-.L000346:
-	sub  rsp, 8
-	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
-.L000347:
-	push rax
-	pop  rax
-// Line 433 (CALL assert_expect ( 433 : 1346269 :(CALL fibo ( 30 :) ):) )
-// Line 433 (CALL fibo ( 30 :) )
-// Line 433  30 
-	push 30
-	pop  rdi
 	mov  rax, rsp
 	and  rax, 15
 	jnz  .L000348
 	mov  rax, 0
-	call fibo
+	call assert_expect
 	jmp  .L000349
 .L000348:
 	sub  rsp, 8
 	mov  rax, 0
-	call fibo
+	call assert_expect
 	add  rsp, 8
 .L000349:
 	push rax
-// Line 433  1346269 
-	push 1346269
-// Line 433  433 
-	push 433
+	pop  rax
+// Line 436 (CALL assert_expect ( 436 : 1346269 :(CALL fibo ( 30 :) ):) )
+// Line 436 (CALL fibo ( 30 :) )
+// Line 436  30 
+	push 30
 	pop  rdi
-	pop  rsi
-	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
 	jnz  .L000350
 	mov  rax, 0
-	call assert_expect
+	call fibo
 	jmp  .L000351
 .L000350:
 	sub  rsp, 8
 	mov  rax, 0
-	call assert_expect
+	call fibo
 	add  rsp, 8
 .L000351:
 	push rax
-	pop  rax
-// Line 434 (CALL array_global () )
+// Line 436  1346269 
+	push 1346269
+// Line 436  436 
+	push 436
+	pop  rdi
+	pop  rsi
+	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
 	jnz  .L000352
 	mov  rax, 0
-	call array_global
+	call assert_expect
 	jmp  .L000353
 .L000352:
 	sub  rsp, 8
 	mov  rax, 0
-	call array_global
+	call assert_expect
 	add  rsp, 8
 .L000353:
 	push rax
 	pop  rax
-// Line 435 (CALL array_local () )
+// Line 437 (CALL array_global () )
 	mov  rax, rsp
 	and  rax, 15
 	jnz  .L000354
 	mov  rax, 0
-	call array_local
+	call array_global
 	jmp  .L000355
 .L000354:
 	sub  rsp, 8
 	mov  rax, 0
-	call array_local
+	call array_global
 	add  rsp, 8
 .L000355:
 	push rax
 	pop  rax
-// Line 436 (CALL string () )
+// Line 438 (CALL array_local () )
 	mov  rax, rsp
 	and  rax, 15
 	jnz  .L000356
 	mov  rax, 0
-	call string
+	call array_local
 	jmp  .L000357
 .L000356:
 	sub  rsp, 8
 	mov  rax, 0
-	call string
+	call array_local
 	add  rsp, 8
 .L000357:
 	push rax
 	pop  rax
-// Line 437 (CALL block_scope () )
+// Line 439 (CALL string () )
 	mov  rax, rsp
 	and  rax, 15
 	jnz  .L000358
 	mov  rax, 0
-	call block_scope
+	call string
 	jmp  .L000359
 .L000358:
 	sub  rsp, 8
 	mov  rax, 0
-	call block_scope
+	call string
 	add  rsp, 8
 .L000359:
 	push rax
 	pop  rax
-// Line 438 (CALL for_ () )
+// Line 440 (CALL block_scope () )
 	mov  rax, rsp
 	and  rax, 15
 	jnz  .L000360
 	mov  rax, 0
-	call for_
+	call block_scope
 	jmp  .L000361
 .L000360:
 	sub  rsp, 8
 	mov  rax, 0
-	call for_
+	call block_scope
 	add  rsp, 8
 .L000361:
 	push rax
 	pop  rax
-// Line 439 (CALL list_ () )
+// Line 441 (CALL for_ () )
 	mov  rax, rsp
 	and  rax, 15
 	jnz  .L000362
 	mov  rax, 0
-	call list_
+	call for_
 	jmp  .L000363
 .L000362:
 	sub  rsp, 8
 	mov  rax, 0
-	call list_
+	call for_
 	add  rsp, 8
 .L000363:
 	push rax
 	pop  rax
-// Line 440 (CALL struct_ () )
+// Line 442 (CALL list_ () )
 	mov  rax, rsp
 	and  rax, 15
 	jnz  .L000364
 	mov  rax, 0
-	call struct_
+	call list_
 	jmp  .L000365
 .L000364:
 	sub  rsp, 8
 	mov  rax, 0
-	call struct_
+	call list_
 	add  rsp, 8
 .L000365:
 	push rax
 	pop  rax
-// Line 446 (CALL assert_expect ( 446 : 11 :(CALL switch_ ( 1 :) ):) )
-// Line 446 (CALL switch_ ( 1 :) )
-// Line 446  1 
-	push 1
-	pop  rdi
+// Line 443 (CALL struct_ () )
 	mov  rax, rsp
 	and  rax, 15
 	jnz  .L000366
 	mov  rax, 0
-	call switch_
+	call struct_
 	jmp  .L000367
 .L000366:
 	sub  rsp, 8
 	mov  rax, 0
-	call switch_
+	call struct_
 	add  rsp, 8
 .L000367:
 	push rax
-// Line 446  11 
-	push 11
-// Line 446  446 
-	push 446
+	pop  rax
+// Line 449 (CALL assert_expect ( 449 : 11 :(CALL switch_ ( 1 :) ):) )
+// Line 449 (CALL switch_ ( 1 :) )
+// Line 449  1 
+	push 1
 	pop  rdi
-	pop  rsi
-	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
 	jnz  .L000368
 	mov  rax, 0
-	call assert_expect
+	call switch_
 	jmp  .L000369
 .L000368:
 	sub  rsp, 8
 	mov  rax, 0
-	call assert_expect
+	call switch_
 	add  rsp, 8
 .L000369:
 	push rax
-	pop  rax
-// Line 447 (CALL assert_expect ( 447 : 13 :(CALL switch_ ( 2 :) ):) )
-// Line 447 (CALL switch_ ( 2 :) )
-// Line 447  2 
-	push 2
-	pop  rdi
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000370
-	mov  rax, 0
-	call switch_
-	jmp  .L000371
-.L000370:
-	sub  rsp, 8
-	mov  rax, 0
-	call switch_
-	add  rsp, 8
-.L000371:
-	push rax
-// Line 447  13 
-	push 13
-// Line 447  447 
-	push 447
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000372
-	mov  rax, 0
-	call assert_expect
-	jmp  .L000373
-.L000372:
-	sub  rsp, 8
-	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
-.L000373:
-	push rax
-	pop  rax
-// Line 448 (CALL assert_expect ( 448 : 13 :(CALL switch_ ( 3 :) ):) )
-// Line 448 (CALL switch_ ( 3 :) )
-// Line 448  3 
-	push 3
-	pop  rdi
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000374
-	mov  rax, 0
-	call switch_
-	jmp  .L000375
-.L000374:
-	sub  rsp, 8
-	mov  rax, 0
-	call switch_
-	add  rsp, 8
-.L000375:
-	push rax
-// Line 448  13 
-	push 13
-// Line 448  448 
-	push 448
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000376
-	mov  rax, 0
-	call assert_expect
-	jmp  .L000377
-.L000376:
-	sub  rsp, 8
-	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
-.L000377:
-	push rax
-	pop  rax
-// Line 449 (CALL assert_expect ( 449 : 13 :(CALL switch_ ( 4 :) ):) )
-// Line 449 (CALL switch_ ( 4 :) )
-// Line 449  4 
-	push 4
-	pop  rdi
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000378
-	mov  rax, 0
-	call switch_
-	jmp  .L000379
-.L000378:
-	sub  rsp, 8
-	mov  rax, 0
-	call switch_
-	add  rsp, 8
-.L000379:
-	push rax
-// Line 449  13 
-	push 13
+// Line 449  11 
+	push 11
 // Line 449  449 
 	push 449
 	pop  rdi
@@ -8048,38 +7956,38 @@ main:
 	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
-	jnz  .L000380
+	jnz  .L000370
 	mov  rax, 0
 	call assert_expect
-	jmp  .L000381
-.L000380:
+	jmp  .L000371
+.L000370:
 	sub  rsp, 8
 	mov  rax, 0
 	call assert_expect
 	add  rsp, 8
-.L000381:
+.L000371:
 	push rax
 	pop  rax
-// Line 450 (CALL assert_expect ( 450 : 15 :(CALL switch_ ( 5 :) ):) )
-// Line 450 (CALL switch_ ( 5 :) )
-// Line 450  5 
-	push 5
+// Line 450 (CALL assert_expect ( 450 : 13 :(CALL switch_ ( 2 :) ):) )
+// Line 450 (CALL switch_ ( 2 :) )
+// Line 450  2 
+	push 2
 	pop  rdi
 	mov  rax, rsp
 	and  rax, 15
-	jnz  .L000382
+	jnz  .L000372
 	mov  rax, 0
 	call switch_
-	jmp  .L000383
-.L000382:
+	jmp  .L000373
+.L000372:
 	sub  rsp, 8
 	mov  rax, 0
 	call switch_
 	add  rsp, 8
-.L000383:
+.L000373:
 	push rax
-// Line 450  15 
-	push 15
+// Line 450  13 
+	push 13
 // Line 450  450 
 	push 450
 	pop  rdi
@@ -8087,38 +7995,38 @@ main:
 	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
-	jnz  .L000384
+	jnz  .L000374
 	mov  rax, 0
 	call assert_expect
-	jmp  .L000385
-.L000384:
+	jmp  .L000375
+.L000374:
 	sub  rsp, 8
 	mov  rax, 0
 	call assert_expect
 	add  rsp, 8
-.L000385:
+.L000375:
 	push rax
 	pop  rax
-// Line 451 (CALL assert_expect ( 451 : 15 :(CALL switch_ ( 6 :) ):) )
-// Line 451 (CALL switch_ ( 6 :) )
-// Line 451  6 
-	push 6
+// Line 451 (CALL assert_expect ( 451 : 13 :(CALL switch_ ( 3 :) ):) )
+// Line 451 (CALL switch_ ( 3 :) )
+// Line 451  3 
+	push 3
 	pop  rdi
 	mov  rax, rsp
 	and  rax, 15
-	jnz  .L000386
+	jnz  .L000376
 	mov  rax, 0
 	call switch_
-	jmp  .L000387
-.L000386:
+	jmp  .L000377
+.L000376:
 	sub  rsp, 8
 	mov  rax, 0
 	call switch_
 	add  rsp, 8
-.L000387:
+.L000377:
 	push rax
-// Line 451  15 
-	push 15
+// Line 451  13 
+	push 13
 // Line 451  451 
 	push 451
 	pop  rdi
@@ -8126,38 +8034,116 @@ main:
 	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
-	jnz  .L000388
+	jnz  .L000378
 	mov  rax, 0
 	call assert_expect
+	jmp  .L000379
+.L000378:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000379:
+	push rax
+	pop  rax
+// Line 452 (CALL assert_expect ( 452 : 13 :(CALL switch_ ( 4 :) ):) )
+// Line 452 (CALL switch_ ( 4 :) )
+// Line 452  4 
+	push 4
+	pop  rdi
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000380
+	mov  rax, 0
+	call switch_
+	jmp  .L000381
+.L000380:
+	sub  rsp, 8
+	mov  rax, 0
+	call switch_
+	add  rsp, 8
+.L000381:
+	push rax
+// Line 452  13 
+	push 13
+// Line 452  452 
+	push 452
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000382
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000383
+.L000382:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000383:
+	push rax
+	pop  rax
+// Line 453 (CALL assert_expect ( 453 : 15 :(CALL switch_ ( 5 :) ):) )
+// Line 453 (CALL switch_ ( 5 :) )
+// Line 453  5 
+	push 5
+	pop  rdi
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000384
+	mov  rax, 0
+	call switch_
+	jmp  .L000385
+.L000384:
+	sub  rsp, 8
+	mov  rax, 0
+	call switch_
+	add  rsp, 8
+.L000385:
+	push rax
+// Line 453  15 
+	push 15
+// Line 453  453 
+	push 453
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000386
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000387
+.L000386:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000387:
+	push rax
+	pop  rax
+// Line 454 (CALL assert_expect ( 454 : 15 :(CALL switch_ ( 6 :) ):) )
+// Line 454 (CALL switch_ ( 6 :) )
+// Line 454  6 
+	push 6
+	pop  rdi
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000388
+	mov  rax, 0
+	call switch_
 	jmp  .L000389
 .L000388:
 	sub  rsp, 8
 	mov  rax, 0
-	call assert_expect
+	call switch_
 	add  rsp, 8
 .L000389:
 	push rax
-	pop  rax
-// Line 454 (CALL assert_expect ( 454 : 11 :(CALL switch2_ ( 97 :) ):) )
-// Line 454 (CALL switch2_ ( 97 :) )
-// Line 454  97 
-	push 97
-	pop  rdi
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000390
-	mov  rax, 0
-	call switch2_
-	jmp  .L000391
-.L000390:
-	sub  rsp, 8
-	mov  rax, 0
-	call switch2_
-	add  rsp, 8
-.L000391:
-	push rax
-// Line 454  11 
-	push 11
+// Line 454  15 
+	push 15
 // Line 454  454 
 	push 454
 	pop  rdi
@@ -8165,116 +8151,38 @@ main:
 	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
-	jnz  .L000392
+	jnz  .L000390
 	mov  rax, 0
 	call assert_expect
+	jmp  .L000391
+.L000390:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000391:
+	push rax
+	pop  rax
+// Line 457 (CALL assert_expect ( 457 : 11 :(CALL switch2_ ( 97 :) ):) )
+// Line 457 (CALL switch2_ ( 97 :) )
+// Line 457  97 
+	push 97
+	pop  rdi
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000392
+	mov  rax, 0
+	call switch2_
 	jmp  .L000393
 .L000392:
 	sub  rsp, 8
 	mov  rax, 0
-	call assert_expect
+	call switch2_
 	add  rsp, 8
 .L000393:
 	push rax
-	pop  rax
-// Line 455 (CALL assert_expect ( 455 : 12 :(CALL switch2_ ( 98 :) ):) )
-// Line 455 (CALL switch2_ ( 98 :) )
-// Line 455  98 
-	push 98
-	pop  rdi
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000394
-	mov  rax, 0
-	call switch2_
-	jmp  .L000395
-.L000394:
-	sub  rsp, 8
-	mov  rax, 0
-	call switch2_
-	add  rsp, 8
-.L000395:
-	push rax
-// Line 455  12 
-	push 12
-// Line 455  455 
-	push 455
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000396
-	mov  rax, 0
-	call assert_expect
-	jmp  .L000397
-.L000396:
-	sub  rsp, 8
-	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
-.L000397:
-	push rax
-	pop  rax
-// Line 456 (CALL assert_expect ( 456 : 12 :(CALL switch2_ ( 99 :) ):) )
-// Line 456 (CALL switch2_ ( 99 :) )
-// Line 456  99 
-	push 99
-	pop  rdi
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000398
-	mov  rax, 0
-	call switch2_
-	jmp  .L000399
-.L000398:
-	sub  rsp, 8
-	mov  rax, 0
-	call switch2_
-	add  rsp, 8
-.L000399:
-	push rax
-// Line 456  12 
-	push 12
-// Line 456  456 
-	push 456
-	pop  rdi
-	pop  rsi
-	pop  rdx
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000400
-	mov  rax, 0
-	call assert_expect
-	jmp  .L000401
-.L000400:
-	sub  rsp, 8
-	mov  rax, 0
-	call assert_expect
-	add  rsp, 8
-.L000401:
-	push rax
-	pop  rax
-// Line 457 (CALL assert_expect ( 457 : 15 :(CALL switch2_ ( 122 :) ):) )
-// Line 457 (CALL switch2_ ( 122 :) )
-// Line 457  122 
-	push 122
-	pop  rdi
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000402
-	mov  rax, 0
-	call switch2_
-	jmp  .L000403
-.L000402:
-	sub  rsp, 8
-	mov  rax, 0
-	call switch2_
-	add  rsp, 8
-.L000403:
-	push rax
-// Line 457  15 
-	push 15
+// Line 457  11 
+	push 11
 // Line 457  457 
 	push 457
 	pop  rdi
@@ -8282,35 +8190,116 @@ main:
 	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
-	jnz  .L000404
+	jnz  .L000394
 	mov  rax, 0
 	call assert_expect
+	jmp  .L000395
+.L000394:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000395:
+	push rax
+	pop  rax
+// Line 458 (CALL assert_expect ( 458 : 12 :(CALL switch2_ ( 98 :) ):) )
+// Line 458 (CALL switch2_ ( 98 :) )
+// Line 458  98 
+	push 98
+	pop  rdi
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000396
+	mov  rax, 0
+	call switch2_
+	jmp  .L000397
+.L000396:
+	sub  rsp, 8
+	mov  rax, 0
+	call switch2_
+	add  rsp, 8
+.L000397:
+	push rax
+// Line 458  12 
+	push 12
+// Line 458  458 
+	push 458
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000398
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000399
+.L000398:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000399:
+	push rax
+	pop  rax
+// Line 459 (CALL assert_expect ( 459 : 12 :(CALL switch2_ ( 99 :) ):) )
+// Line 459 (CALL switch2_ ( 99 :) )
+// Line 459  99 
+	push 99
+	pop  rdi
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000400
+	mov  rax, 0
+	call switch2_
+	jmp  .L000401
+.L000400:
+	sub  rsp, 8
+	mov  rax, 0
+	call switch2_
+	add  rsp, 8
+.L000401:
+	push rax
+// Line 459  12 
+	push 12
+// Line 459  459 
+	push 459
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000402
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000403
+.L000402:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000403:
+	push rax
+	pop  rax
+// Line 460 (CALL assert_expect ( 460 : 15 :(CALL switch2_ ( 122 :) ):) )
+// Line 460 (CALL switch2_ ( 122 :) )
+// Line 460  122 
+	push 122
+	pop  rdi
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000404
+	mov  rax, 0
+	call switch2_
 	jmp  .L000405
 .L000404:
 	sub  rsp, 8
 	mov  rax, 0
-	call assert_expect
+	call switch2_
 	add  rsp, 8
 .L000405:
 	push rax
-	pop  rax
-// Line 460 (CALL assert_expect ( 460 : 92 :(CALL q8 () ):) )
-// Line 460 (CALL q8 () )
-	mov  rax, rsp
-	and  rax, 15
-	jnz  .L000406
-	mov  rax, 0
-	call q8
-	jmp  .L000407
-.L000406:
-	sub  rsp, 8
-	mov  rax, 0
-	call q8
-	add  rsp, 8
-.L000407:
-	push rax
-// Line 460  92 
-	push 92
+// Line 460  15 
+	push 15
 // Line 460  460 
 	push 460
 	pop  rdi
@@ -8318,23 +8307,35 @@ main:
 	pop  rdx
 	mov  rax, rsp
 	and  rax, 15
-	jnz  .L000408
+	jnz  .L000406
 	mov  rax, 0
 	call assert_expect
-	jmp  .L000409
-.L000408:
+	jmp  .L000407
+.L000406:
 	sub  rsp, 8
 	mov  rax, 0
 	call assert_expect
 	add  rsp, 8
-.L000409:
+.L000407:
 	push rax
 	pop  rax
-// Line 463 (CALL assert_expect ( 463 : 0 : 0 :) )
-// Line 463  0 
-	push 0
-// Line 463  0 
-	push 0
+// Line 463 (CALL assert_expect ( 463 : 92 :(CALL q8 () ):) )
+// Line 463 (CALL q8 () )
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000408
+	mov  rax, 0
+	call q8
+	jmp  .L000409
+.L000408:
+	sub  rsp, 8
+	mov  rax, 0
+	call q8
+	add  rsp, 8
+.L000409:
+	push rax
+// Line 463  92 
+	push 92
 // Line 463  463 
 	push 463
 	pop  rdi
@@ -8354,13 +8355,13 @@ main:
 .L000411:
 	push rax
 	pop  rax
-// Line 464 (CALL assert_expect ( 464 : 1 : 1 :) )
-// Line 464  1 
-	push 1
-// Line 464  1 
-	push 1
-// Line 464  464 
-	push 464
+// Line 466 (CALL assert_expect ( 466 : 0 : 0 :) )
+// Line 466  0 
+	push 0
+// Line 466  0 
+	push 0
+// Line 466  466 
+	push 466
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -8378,13 +8379,13 @@ main:
 .L000413:
 	push rax
 	pop  rax
-// Line 465 (CALL assert_expect ( 465 : 2 : 2 :) )
-// Line 465  2 
-	push 2
-// Line 465  2 
-	push 2
-// Line 465  465 
-	push 465
+// Line 467 (CALL assert_expect ( 467 : 1 : 1 :) )
+// Line 467  1 
+	push 1
+// Line 467  1 
+	push 1
+// Line 467  467 
+	push 467
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -8402,13 +8403,13 @@ main:
 .L000415:
 	push rax
 	pop  rax
-// Line 466 (CALL assert_expect ( 466 : 3 : 3 :) )
-// Line 466  3 
-	push 3
-// Line 466  3 
-	push 3
-// Line 466  466 
-	push 466
+// Line 468 (CALL assert_expect ( 468 : 2 : 2 :) )
+// Line 468  2 
+	push 2
+// Line 468  2 
+	push 2
+// Line 468  468 
+	push 468
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -8426,20 +8427,13 @@ main:
 .L000417:
 	push rax
 	pop  rax
-// Line 468 (CALL assert_expect ( 468 : 15 :(|  13   7 ):) )
-// Line 468 (|  13   7 )
-// Line 468  13 
-	push 13
-// Line 468  7 
-	push 7
-	pop  rdi
-	pop  rax
-	or   rax, rdi
-	push rax
-// Line 468  15 
-	push 15
-// Line 468  468 
-	push 468
+// Line 469 (CALL assert_expect ( 469 : 3 : 3 :) )
+// Line 469  3 
+	push 3
+// Line 469  3 
+	push 3
+// Line 469  469 
+	push 469
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -8457,20 +8451,20 @@ main:
 .L000419:
 	push rax
 	pop  rax
-// Line 469 (CALL assert_expect ( 469 : 5115 :(|  938   5073 ):) )
-// Line 469 (|  938   5073 )
-// Line 469  938 
-	push 938
-// Line 469  5073 
-	push 5073
+// Line 471 (CALL assert_expect ( 471 : 15 :(|  13   7 ):) )
+// Line 471 (|  13   7 )
+// Line 471  13 
+	push 13
+// Line 471  7 
+	push 7
 	pop  rdi
 	pop  rax
 	or   rax, rdi
 	push rax
-// Line 469  5115 
-	push 5115
-// Line 469  469 
-	push 469
+// Line 471  15 
+	push 15
+// Line 471  471 
+	push 471
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -8488,20 +8482,20 @@ main:
 .L000421:
 	push rax
 	pop  rax
-// Line 470 (CALL assert_expect ( 470 : 5 :(&  13   7 ):) )
-// Line 470 (&  13   7 )
-// Line 470  13 
-	push 13
-// Line 470  7 
-	push 7
+// Line 472 (CALL assert_expect ( 472 : 5115 :(|  938   5073 ):) )
+// Line 472 (|  938   5073 )
+// Line 472  938 
+	push 938
+// Line 472  5073 
+	push 5073
 	pop  rdi
 	pop  rax
-	and  rax, rdi
+	or   rax, rdi
 	push rax
-// Line 470  5 
-	push 5
-// Line 470  470 
-	push 470
+// Line 472  5115 
+	push 5115
+// Line 472  472 
+	push 472
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -8519,20 +8513,20 @@ main:
 .L000423:
 	push rax
 	pop  rax
-// Line 471 (CALL assert_expect ( 471 : 896 :(&  938   5073 ):) )
-// Line 471 (&  938   5073 )
-// Line 471  938 
-	push 938
-// Line 471  5073 
-	push 5073
+// Line 473 (CALL assert_expect ( 473 : 5 :(&  13   7 ):) )
+// Line 473 (&  13   7 )
+// Line 473  13 
+	push 13
+// Line 473  7 
+	push 7
 	pop  rdi
 	pop  rax
 	and  rax, rdi
 	push rax
-// Line 471  896 
-	push 896
-// Line 471  471 
-	push 471
+// Line 473  5 
+	push 5
+// Line 473  473 
+	push 473
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -8550,20 +8544,20 @@ main:
 .L000425:
 	push rax
 	pop  rax
-// Line 472 (CALL assert_expect ( 472 : 10 :(^  13   7 ):) )
-// Line 472 (^  13   7 )
-// Line 472  13 
-	push 13
-// Line 472  7 
-	push 7
+// Line 474 (CALL assert_expect ( 474 : 896 :(&  938   5073 ):) )
+// Line 474 (&  938   5073 )
+// Line 474  938 
+	push 938
+// Line 474  5073 
+	push 5073
 	pop  rdi
 	pop  rax
-	xor  rax, rdi
+	and  rax, rdi
 	push rax
-// Line 472  10 
-	push 10
-// Line 472  472 
-	push 472
+// Line 474  896 
+	push 896
+// Line 474  474 
+	push 474
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -8581,20 +8575,20 @@ main:
 .L000427:
 	push rax
 	pop  rax
-// Line 473 (CALL assert_expect ( 473 : 4219 :(^  938   5073 ):) )
-// Line 473 (^  938   5073 )
-// Line 473  938 
-	push 938
-// Line 473  5073 
-	push 5073
+// Line 475 (CALL assert_expect ( 475 : 10 :(^  13   7 ):) )
+// Line 475 (^  13   7 )
+// Line 475  13 
+	push 13
+// Line 475  7 
+	push 7
 	pop  rdi
 	pop  rax
 	xor  rax, rdi
 	push rax
-// Line 473  4219 
-	push 4219
-// Line 473  473 
-	push 473
+// Line 475  10 
+	push 10
+// Line 475  475 
+	push 475
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -8612,21 +8606,20 @@ main:
 .L000429:
 	push rax
 	pop  rax
-// Line 475 (CALL assert_expect ( 475 : 29 :(>>  938   5 ):) )
-// Line 475 (>>  938   5 )
-// Line 475  938 
+// Line 476 (CALL assert_expect ( 476 : 4219 :(^  938   5073 ):) )
+// Line 476 (^  938   5073 )
+// Line 476  938 
 	push 938
-// Line 475  5 
-	push 5
+// Line 476  5073 
+	push 5073
 	pop  rdi
 	pop  rax
-	mov  cl , dil
-	shr  rax, cl
+	xor  rax, rdi
 	push rax
-// Line 475  29 
-	push 29
-// Line 475  475 
-	push 475
+// Line 476  4219 
+	push 4219
+// Line 476  476 
+	push 476
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -8644,21 +8637,21 @@ main:
 .L000431:
 	push rax
 	pop  rax
-// Line 476 (CALL assert_expect ( 476 : 1664 :(<<  13   7 ):) )
-// Line 476 (<<  13   7 )
-// Line 476  13 
-	push 13
-// Line 476  7 
-	push 7
+// Line 478 (CALL assert_expect ( 478 : 29 :(>>  938   5 ):) )
+// Line 478 (>>  938   5 )
+// Line 478  938 
+	push 938
+// Line 478  5 
+	push 5
 	pop  rdi
 	pop  rax
 	mov  cl , dil
-	shl  rax, cl
+	shr  rax, cl
 	push rax
-// Line 476  1664 
-	push 1664
-// Line 476  476 
-	push 476
+// Line 478  29 
+	push 29
+// Line 478  478 
+	push 478
 	pop  rdi
 	pop  rsi
 	pop  rdx
@@ -8676,27 +8669,59 @@ main:
 .L000433:
 	push rax
 	pop  rax
-// Line 478 (CALL printf_ ((ADDR  "passed tests.\n" ):) )
-// Line 478 (ADDR  "passed tests.\n" )
+// Line 479 (CALL assert_expect ( 479 : 1664 :(<<  13   7 ):) )
+// Line 479 (<<  13   7 )
+// Line 479  13 
+	push 13
+// Line 479  7 
+	push 7
+	pop  rdi
+	pop  rax
+	mov  cl , dil
+	shl  rax, cl
+	push rax
+// Line 479  1664 
+	push 1664
+// Line 479  479 
+	push 479
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000434
+	mov  rax, 0
+	call assert_expect
+	jmp  .L000435
+.L000434:
+	sub  rsp, 8
+	mov  rax, 0
+	call assert_expect
+	add  rsp, 8
+.L000435:
+	push rax
+	pop  rax
+// Line 481 (CALL printf_ ((ADDR  "passed tests.\n" ):) )
+// Line 481 (ADDR  "passed tests.\n" )
 	lea  rax, .LS000029[rip]
 	push rax
 	pop  rdi
 	mov  rax, rsp
 	and  rax, 15
-	jnz  .L000434
+	jnz  .L000436
 	mov  rax, 0
 	call printf_
-	jmp  .L000435
-.L000434:
+	jmp  .L000437
+.L000436:
 	sub  rsp, 8
 	mov  rax, 0
 	call printf_
 	add  rsp, 8
-.L000435:
+.L000437:
 	push rax
 	pop  rax
-// Line 479 (RETURN  0 )
-// Line 479  0 
+// Line 482 (RETURN  0 )
+// Line 482  0 
 	push 0
 	pop  rax
 	mov  rsp, rbp

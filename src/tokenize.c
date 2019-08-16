@@ -148,28 +148,30 @@ void tokenize(char *file, char *p, bool is_main) {
                 while(is_ident_char(*(p + len)))
                     len++;
 
-                Token *cursor = cur;
+                Token *head = cur;
                 cur = new_token(TK_IDENT, cur, p, len);
                 Token *tok = cur;
                 p += len;
-                /*
+
                 if(*p == '(') {
                     // function macro
                     p++;
-                    Token head;
-                    head.next = NULL;
-                    Token *t = &head;
-                    TokContext *args_ctx = new_tok_context(fi, t, p);
-                    while(*p != ')') {
-                        read_token(args_ctx);
-                        if(*p != ',')
+                    ctx->char_ptr = p;
+                    ctx->current_token = head;
+                    while(*(ctx->char_ptr) != ')') {
+                        read_token(ctx);
+                        if(*(ctx->char_ptr) != ',')
                             break;
+                        ctx->char_ptr++;
                     }
-                }*/
+                    if(*(ctx->char_ptr) != ')')
+                        error_at_char(fi, ctx->char_ptr, "Expected ')'");
+                    p = ctx->char_ptr + 1;
+                }
 
                 print_token(stderr, tok);
                 fprintf(stderr, "=>");
-                cur = cursor;
+                cur = head;
                 cur->next = NULL;
 
                 ctx->char_ptr = p;
@@ -179,10 +181,10 @@ void tokenize(char *file, char *p, bool is_main) {
                     print_token(stderr, read_token(ctx));
                     i++;
                 }
-                if(!cursor->next)
+                if(!head->next)
                     error_at_token(tok, "No substitute token.");
-                new_macro(tok, cursor->next);
-                cursor->next = NULL;
+                new_macro(tok, head->next);
+                head->next = NULL;
 
                 fprintf(stderr, "\n");
             }
