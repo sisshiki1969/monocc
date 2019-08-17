@@ -60,11 +60,19 @@ Token *dup_tokens(Token *src) {
     return head.next;
 }
 
-Token *find_macro(Token *token) {
+Macro *dup_macro(Macro *macro) {
+    Macro *m = calloc(1, sizeof(Macro));
+    m->token = macro->token;
+    m->args = dup_tokens(macro->args);
+    m->subst = dup_tokens(macro->subst);
+    return m;
+}
+
+Macro *find_macro(Token *token) {
     for(Macro *m = macros; m; m = m->next) {
         if(token->len == m->token->len &&
            strncmp(token->str, m->token->str, token->len) == 0) {
-            return dup_tokens(m->subst);
+            return dup_macro(m);
         }
     }
     return NULL;
@@ -114,10 +122,11 @@ void tokenize(char *file, char *p, bool is_main) {
 
     while(*p) {
         // fprintf(stderr, "%c", *p);
-        if(isspace(*p)) {
+        if(*p == ' ' || *p == '\t') {
             p++;
             continue;
         }
+
         if(*p == '#') {
             char *line_end = strchr(p++, '\n');
             while(*p == ' ' || *p == '\t')
@@ -125,6 +134,7 @@ void tokenize(char *file, char *p, bool is_main) {
             int len = 0;
             while(is_ident_char(*(p + len)))
                 len++;
+
             if(is_reserved(p, len, "include")) {
                 p += len;
                 while(*p == ' ' || *p == '\t')
@@ -152,7 +162,7 @@ void tokenize(char *file, char *p, bool is_main) {
                     tokenize(file_name, text, false);
                 }
             } else if(is_reserved(p, len, "define")) {
-                fprintf(stderr, "macro define: ");
+                // fprintf(stderr, "macro define: ");
                 p += len;
                 while(*p == ' ' || *p == '\t')
                     p++;
@@ -168,13 +178,14 @@ void tokenize(char *file, char *p, bool is_main) {
 
                 ctx->p = p;
                 ctx->cur = head;
-                print_token(stderr, tok);
+                // print_token(stderr, tok);
 
                 if(read_if(ctx, '(')) {
                     skip_space(ctx);
                     // function macro
                     while(*(ctx->p) != ')') {
-                        print_token(stderr, read_token(ctx));
+                        // print_token(stderr, read_token(ctx));
+                        read_token(ctx);
                         skip_space(ctx);
                         if(*(ctx->p) != ',')
                             break;
@@ -184,7 +195,7 @@ void tokenize(char *file, char *p, bool is_main) {
                         error_at_char(fi, ctx->p, "Expected ')'");
                 }
 
-                fprintf(stderr, "=>");
+                // fprintf(stderr, "=>");
                 Token *args = head->next;
                 head->next = NULL;
                 ctx->cur = head;
@@ -192,25 +203,30 @@ void tokenize(char *file, char *p, bool is_main) {
                 skip_space(ctx);
                 int i = 0;
                 while(*(ctx->p) != '\n' && i < 50) {
-                    print_token(stderr, read_token(ctx));
+                    read_token(ctx);
+                    // print_token(stderr, read_token(ctx));
                     skip_space(ctx);
                     i++;
                 }
-                if(!head->next)
-                    error_at_char(fi, ctx->p - 1, "No substitute token.");
                 new_macro(tok, args, head->next);
                 head->next = NULL;
 
-                fprintf(stderr, "\n");
+                // fprintf(stderr, "\n");
             }
 
             p = line_end + 1;
             continue;
         }
+
         // TokContext *ctx = new_tok_context(fi, cur, p);
         ctx->p = p;
         ctx->cur = cur;
-        read_token(ctx);
+        while(*(ctx->p) != '\n' && *(ctx->p) != 0) {
+            read_token(ctx);
+        }
+
+        while(*(ctx->p) == '\n')
+            ctx->p++;
         cur = ctx->cur;
         p = ctx->p;
     }
@@ -503,6 +519,10 @@ Token *read_token(TokContext *ctx) {
 
     if(ctx->p == p)
         error_at_char(fi, p, "Illegal character.");
+
+    while(*p == ' ' || *p == '\t') {
+        p++;
+    }
 
     ctx->p = p;
     ctx->cur = cur;

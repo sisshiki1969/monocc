@@ -38,7 +38,7 @@ char *read_file(char *path) {
         buf[size++] = '\n';
     buf[size] = '\0';
     fclose(fp);
-    fprintf(stderr, "monocc: file read\n");
+    // fprintf(stderr, "monocc: file read\n");
     // fprintf(stderr, "%s", buf);
     return buf;
 }
@@ -127,17 +127,29 @@ void pp() {
         // print_token(stderr, t);
         if(t->kind != TK_IDENT)
             continue;
-        Token *subst = find_macro(t);
-        if(!subst)
+        Macro *m = find_macro(t);
+        if(!m)
             continue;
+        if(!m->subst) {
+            Token *next_token = t->next;
+            t->kind = next_token->kind;
+            t->next = next_token->next;
+            t->str = next_token->str;
+            t->len = next_token->len;
+            t->int_val = next_token->int_val;
+            t = next_token;
+            continue;
+        }
+
         Token *next_token = t->next;
-        t->kind = subst->kind;
-        t->next = subst->next;
-        t->str = subst->str;
-        t->len = subst->len;
-        t->int_val = subst->int_val;
-        while(t->next)
+        t->kind = m->subst->kind;
+        t->next = m->subst->next;
+        t->str = m->subst->str;
+        t->len = m->subst->len;
+        t->int_val = m->subst->int_val;
+        while(t->next) {
             t = t->next;
+        }
         t->next = next_token;
     }
 }
@@ -165,7 +177,7 @@ void compile(char *file) {
     fprintf(output, "\t.data\n");
     Global *global = globals;
 
-    fprintf(stderr, "monocc: emit globals...\n");
+    // fprintf(stderr, "monocc: emit globals...\n");
     for(; global; global = global->next) {
         if(global->is_extern) {
             continue;
@@ -175,7 +187,7 @@ void compile(char *file) {
         fprintf(output, "%.*s:\n", global->token->len, global->token->str);
         emit_basic_global(global->type, global->body);
     };
-    fprintf(stderr, "monocc: emitted globals\n");
+    // fprintf(stderr, "monocc: emitted globals\n");
 
     int i = 0;
     while(i < vec_len(strings)) {

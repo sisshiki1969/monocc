@@ -1,4 +1,4 @@
-CFLAGS=-std=c11 -g -static
+CFLAGS=-std=c11 -g -static -Wno-format-security
 LDLIBS = -L /usr/lib -L /usr/local/lib -L /usr/include/
 SRCS=$(wildcard ./src/*.c)
 OBJS=$(SRCS:.c=.o)

@@ -323,6 +323,7 @@ void error_at_node(Node *node, char *fmt, ...);
 
 void print_tokens(Token *token);
 void tokenize(char *file, char *source, bool is_main);
+bool cmp_token(Token *t1, Token *t2);
 
 // Methods for Node
 
@@ -408,7 +409,7 @@ struct Macro {
 };
 
 Macro *new_macro(Token *token, Token *args, Token *subst);
-Token *find_macro(Token *token);
+Macro *find_macro(Token *token);
 
 // Globals
 
