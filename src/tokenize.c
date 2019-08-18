@@ -40,10 +40,10 @@ FileInfo *new_file_info(char *file_name, char *start) {
 
 Macro *macros;
 
-Macro *new_macro(Token *token, Token *args, Token *subst) {
+Macro *new_macro(Token *token, Token *params, Token *subst) {
     Macro *m = calloc(1, sizeof(Macro));
     m->token = token;
-    m->args = args;
+    m->params = params;
     m->subst = subst;
     m->next = macros;
     macros = m;
@@ -63,7 +63,7 @@ Token *dup_tokens(Token *src) {
 Macro *dup_macro(Macro *macro) {
     Macro *m = calloc(1, sizeof(Macro));
     m->token = macro->token;
-    m->args = dup_tokens(macro->args);
+    m->params = dup_tokens(macro->params);
     m->subst = dup_tokens(macro->subst);
     return m;
 }
@@ -77,13 +77,6 @@ Macro *find_macro(Token *token) {
     }
     return NULL;
 }
-
-typedef struct TokContext TokContext;
-struct TokContext {
-    FileInfo *file_info;
-    Token *cur;
-    char *p;
-};
 
 TokContext *new_tok_context(FileInfo *file_info, Token *current_token,
                             char *char_ptr) {
@@ -179,13 +172,19 @@ void tokenize(char *file, char *p, bool is_main) {
                 ctx->p = p;
                 ctx->cur = head;
                 // print_token(stderr, tok);
+                head->next = NULL;
 
                 if(read_if(ctx, '(')) {
+                    int i = 0;
+                    // read params of function-like macro
+                    // fprintf(stderr, " ( ");
                     skip_space(ctx);
                     // function macro
                     while(*(ctx->p) != ')') {
-                        // print_token(stderr, read_token(ctx));
-                        read_token(ctx);
+                        Token *param_token = read_token(ctx);
+                        param_token->int_val = i++;
+                        // print_token(stderr, param_token);
+
                         skip_space(ctx);
                         if(*(ctx->p) != ',')
                             break;
@@ -193,10 +192,11 @@ void tokenize(char *file, char *p, bool is_main) {
                     }
                     if(!read_if(ctx, ')'))
                         error_at_char(fi, ctx->p, "Expected ')'");
+                    // fprintf(stderr, " ) ");
                 }
 
                 // fprintf(stderr, "=>");
-                Token *args = head->next;
+                Token *params = head->next;
                 head->next = NULL;
                 ctx->cur = head;
 
@@ -208,7 +208,7 @@ void tokenize(char *file, char *p, bool is_main) {
                     skip_space(ctx);
                     i++;
                 }
-                new_macro(tok, args, head->next);
+                new_macro(tok, params, head->next);
                 head->next = NULL;
 
                 // fprintf(stderr, "\n");

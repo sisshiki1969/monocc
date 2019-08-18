@@ -130,6 +130,60 @@ void pp() {
         Macro *m = find_macro(t);
         if(!m)
             continue;
+        Macro args_head;
+        args_head.next = NULL;
+        Macro *args = &args_head;
+        if(m->params) {
+            int param_count = 0;
+            for(Token *param = m->params; param; param = param->next)
+                param_count++;
+
+            Token *start = t;
+            t = t->next;
+            if(!t)
+                error_at_token(start, "Expected '('.");
+
+            if(t->kind != TK_OP_PAREN)
+                error_at_token(t, "Expected '('.");
+            int arg_count = 0;
+            while(t->next->kind != TK_CL_PAREN) {
+                // invoke function-like macro
+                Token *arg_token = t->next;
+                if(arg_token->kind == TK_CL_PAREN ||
+                   arg_token->kind == TK_COMMA)
+                    arg_token = NULL;
+                while(t->next->kind != TK_CL_PAREN &&
+                      t->next->kind != TK_COMMA) {
+                    if(t->next->kind == TK_OP_PAREN) {
+                        while(t->next->kind != TK_CL_PAREN)
+                            t = t->next;
+                    }
+                    t = t->next;
+                }
+
+                Token *next = t->next;
+                t->next = NULL;
+                t = next;
+                // print_tokens(stderr, arg_token);
+                Macro *arg = calloc(1, sizeof(Macro));
+                arg->params = arg_token;
+                args->next = arg;
+                args = arg;
+                arg_count++;
+                if(arg_count > param_count)
+                    error_at_token(
+                        arg_token,
+                        "Too many arguments in invocation of macro '%.*s'.",
+                        start->len, start->str);
+            }
+            start->next = t->next;
+            t = start;
+
+            if(arg_count < param_count)
+                error_at_token(t, "Too few arguments for invokation of macro.");
+        }
+        // for(Macro *args = args_head.next; args; args = args->next)
+        // print_tokens(stderr, args->params);
         if(!m->subst) {
             Token *next_token = t->next;
             t->kind = next_token->kind;
@@ -148,6 +202,33 @@ void pp() {
         t->len = m->subst->len;
         t->int_val = m->subst->int_val;
         while(t->next) {
+            if(t->kind == TK_IDENT) {
+                for(Token *param = m->params; param; param = param->next) {
+                    if(cmp_token(t, param)) {
+                        int i = param->int_val;
+                        // fprintf(stderr, "find: %d", i);
+                        // print_token(stderr, t);
+                        for(Macro *args = args_head.next; args;
+                            args = args->next) {
+                            if(i-- == 0) {
+                                Token *next = t->next;
+                                // print_tokens(stderr, args->params);
+                                t->kind = args->params->kind;
+                                t->next = args->params->next;
+                                t->str = args->params->str;
+                                t->len = args->params->len;
+                                t->int_val = args->params->int_val;
+                                while(t->next)
+                                    t - t->next;
+                                t->next = next;
+                                break;
+                            }
+                        }
+                        // fprintf(stderr, "\n");
+                        break;
+                    }
+                }
+            }
             t = t->next;
         }
         t->next = next_token;
@@ -159,7 +240,7 @@ void compile(char *file) {
     fprintf(stderr, "monocc: tokenize\n");
 
     pp();
-    print_tokens(token);
+    print_tokens(output, token);
     fprintf(stderr, "monocc: pp\n");
 
     strings = vec_new();

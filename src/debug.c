@@ -88,21 +88,21 @@ void print_token(FILE *stream, Token *token) {
         fprintf(stream, "\"%.*s\"", token->len, token->str);
         break;
     default:
-        error_at_token(token, "print_tokens(): Unknown TokenKind.");
+        error_at_token(token, "print_token(): Unknown TokenKind.");
         break;
     }
 }
 
 /// Print tokens.
-void print_tokens(Token *token) {
-    fprintf(output, "// ");
+void print_tokens(FILE *stream, Token *token) {
+    fprintf(stream, "// ");
     while(token) {
-        print_token(output, token);
+        print_token(stream, token);
         if(token->kind == TK_SEMI)
-            fprintf(output, "\n// ");
+            fprintf(stream, "\n// ");
         token = token->next;
     }
-    fprintf(output, "\n");
+    fprintf(stream, "\n");
 }
 
 /// Print node.

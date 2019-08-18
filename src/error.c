@@ -79,11 +79,14 @@ void error_at_char(FileInfo *fi, char *err_char, char *fmt, ...) {
 }
 
 void error_at_token(Token *token, char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+
     FileInfo *fi = get_file_info(token->str);
     PosInfo *pos = get_pos(token->str, fi->start);
 
     print_error_line(fi, pos, token->len);
-    fprintf(stderr, fmt);
+    vfprintf(stderr, fmt, ap);
     fprintf(stderr, "\n");
     exit(1);
 }

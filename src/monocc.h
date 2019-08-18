@@ -321,9 +321,20 @@ void error_at_node(Node *node, char *fmt, ...);
 
 // Methods for Token
 
-void print_tokens(Token *token);
+typedef struct TokContext TokContext;
+struct TokContext {
+    FileInfo *file_info;
+    Token *cur;
+    char *p;
+};
+
+TokContext *new_tok_context(FileInfo *file_info, Token *cur, char *p);
+void print_tokens(FILE *stream, Token *token);
 void tokenize(char *file, char *source, bool is_main);
 bool cmp_token(Token *t1, Token *t2);
+bool read_if(TokContext *ctx, int c);
+void skip_space(TokContext *ctx);
+Token *read_token(TokContext *ctx);
 
 // Methods for Node
 
@@ -404,7 +415,7 @@ typedef struct Macro Macro;
 struct Macro {
     Macro *next;
     Token *token;
-    Token *args;
+    Token *params;
     Token *subst;
 };
 

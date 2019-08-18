@@ -50,6 +50,6 @@ self: monocc
 	diff ./self/test.s ./self2/test.s -s
 
 clean:
-	rm -f ./src/monocc ./src/*.o ./src/*.s *~ tmp* self_* ./self/* ./self2/* a.out lib.o
+	rm -f ./src/monocc ./src/*.o ./src/*.s ./test/*.s *~ tmp* self_* ./self/* ./self2/* a.out lib.o
 
 .PHONY: test self clean

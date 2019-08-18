@@ -350,8 +350,8 @@ int main() {
     assert_expect(__LINE__, 1, true);
     assert_expect(__LINE__, 0, false);
     assert_expect(__LINE__, 0, (int)NULL);
-#define mac(x, y) 3
-    assert_expect(__LINE__, 11, mac(3, 8));
+#define mul(argx, argy, argz) (argx * (argy + argz))
+    assert_expect(__LINE__, 70, mul(10, 2, 5));
 
     assert_expect(__LINE__, 1979, i);
     assert_expect(__LINE__, 2015, j);
