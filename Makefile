@@ -1,4 +1,4 @@
-CFLAGS=-std=c11 -g -static
+CFLAGS=-std=c11 -g -static -pie
 SRCS=$(wildcard ./src/*.c)
 OBJS=$(SRCS:.c=.o)
 
@@ -11,16 +11,18 @@ $(OBJS): ./src/monocc.h
 test: monocc
 	./src/monocc -test
 	./src/monocc ./test/test.c
-	$(CC) -o tmp ./test/test.s lib.o
+	gcc -o tmp ./test/test.s lib.o
 	./tmp
 
 self: clean monocc
-	rm -f ./self/* ./self2/* tmp* ./src/*.o ./src/*.s
 	bash self.sh self src
 	bash self.sh self2 self
+	bash self.sh self3 self2
 	diff ./self/monocc ./self2/monocc -s
+	diff ./self2/monocc ./self3/monocc -s
 
 clean:
-	rm -f ./src/monocc ./src/*.o ./src/*.s ./test/*.s *~ tmp* self_* ./self/* ./self2/* a.out lib.o
+	rm -f ./src/monocc ./src/*.o ./src/*.s ./test/*.s *~ tmp* self_* a.out lib.o
+	rm -fr ./self ./self2 ./self3
 
 .PHONY: test self clean

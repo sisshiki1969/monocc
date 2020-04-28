@@ -2,11 +2,10 @@
 try() {
     expected="$1"
     input="$2"
-
-    ./src/monocc "int foo(int a, int b, int c); int print(int a);
+    ./src/monocc -string "int foo(int a, int b, int c); int print(int a);
         int alloc4(int **p, int i1, int i2, int i3, int i4);
         int print_str(char* x);
-        int main(){${input};}" > tmp.s
+        int main(){$input}" > tmp.s
     gcc -o tmp tmp.s lib.o
     ./tmp
     actual="$?"
@@ -20,14 +19,14 @@ try() {
 }
 
 try 9 "int alpha5; alpha5 = 5; alpha5 * 6 - 21;"
-try 45 "int alpha5; int beta_9; alpha5 = 5; beta_9 = alpha5 * 6 - 21; print(alpha5); print(beta_9); beta_9*alpha5"
+try 45 "int alpha5; int beta_9; alpha5 = 5; beta_9 = alpha5 * 6 - 21; print(alpha5); print(beta_9); beta_9*alpha5;"
 try 37 "int a; a = 5 *5 +12;return a;"
 try 13 "int a; int b; a=8; if(a==4) b=19; else b=13; return b;"
 try 13 "int a; int b; a=8; if(a==4) ; else b=13; return b;"
 try 8 "int a; int b; a=b=8; if(a==4) b=19; else ; return b;"
 try 19 "int a; a=8; if(a==8) a=19; return a;"
 try 3 "int i; int ifs; i = 1; if(1==i) if(0==i) ifs = 7; else ifs = 3; else ifs = 9; return ifs;"
-try 5 "int a; int b; if(1==1) {a = 1; b = 5;} else {a = 3; b = 3;} a*b"
+try 5 "int a; int b; if(1==1) {a = 1; b = 5;} else {a = 3; b = 3;} a*b;"
 try 15 "int i; int sum; i = 1;
 sum = 0;
 while (i < 6) { sum = sum + i; i = i + 1; }
@@ -35,16 +34,16 @@ return sum;"
 try 5 "int a; int b; a = foo(b = 37, 7, 6);
 print(a);
 return a;"
-try 1 "int a; int *p; int *q; p = &a; q = &a; return(p==q)"
-try 0 "int a; int *p; int *q; p = &a; q = &a; return(p!=q)"
-try 0 "int a; int b; int *p; int *q; p = &a; q = &b; return(p==q)"
-try 1 "int a; int b; int *p; int *q; p = &a; q = &b; return(p!=q)"
+try 1 "int a; int *p; int *q; p = &a; q = &a; return(p==q);"
+try 0 "int a; int *p; int *q; p = &a; q = &a; return(p!=q);"
+try 0 "int a; int b; int *p; int *q; p = &a; q = &b; return(p==q);"
+try 1 "int a; int b; int *p; int *q; p = &a; q = &b; return(p!=q);"
 
 try2() {
     expected="$1"
     input="$2"
 
-    ./src/monocc "$input" > tmp.s
+    ./src/monocc -string "$input" > tmp.s
     gcc -o tmp tmp.s lib.o
     ./tmp
     actual="$?"

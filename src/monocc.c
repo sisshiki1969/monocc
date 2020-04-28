@@ -164,7 +164,6 @@ void pp() {
                 Token *next = t->next;
                 t->next = NULL;
                 t = next;
-                // print_tokens(stderr, arg_token);
                 Macro *arg = calloc(1, sizeof(Macro));
                 arg->params = arg_token;
                 args->next = arg;
@@ -173,8 +172,8 @@ void pp() {
                 if(arg_count > param_count)
                     error_at_token(
                         arg_token,
-                        "Too many arguments in invocation of macro '%.*s'.",
-                        start->len, start->str);
+                        "Too many arguments in invocation of macro '%.*s'. %d %d",
+                        start->len, start->str, arg_count, param_count);
             }
             start->next = t->next;
             t = start;
@@ -186,21 +185,13 @@ void pp() {
         // print_tokens(stderr, args->params);
         if(!m->subst) {
             Token *next_token = t->next;
-            t->kind = next_token->kind;
-            t->next = next_token->next;
-            t->str = next_token->str;
-            t->len = next_token->len;
-            t->int_val = next_token->int_val;
+            copy_token(next_token, t);
             t = next_token;
             continue;
         }
 
         Token *next_token = t->next;
-        t->kind = m->subst->kind;
-        t->next = m->subst->next;
-        t->str = m->subst->str;
-        t->len = m->subst->len;
-        t->int_val = m->subst->int_val;
+        copy_token(m->subst, t);
         while(t->next) {
             if(t->kind == TK_IDENT) {
                 for(Token *param = m->params; param; param = param->next) {
@@ -212,12 +203,7 @@ void pp() {
                             args = args->next) {
                             if(i-- == 0) {
                                 Token *next = t->next;
-                                // print_tokens(stderr, args->params);
-                                t->kind = args->params->kind;
-                                t->next = args->params->next;
-                                t->str = args->params->str;
-                                t->len = args->params->len;
-                                t->int_val = args->params->int_val;
+                                copy_token(args->params, t);
                                 while(t->next)
                                     t - t->next;
                                 t->next = next;
@@ -237,15 +223,11 @@ void pp() {
 
 void compile(char *file) {
     tokenize(file, source_text, true);
-    fprintf(stderr, "monocc: tokenize\n");
-
     pp();
     print_tokens(output, token);
-    fprintf(stderr, "monocc: pp\n");
 
     strings = vec_new();
     parse_program();
-    fprintf(stderr, "monocc: parse\n");
     print_globals();
     print_funcs();
     print_strings();
@@ -298,13 +280,15 @@ int main(int argc, char **argv) {
             test_vec();
             return 0;
         } else if(strcmp(argv[i], "-string") == 0) {
-            if(i + 1 < argc) {
+            if(i + 2 > argc) {
                 fprintf(stderr, "No input string.\n");
                 return 1;
             }
             file = "input";
             source_text = argv[i + 1];
-            break;
+            output = fopen("tmp.s", "w");
+            compile(file);
+            return 0;
         } else {
             file = argv[i];
             source_text = read_file(argv[i]);
@@ -317,7 +301,6 @@ int main(int argc, char **argv) {
             }
             *(dot + 1) = 's';
 
-            fprintf(stderr, "output file: %s\n", output_file_name);
             output = fopen(output_file_name, "w");
             if(!output) {
                 fprintf(stderr, "Cannot open output file.\n");

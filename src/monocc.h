@@ -55,6 +55,20 @@ extern int *__errno_location();
 #define SEEK_END 2
 #define SEEK_SET 0
 #define errno (*__errno_location())
+
+typedef struct {
+    unsigned int gp_offset;
+    unsigned int fp_offset;
+    void *overflow_arg_area;
+    void *reg_save_area;
+} va_list[1];
+
+#define va_start(ap, last) __builtin_va_start(ap)
+#define va_end(ap) 0
+
+#define __GNUC_VA_LIST 1
+typedef va_list __gnuc_va_list;
+
 #endif
 
 // File info
@@ -171,7 +185,18 @@ struct MemberInfo {
 };
 
 struct Type {
-    enum { VOID, INT, CHAR, BOOL, PTR, ARRAY, FUNC, STRUCT, ENUM, ENUM_EL } ty;
+    enum {
+        VOID,
+        INT,
+        CHAR,
+        BOOL,
+        PTR,
+        ARRAY,
+        FUNC,
+        STRUCT,
+        ENUM,
+        ENUM_EL
+    } ty;
     Type *ptr_to;
     /// array size for ARRAY
     int array_size;
@@ -312,6 +337,7 @@ struct Vector {
 char *read_file(char *path);
 
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
+void copy_token(Token *src, Token *dest);
 
 int get_line(char *p, char *source);
 void error(char *fmt, ...);
