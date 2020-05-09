@@ -14,4 +14,5 @@ $CC/monocc $DIR/debug.c
 $CC/monocc $DIR/codegen.c
 $CC/monocc $DIR/type.c
 $CC/monocc $DIR/test.c
+$CC/monocc $DIR/pp.c
 gcc -static -pie -o $DIR/monocc $DIR/*.s $DIR/error.c -L /usr/lib -L /usr/local/lib -L /usr/include/

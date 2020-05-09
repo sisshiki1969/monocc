@@ -8,14 +8,14 @@
 
 #ifdef FILE
 typedef struct {
-    char mode;
-    char *ptr;
-    int rcount;
-    int wcount;
-    char *base;
-    int bufsiz;
-    int fd;
-    char smallbuf[1];
+  char mode;
+  char *ptr;
+  int rcount;
+  int wcount;
+  char *base;
+  int bufsiz;
+  int fd;
+  char smallbuf[1];
 } FILE;
 typedef int size_t;
 void *calloc(int n, int size);
@@ -57,10 +57,10 @@ extern int *__errno_location();
 #define errno (*__errno_location())
 
 typedef struct {
-    unsigned int gp_offset;
-    unsigned int fp_offset;
-    void *overflow_arg_area;
-    void *reg_save_area;
+  int gp_offset;
+  int fp_offset;
+  void *overflow_arg_area;
+  void *reg_save_area;
 } va_list[1];
 
 #define va_start(ap, last) __builtin_va_start(ap)
@@ -76,10 +76,10 @@ typedef va_list __gnuc_va_list;
 typedef struct FileInfo FileInfo;
 
 struct FileInfo {
-    FileInfo *next;
-    char *file_name;
-    char *start;
-    char *end;
+  FileInfo *next;
+  char *file_name;
+  char *start;
+  char *end;
 };
 
 // Token
@@ -87,90 +87,90 @@ struct FileInfo {
 typedef enum TokenKind TokenKind;
 
 enum TokenKind {
-    TK_IDENT,
-    TK_NUM,
-    TK_STR,
+  TK_IDENT,
+  TK_NUM,
+  TK_STR,
 
-    TK_ADD,
-    TK_SUB,
-    TK_MUL,
-    TK_DIV,
+  TK_ADD,
+  TK_SUB,
+  TK_MUL,
+  TK_DIV,
 
-    TK_EQ,
-    TK_NEQ,
-    TK_GT,
-    TK_GE,
-    TK_LT,
-    TK_LE,
+  TK_EQ,
+  TK_NEQ,
+  TK_GT,
+  TK_GE,
+  TK_LT,
+  TK_LE,
 
-    TK_ASSIGN,
-    TK_ASSIGN_ADD,
-    TK_ASSIGN_SUB,
-    TK_ASSIGN_MUL,
-    TK_ASSIGN_DIV,
+  TK_ASSIGN,
+  TK_ASSIGN_ADD,
+  TK_ASSIGN_SUB,
+  TK_ASSIGN_MUL,
+  TK_ASSIGN_DIV,
 
-    TK_INC,
-    TK_DEC,
+  TK_INC,
+  TK_DEC,
 
-    TK_LAND,
-    TK_LOR,
-    TK_AND,
-    TK_OR,
-    TK_XOR,
-    TK_NOT,
-    TK_SHR,
-    TK_SHL,
+  TK_LAND,
+  TK_LOR,
+  TK_AND,
+  TK_OR,
+  TK_XOR,
+  TK_NOT,
+  TK_SHR,
+  TK_SHL,
 
-    TK_SEMI,
-    TK_OP_PAREN,
-    TK_CL_PAREN,
-    TK_OP_BRACE,
-    TK_CL_BRACE,
-    TK_OP_BRACKET,
-    TK_CL_BRACKET,
-    TK_COMMA,
-    TK_COLON,
-    TK_DOT,
-    TK_ARROW,
-    TK_TILDA,
-    TK_ELLIPSIS,
+  TK_SEMI,
+  TK_OP_PAREN,
+  TK_CL_PAREN,
+  TK_OP_BRACE,
+  TK_CL_BRACE,
+  TK_OP_BRACKET,
+  TK_CL_BRACKET,
+  TK_COMMA,
+  TK_COLON,
+  TK_DOT,
+  TK_ARROW,
+  TK_TILDA,
+  TK_ELLIPSIS,
 
-    TK_IF,
-    TK_ELSE,
-    TK_WHILE,
-    TK_FOR,
-    TK_SWITCH,
-    TK_CASE,
-    TK_DEFAULT,
-    TK_BREAK,
-    TK_CONTINUE,
-    TK_RETURN,
-    TK_SIZEOF,
+  TK_IF,
+  TK_ELSE,
+  TK_WHILE,
+  TK_FOR,
+  TK_SWITCH,
+  TK_CASE,
+  TK_DEFAULT,
+  TK_BREAK,
+  TK_CONTINUE,
+  TK_RETURN,
+  TK_SIZEOF,
 
-    TK_INT,
-    TK_CHAR,
-    TK_BOOL,
-    TK_VOID,
-    TK_STRUCT,
-    TK_ENUM,
-    TK_UNION,
+  TK_INT,
+  TK_CHAR,
+  TK_BOOL,
+  TK_VOID,
+  TK_STRUCT,
+  TK_ENUM,
+  TK_UNION,
 
-    TK_EXTERN,
-    TK_TYPEDEF,
+  TK_EXTERN,
+  TK_TYPEDEF,
 
-    TK_EOF,
+  TK_EOF,
 
-    TK_MACRO,
+  TK_MACRO,
 };
 
 typedef struct Token Token;
 
 struct Token {
-    TokenKind kind;
-    Token *next;
-    int int_val;
-    char *str;
-    int len;
+  TokenKind kind;
+  Token *next;
+  int int_val;
+  char *str;
+  int len;
 };
 
 // Type
@@ -178,85 +178,74 @@ typedef struct MemberInfo MemberInfo;
 typedef struct Type Type;
 
 struct MemberInfo {
-    MemberInfo *next;
-    Token *ident;
-    Type *type;
-    int offset;
+  MemberInfo *next;
+  Token *ident;
+  Type *type;
+  int offset;
 };
 
 struct Type {
-    enum {
-        VOID,
-        INT,
-        CHAR,
-        BOOL,
-        PTR,
-        ARRAY,
-        FUNC,
-        STRUCT,
-        ENUM,
-        ENUM_EL
-    } ty;
-    Type *ptr_to;
-    /// array size for ARRAY
-    int array_size;
-    /// parameter list for FUNC
-    MemberInfo *params;
-    /// member list for STRUCT
-    MemberInfo *member;
-    int offset;
-    // Type *next;
-    Token *tag_name;
+  enum { VOID, INT, CHAR, BOOL, PTR, ARRAY, FUNC, STRUCT, ENUM, ENUM_EL } ty;
+  Type *ptr_to;
+  /// array size for ARRAY
+  int array_size;
+  /// parameter list for FUNC
+  MemberInfo *params;
+  /// member list for STRUCT
+  MemberInfo *member;
+  int offset;
+  // Type *next;
+  Token *tag_name;
 };
 
 // Node
 
 typedef enum {
-    ND_IDENT,
-    ND_NUM,
+  ND_IDENT,
+  ND_NUM,
 
-    ND_STR,
-    ND_INIT,
+  ND_STR,
+  ND_INIT,
 
-    ND_ADD,
-    ND_SUB,
-    ND_MUL,
-    ND_DIV,
-    ND_EQ,
-    ND_NEQ,
-    ND_GE,
-    ND_GT,
+  ND_ADD,
+  ND_SUB,
+  ND_MUL,
+  ND_DIV,
+  ND_EQ,
+  ND_NEQ,
+  ND_GE,
+  ND_GT,
 
-    ND_LAND,
-    ND_LOR,
-    ND_NOT,
-    ND_AND,
-    ND_OR,
-    ND_XOR,
-    ND_SHR,
-    ND_SHL,
-    ND_CMP,
+  ND_LAND,
+  ND_LOR,
+  ND_NOT,
+  ND_AND,
+  ND_OR,
+  ND_XOR,
+  ND_SHR,
+  ND_SHL,
+  ND_CMP,
 
-    ND_ASSIGN,
-    ND_ADDR,
-    ND_DEREF,
-    ND_LVAR,
-    ND_GVAR,
-    ND_CALL,
-    ND_MEMBER,
-    ND_CAST,
+  ND_ASSIGN,
+  ND_ADDR,
+  ND_DEREF,
+  ND_LVAR,
+  ND_GVAR,
+  ND_CALL,
+  ND_MEMBER,
+  ND_CAST,
 
-    ND_IF,
-    ND_WHILE,
-    ND_FOR,
-    ND_SWITCH,
-    ND_CASE,
-    ND_DEFAULT,
-    ND_RETURN,
-    ND_BREAK,
-    ND_CONTINUE,
-    ND_BLOCK,
-    ND_FDECL,
+  ND_IF,
+  ND_WHILE,
+  ND_FOR,
+  ND_SWITCH,
+  ND_CASE,
+  ND_DEFAULT,
+  ND_RETURN,
+  ND_BREAK,
+  ND_CONTINUE,
+  ND_BLOCK,
+  ND_FDECL,
 } NodeKind;
 
 // Local variables
@@ -264,32 +253,32 @@ typedef enum {
 typedef struct LVar LVar;
 
 struct LVar {
-    LVar *next;
-    Token *token;
-    Type *type;
-    int offset;
-    LVar *scope;
-    bool scope_head;
+  LVar *next;
+  Token *token;
+  Type *type;
+  int offset;
+  LVar *scope;
+  bool scope_head;
 };
 
 typedef struct Node Node;
 typedef struct Vector Vector;
 
 struct Node {
-    NodeKind kind;
-    Node *lhs;
-    Node *rhs;
-    Node *xhs;
-    /// Value in integer valid for ND_NUM only.
-    int int_val;
-    /// Pomtter to LVar (valid for ND_LVAR only).
-    LVar *lvar;
-    /// Max offset of local vars (valid for ND_FDECL only).
-    int offset;
-    char *label;
-    Vector *nodes;
-    Token *token;
-    Type *type;
+  NodeKind kind;
+  Node *lhs;
+  Node *rhs;
+  Node *xhs;
+  /// Value in integer valid for ND_NUM only.
+  int int_val;
+  /// Pomtter to LVar (valid for ND_LVAR only).
+  LVar *lvar;
+  /// Max offset of local vars (valid for ND_FDECL only).
+  int offset;
+  char *label;
+  Vector *nodes;
+  Token *token;
+  Type *type;
 };
 
 // Global variables and functions
@@ -297,11 +286,11 @@ struct Node {
 typedef struct Global Global;
 
 struct Global {
-    Global *next;
-    Token *token;
-    Type *type;
-    Node *body;
-    bool is_extern;
+  Global *next;
+  Token *token;
+  Type *type;
+  Node *body;
+  bool is_extern;
 };
 
 // Tag name
@@ -309,9 +298,9 @@ struct Global {
 typedef struct TagName TagName;
 
 struct TagName {
-    TagName *next;
-    Token *ident;
-    Type *type;
+  TagName *next;
+  Token *ident;
+  Type *type;
 };
 
 TagName *find_tag(Token *token);
@@ -319,9 +308,9 @@ TagName *find_tag(Token *token);
 typedef struct Typedef Typedef;
 
 struct Typedef {
-    Typedef *next;
-    Type *type;
-    Token *ident;
+  Typedef *next;
+  Type *type;
+  Token *ident;
 };
 
 Type *find_typedef(Token *ident);
@@ -329,9 +318,9 @@ Type *find_typedef(Token *ident);
 typedef struct Vector Vector;
 
 struct Vector {
-    Node **data;
-    int len;
-    int capacity;
+  Node **data;
+  int len;
+  int capacity;
 };
 
 char *read_file(char *path);
@@ -349,9 +338,9 @@ void error_at_node(Node *node, char *fmt, ...);
 
 typedef struct TokContext TokContext;
 struct TokContext {
-    FileInfo *file_info;
-    Token *cur;
-    char *p;
+  FileInfo *file_info;
+  Token *cur;
+  char *p;
 };
 
 TokContext *new_tok_context(FileInfo *file_info, Token *cur, char *p);
@@ -436,13 +425,15 @@ void gen_stmt(Node *node);
 
 // Macros
 
+void pp();
+
 typedef struct Macro Macro;
 
 struct Macro {
-    Macro *next;
-    Token *token;
-    Token *params;
-    Token *subst;
+  Macro *next;
+  Token *token;
+  Token *params;
+  Token *subst;
 };
 
 Macro *new_macro(Token *token, Token *args, Token *subst);
@@ -451,7 +442,7 @@ Macro *find_macro(Token *token);
 // Globals
 
 extern char *source_text;
-extern char *registers[4][5];
+extern char *registers[4][6];
 
 extern FileInfo *file_informations;
 extern Token *token;

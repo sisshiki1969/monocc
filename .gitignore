@@ -5,6 +5,8 @@ monocc
 .*/*
 self/*
 self2/*
+self3/*
 self
 self2
+self3
 a.out
