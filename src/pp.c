@@ -76,15 +76,13 @@ void pp() {
     // print_tokens(stderr, args->params);
     if (!m->subst) {
       Token *next_token = t->next;
-      copy_token(next_token, t);
-      //*t = *next_token;
+      *t = *next_token;
       t = next_token;
       continue;
     }
 
     Token *next_token = t->next;
-    copy_token(m->subst, t);
-    //*t = *(m->subst);
+    *t = *(m->subst);
     while (t->next) {
       if (t->kind == TK_IDENT) {
         for (Token *param = m->params; param; param = param->next) {
@@ -95,8 +93,8 @@ void pp() {
             for (Macro *args = args_head.next; args; args = args->next) {
               if (i-- == 0) {
                 Token *next = t->next;
-                copy_token(args->params, t);
-                //*t = *args->params;
+                // copy_token(args->params, t);
+                *t = *args->params;
                 while (t->next) t - t->next;
                 t->next = next;
                 break;

@@ -1,7 +1,7 @@
 #include "monocc.h"
 
 char *source_text;
-FileInfo *file_informations;
+FileInfo *file_informations = NULL;
 Token *token;
 Vector *ext_declarations;
 Vector *strings;
@@ -30,7 +30,7 @@ char *read_file(char *path) {
   if (fseek(fp, 0, SEEK_SET) == -1)
     error("%s: fseek: %s\n", path, strerror(errno));
 
-  char *buf = calloc(1, size + 2);
+  char *buf = calloc(1, size + 8);
   fread(buf, size, 1, fp);
 
   if (size == 0 || buf[size - 1] != '\n') buf[size++] = '\n';
@@ -135,19 +135,23 @@ void compile(char *file) {
   char *s = "__builtin_va_start";
   Token *t = create_token(TK_IDENT, s, strlen(s));
   new_func(t, new_type_func(new_type_void()), NULL);
+
   tokenize(file, source_text, true);
   pp();
-  print_tokens(output, token);
 
   strings = vec_new();
   parse_program();
-  print_globals();
-  print_funcs();
-  print_strings();
-  print_structs();
-  print_typedefs();
+  if (verbose) {
+    print_tokens(output, token);
 
-  fprintf(output, "\n");
+    print_globals();
+    print_funcs();
+    print_strings();
+    print_structs();
+    print_typedefs();
+    fprintf(output, "\n");
+  }
+
   fprintf(output, "\t.intel_syntax noprefix\n");
 
   fprintf(output, "\t.data\n");
@@ -176,6 +180,14 @@ void compile(char *file) {
     i++;
   }
   fprintf(output, "\n");
+  if (verbose) {
+    for (FileInfo *fi = file_informations; fi; fi = fi->next) {
+      int no = fi->no;
+      char *name = fi->file_name;
+      int len = strlen(name);
+      fprintf(output, "\t.file %d \"%.*s\"\n", no, len, name);
+    }
+  }
 
   fprintf(output, "\t.text\n");
 
@@ -190,7 +202,7 @@ void compile(char *file) {
 
 int main(int argc, char **argv) {
   char *file;
-
+  verbose = true;
   for (int i = 1; i < argc; i++) {
     if (strcmp(argv[i], "-test") == 0) {
       test_vec();
@@ -205,6 +217,8 @@ int main(int argc, char **argv) {
       output = fopen("tmp.s", "w");
       compile(file);
       return 0;
+    } else if (strcmp(argv[i], "-v") == 0) {
+      verbose = false;
     } else {
       file = argv[i];
       source_text = read_file(argv[i]);

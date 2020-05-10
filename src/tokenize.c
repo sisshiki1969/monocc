@@ -23,18 +23,6 @@ Token *dup_token(Token *src) {
   return new;
 }
 
-/// Copy token from src to dest.
-void copy_token(Token *src, Token *dest) {
-  *dest = *src;
-  /*
-  dest->kind = src->kind;
-  dest->next = src->next;
-  dest->str = src->str;
-  dest->len = src->len;
-  dest->int_val = src->int_val;
-  */
-}
-
 bool is_ident_char(char c) { return isalnum(c) || c == '_'; }
 
 bool is_reserved(char *str, int len, char *reserved) {
@@ -46,6 +34,11 @@ FileInfo *new_file_info(char *file_name, char *start) {
   fi->next = file_informations;
   fi->file_name = file_name;
   fi->start = start;
+  if (file_informations) {
+    fi->no = file_informations->no + 1;
+  } else {
+    fi->no = 1;
+  };
   file_informations = fi;
   return fi;
 }
@@ -100,7 +93,7 @@ TokContext *new_tok_context(FileInfo *file_info, Token *current_token,
 }
 
 bool read_if(TokContext *ctx, int c) {
-  if (*(ctx->p) == c) {
+  if (*ctx->p == c) {
     ctx->p++;
     return true;
   }
@@ -108,7 +101,7 @@ bool read_if(TokContext *ctx, int c) {
 }
 
 void skip_space(TokContext *ctx) {
-  while (*(ctx->p) == ' ' || *(ctx->p) == '\t') ctx->p++;
+  while (*ctx->p == ' ' || *ctx->p == '\t') ctx->p++;
 }
 
 Token *read_token(TokContext *ctx);

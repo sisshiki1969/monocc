@@ -6,13 +6,13 @@ CC=$2
 
 mkdir -p $DIR
 cp -f ./src/* $DIR
-$CC/monocc $DIR/monocc.c
-$CC/monocc $DIR/tokenize.c
-$CC/monocc $DIR/parse.c
-$CC/monocc $DIR/container.c
-$CC/monocc $DIR/debug.c
-$CC/monocc $DIR/codegen.c
-$CC/monocc $DIR/type.c
-$CC/monocc $DIR/test.c
-$CC/monocc $DIR/pp.c
-gcc -static -pie -o $DIR/monocc $DIR/*.s $DIR/error.c -L /usr/lib -L /usr/local/lib -L /usr/include/
+$CC/monocc -v $DIR/monocc.c
+$CC/monocc -v $DIR/tokenize.c
+$CC/monocc -v $DIR/parse.c
+$CC/monocc -v $DIR/container.c
+$CC/monocc -v $DIR/debug.c
+$CC/monocc -v $DIR/codegen.c
+$CC/monocc -v $DIR/type.c
+$CC/monocc -v $DIR/test.c
+$CC/monocc -v $DIR/pp.c
+gcc -static -o $DIR/monocc $DIR/*.s $DIR/error.c -L /usr/lib -L /usr/local/lib -L /usr/include/

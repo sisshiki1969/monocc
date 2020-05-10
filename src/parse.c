@@ -619,8 +619,10 @@ Node *parse_prim_expr() {
     error_at_token(cur_token, "Identifier is not defined.");
   }
   if (consume_if(TK_MACRO)) {
-    if (strncmp(cur_token->str, "__LINE__", 8) == 0)
-      return new_node_num(get_line(cur_token->str, source_text), cur_token);
+    if (strncmp(cur_token->str, "__LINE__", 8) == 0) {
+      int line_no = get_line(cur_token->str, source_text);
+      return new_node_num(line_no, cur_token);
+    }
   }
   if (is_type_specifier(token))
     error_at_token(token, "Can not use declaration here.");

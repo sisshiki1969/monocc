@@ -83,6 +83,7 @@ struct FileInfo {
   char *file_name;
   char *start;
   char *end;
+  int no;
 };
 
 // Token
@@ -329,9 +330,9 @@ struct Vector {
 char *read_file(char *path);
 
 Token *new_token(TokenKind kind, Token *cur, char *str, int len);
-void copy_token(Token *src, Token *dest);
 
 int get_line(char *p, char *source);
+int get_file_no(char *p);
 void error(char *fmt, ...);
 void error_at_char(FileInfo *fi, char *source, char *fmt, ...);
 void error_at_token(Token *token, char *fmt, ...);
@@ -450,6 +451,7 @@ Global *new_func(Token *ident, Type *type, Node *body);
 
 extern char *source_text;
 extern char *registers[4][6];
+extern bool verbose;
 
 extern FileInfo *file_informations;
 extern Token *token;

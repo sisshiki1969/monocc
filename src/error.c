@@ -12,6 +12,7 @@ struct PosInfo {
 int get_line(char *p, char *source) {
   char *cursor;
   int line = 1;
+  if (p < source) error("Illegal position in source.");
   while (cursor = strchr(source, '\n')) {
     if (cursor > p) break;
     source = cursor + 1;
@@ -42,8 +43,10 @@ FileInfo *get_file_info(char *p) {
   for (FileInfo *fi = file_informations; fi; fi = fi->next) {
     if (fi->start <= p && p <= fi->end) return fi;
   }
-  error("Internal error: Can not find file.");
+  error("Internal error: Can not find file. %s", p);
 }
+
+int get_file_no(char *p) { return get_file_info(p)->no; }
 
 void error(char *fmt, ...) {
   va_list ap;

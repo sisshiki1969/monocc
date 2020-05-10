@@ -3,6 +3,7 @@
 // Globals
 
 int label_count = 0;
+bool verbose;
 
 // Loop
 
@@ -151,10 +152,9 @@ void emit_deref_rax(Node *node) {
 /// using reg: none.
 void emit_lvar_addr(LVar *lvar) {
   fprintf(output, "\tlea  rax, [rbp - %d]\n", lvar->offset);
-  // fprintf(output, "\tsub  rax, %d\n", lvar->offset);
 }
 
-/// Generate address of a local variable.
+/// Generate address.
 /// using reg: none.
 void gen_lval_to_rax(Node *node) {
   if (node->kind == ND_LVAR) {
@@ -412,9 +412,15 @@ void gen_lnot(Node *node) {
 
 void gen(Node *node) {
   if (!node) return;
-  fprintf(output, "// Line %d ", get_line(node->token->str, source_text));
-  print_node(node);
-  fprintf(output, "\n");
+  if (verbose) {
+    // int line = get_line(node->token->str, source_text);
+    fprintf(output, "// Line %d ", get_line(node->token->str, source_text));
+    print_node(node);
+    fprintf(output, "\n");
+    fprintf(output, "\t.loc %d %d\n", get_file_no(node->token->str),
+            get_line(node->token->str, source_text));
+  }
+
   Node *parent;
   char *label;
   int i;
@@ -678,11 +684,18 @@ void gen(Node *node) {
         fprintf(output, "\tpop  rsi\n");
 
         int size = sizeof_type(l_ty);
-        while (size >= 0) {
-          fprintf(output, "\tmov  al, BYTE PTR [rdi + %d]\n", size);
-          fprintf(output, "\tmov  BYTE PTR [rsi + %d], al\n", size);
-          size -= 1;
+        int i = 0;
+        while (i <= size - 8) {
+          fprintf(output, "\tmov  rax, QWORD PTR [rdi + %d]\n", i);
+          fprintf(output, "\tmov  QWORD PTR [rsi + %d], rax\n", i);
+          i += 8;
         }
+        while (i < size) {
+          fprintf(output, "\tmov  al, BYTE PTR [rdi + %d]\n", i);
+          fprintf(output, "\tmov  BYTE PTR [rsi + %d], al\n", i);
+          i++;
+        }
+        fprintf(output, "\tpush rdi\n");
       } else {
         gen(node->rhs);
         fprintf(output, "\tpop  rdi\n");
