@@ -32,52 +32,56 @@ Node *new_node_str(Token *token) {
   Node *node = calloc(1, sizeof(Node));
   node->kind = ND_STR;
   node->token = token;
-  node->type = new_type_array(new_type_char(), token->len);
+  int len = 0;
+  for (Token *t = token; t; t = t->next) len += t->len;
+  node->type = new_type_array(new_type_char(), len);
   node->int_val = vec_len(strings);
   vec_push(strings, node);
 
-  node->label = (char *)calloc(1, token->len + 1);
-  char *src = token->str;
+  node->label = (char *)calloc(1, len + 1);
   char *dest = node->label;
-  for (int i = 0; i < token->len; i++) {
-    if (*src != '\\') {
-      *dest++ = *src++;
-    } else {
-      i++;
-      src++;
-      switch (*src++) {
-        case '0':
-          *dest++ = '\0';
-          break;
-        case 'a':
-          *dest++ = '\a';
-          break;
-        case 'b':
-          *dest++ = '\b';
-          break;
-        case 'f':
-          *dest++ = '\f';
-          break;
-        case 'n':
-          *dest++ = '\n';
-          break;
-        case 'r':
-          *dest++ = '\r';
-          break;
-        case 't':
-          *dest++ = '\t';
-          break;
-        case '\\':
-          *dest++ = '\\';
-          break;
-        case '\'':
-          *dest++ = '\'';
-          break;
-        case '\"':
-          *dest++ = '\"';
-          break;
-        default:
-          error_at_token(token, "Unsupported escape sequence.");
+  for (Token *t = token; t; t = t->next) {
+    char *src = t->str;
+    for (int i = 0; i < t->len; i++) {
+      if (*src != '\\') {
+        *dest++ = *src++;
+      } else {
+        i++;
+        src++;
+        switch (*src++) {
+          case '0':
+            *dest++ = '\0';
+            break;
+          case 'a':
+            *dest++ = '\a';
+            break;
+          case 'b':
+            *dest++ = '\b';
+            break;
+          case 'f':
+            *dest++ = '\f';
+            break;
+          case 'n':
+            *dest++ = '\n';
+            break;
+          case 'r':
+            *dest++ = '\r';
+            break;
+          case 't':
+            *dest++ = '\t';
+            break;
+          case '\\':
+            *dest++ = '\\';
+            break;
+          case '\'':
+            *dest++ = '\'';
+            break;
+          case '\"':
+            *dest++ = '\"';
+            break;
+          default:
+            error_at_token(token, "Unsupported escape sequence.");
+        }
       }
     }
   }
@@ -577,7 +581,16 @@ Node *parse_prim_expr() {
     return new_node_num(consume_number(), cur_token);
   }
   if (peek(TK_STR)) {
-    return new_node_str(consume());
+    Token *tok = consume();
+    Token *t = tok;
+    while (peek(TK_STR)) {
+      t->next = consume();
+      t = t->next;
+    }
+    t->next = NULL;
+    Node *node = new_node_str(tok);
+
+    return node;
   }
   if (consume_if(TK_OP_PAREN)) {
     Node *node = parse_expr();

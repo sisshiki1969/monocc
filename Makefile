@@ -14,7 +14,7 @@ test: monocc
 	gcc -o tmp ./test/test.s lib.o
 	./tmp
 
-self: clean monocc
+self: clean monocc test
 	bash self.sh self src
 	bash self.sh self2 self
 	bash self.sh self3 self2

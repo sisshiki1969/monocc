@@ -52,10 +52,14 @@ void emit_basic_global(Type *type, Node *init) {
         fprintf(output, "\t.zero %d\n", sizeof_type(type));
     } else if (init->kind == ND_STR) {
       // char str[] = "sample";
-      fprintf(output, "\t.string \"%.*s\"\n", init->token->len,
-              init->token->str);
+      int str_size = 1;
+      fprintf(output, "\t.string \"");
+      for (Token *t = init->token; t; t = t->next) {
+        fprintf(output, "%.*s", t->len, t->str);
+        str_size += t->len;
+      }
+      fprintf(output, "\"\n");
       int ary_size = type->array_size;
-      int str_size = init->token->len + 1;
       if (ary_size > str_size)
         fprintf(output, "\t.zero %d\n", ary_size - str_size);
     } else
@@ -151,9 +155,13 @@ void compile(char *file) {
 
   int i = 0;
   while (i < vec_len(strings)) {
-    fprintf(output, ".LS%06d:\n", strings->data[i]->int_val);
-    fprintf(output, "\t.string \"%.*s\"\n", strings->data[i]->token->len,
-            strings->data[i]->token->str);
+    Node *node = strings->data[i];
+    fprintf(output, ".LS%06d:\n", node->int_val);
+    fprintf(output, "\t.string \"");
+    for (Token *t = node->token; t; t = t->next) {
+      fprintf(output, "%.*s", t->len, t->str);
+    }
+    fprintf(output, "\"\n");
     i++;
   }
   fprintf(output, "\n");

@@ -1,55 +1,77 @@
 #include "monocc.h"
 
+void check_params(Macro *m, Token **t, Macro **args) {
+  // (*t)->kind == TK_IDENT
+  int param_count = 0;
+  for (Token *param = m->params; param; param = param->next) param_count++;
+
+  Token *start = *t;
+  *t = (*t)->next;
+  if (!*t) error_at_token(start, "Expected '('.");
+  if ((*t)->kind != TK_OP_PAREN) error_at_token(*t, "Expected '('.");
+  // (*t)->kind == TK_OP_PAREN
+  int arg_count = 0;
+  Token anchor;
+  while ((*t)->next && (*t)->next->kind != TK_CL_PAREN) {
+    // (*t)->next->kind != TK_CL_PAREN
+    // invoke function-like macro
+    Token *arg_token = (*t)->next;
+    while ((*t)->next->kind != TK_CL_PAREN && (*t)->next->kind != TK_COMMA) {
+      if ((*t)->next->kind == TK_OP_PAREN) {
+        while ((*t)->next->kind != TK_CL_PAREN) {
+          *t = (*t)->next;
+          if (!(*t)->next)
+            error_at_token(*t, "Improperly terminated macro invocation.");
+        }
+        // (*t)->next->kind != TK_CL_PAREN
+      }
+      *t = (*t)->next;
+      if (!(*t)->next)
+        error_at_token(*t, "Improperly terminated macro invocation.");
+    }
+    // (*t)->next->kind == ( TK_CL_PAREN || TK_COMMA )
+
+    Token *next = (*t)->next;
+    (*t)->next = NULL;
+    anchor.next = next;
+    *t = &anchor;
+    // (*t)->next->kind == ( TK_CL_PAREN || TK_COMMA )
+    Macro *arg = calloc(1, sizeof(Macro));
+    arg->params = arg_token;
+    (*args)->next = arg;
+    *args = arg;
+    arg_count++;
+    if (arg_count > param_count)
+      error_at_token(arg_token,
+                     "Too many arguments in invocation of macro '%.*s'. "
+                     "actual:%d expected:%d",
+                     start->len, start->str, arg_count, param_count);
+    if ((*t)->next->kind == TK_CL_PAREN) break;
+    // (*t)->next->kind == TK_COMMA
+    *t = (*t)->next;
+    // (*t)->kind == TK_COMMA
+  }
+  // (*t)->next->kind == TK_CL_PAREN or !(*t)->next
+  if (!(*t)->next) error_at_token(*t, "Expected ')'.");
+  // (*t)->next->kind == TK_CL_PAREN
+  start->next = (*t)->next->next;
+  *t = start;
+
+  if (arg_count < param_count)
+    error_at_token(*t, "Too few arguments for invokation of macro.");
+}
+
 void pp() {
+  Macro *m;
   for (Token *t = token; t; t = t->next) {
     // print_token(stderr, t);
     if (t->kind != TK_IDENT) continue;
-    Macro *m = find_macro(t);
-    if (!m) continue;
+    if (!(m = find_macro(t))) continue;
     Macro args_head;
     args_head.next = NULL;
     Macro *args = &args_head;
     if (m->params) {
-      int param_count = 0;
-      for (Token *param = m->params; param; param = param->next) param_count++;
-
-      Token *start = t;
-      t = t->next;
-      if (!t) error_at_token(start, "Expected '('.");
-
-      if (t->kind != TK_OP_PAREN) error_at_token(t, "Expected '('.");
-      int arg_count = 0;
-      while (t->next->kind != TK_CL_PAREN) {
-        // invoke function-like macro
-        Token *arg_token = t->next;
-        if (arg_token->kind == TK_CL_PAREN || arg_token->kind == TK_COMMA)
-          arg_token = NULL;
-        while (t->next->kind != TK_CL_PAREN && t->next->kind != TK_COMMA) {
-          if (t->next->kind == TK_OP_PAREN) {
-            while (t->next->kind != TK_CL_PAREN) t = t->next;
-          }
-          t = t->next;
-        }
-
-        Token *next = t->next;
-        t->next = NULL;
-        t = next;
-        Macro *arg = calloc(1, sizeof(Macro));
-        arg->params = arg_token;
-        args->next = arg;
-        args = arg;
-        arg_count++;
-        if (arg_count > param_count)
-          error_at_token(
-              arg_token,
-              "Too many arguments in invocation of macro '%.*s'. %d %d",
-              start->len, start->str, arg_count, param_count);
-      }
-      start->next = t->next;
-      t = start;
-
-      if (arg_count < param_count)
-        error_at_token(t, "Too few arguments for invokation of macro.");
+      check_params(m, &t, &args);
     }
     // for(Macro *args = args_head.next; args; args = args->next)
     // print_tokens(stderr, args->params);
