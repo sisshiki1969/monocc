@@ -6,6 +6,8 @@ monocc
 self/*
 self2/*
 self3/*
+src/*.o
+src/*.s
 self
 self2
 self3
