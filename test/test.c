@@ -1,5 +1,7 @@
 #include "test.h"
 
+#include <stdbool.h>
+
 int A;        // int
 int *B;       // * int
 int C[5];     // [] int
@@ -53,7 +55,7 @@ int array_local() {
 int a[10][8];
 int i = 1979;
 int j = 2015;
-char s = 270;
+char s = 24;
 char *str = "Hi, guys.\tAre you hungry";
 char str_ary[] =
     "Hey, girls.\n"
@@ -261,9 +263,9 @@ void struct_() {
   assert_expect(__LINE__, 4, sizeof(pos.col));
   assert_expect(__LINE__, 4, sizeof(pos.row));
 
-  struct Leaf node;
-  struct Leaf *node_ptr = &node;
-  struct Leaf node_new;
+  Leaf node;
+  Leaf *node_ptr = &node;
+  Leaf node_new;
   node.size = 10;
   node.ch = 5;
   node_new.size = 195;
@@ -287,17 +289,21 @@ void struct_() {
   tree.left = &node;
   assert_expect(__LINE__, 195, tree.right->size);
 
-  struct Leaf l1;
-  struct Leaf l2;
+  Leaf l1;
+  Leaf l2;
   l1.size = 100;
   l2.size = 500;
   l2 = l1;
   leaf_global.size = 700;
   assert_expect(__LINE__, 100, l2.size);
-  // l2 = leaf_global;
-  // assert_expect(__LINE__, 700, l2.size);
-  // leaf_global = l1;
-  // assert_expect(__LINE__, 100, leaf_global.size);
+  l2 = leaf_global;
+  assert_expect(__LINE__, 700, l2.size);
+  leaf_global = l1;
+  assert_expect(__LINE__, 100, leaf_global.size);
+  Leaf *l1p = &l1;
+  Leaf *l2p = &l2;
+  *l2p = *l1p;
+  assert_expect(__LINE__, 100, l2p->size);
 }
 
 int q8_count;
@@ -370,7 +376,7 @@ int main() {
 
   assert_expect(__LINE__, 1979, i);
   assert_expect(__LINE__, 2015, j);
-  assert_expect(__LINE__, 14, s);
+  assert_expect(__LINE__, 24, s);
 
   assert_expect(__LINE__, 9, +9);
   assert_expect(__LINE__, 4, -3 + 7);

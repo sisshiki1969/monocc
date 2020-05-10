@@ -150,8 +150,8 @@ void emit_deref_rax(Node *node) {
 /// Push address of local var.
 /// using reg: none.
 void emit_lvar_addr(LVar *lvar) {
-  fprintf(output, "\tmov  rax, rbp\n");
-  fprintf(output, "\tsub  rax, %d\n", lvar->offset);
+  fprintf(output, "\tlea  rax, [rbp - %d]\n", lvar->offset);
+  // fprintf(output, "\tsub  rax, %d\n", lvar->offset);
 }
 
 /// Generate address of a local variable.
@@ -668,46 +668,28 @@ void gen(Node *node) {
         error_types(l_ty, r_ty);
         error_at_node(node->lhs, "Type mismatch in assignment operation.");
       }
-      if (is_struct(l_ty) && is_struct(r_ty)) {
-        if (node->lhs->kind != ND_LVAR || node->rhs->kind != ND_LVAR) {
-          error_at_node(node->lhs, "Currently, only local var.");
-        }
-        int l_offset = node->lhs->lvar->offset;
-        int r_offset = node->rhs->lvar->offset;
-        int size = sizeof_type(l_ty);
-        while (size >= 8) {
-          fprintf(output, "\tmov  rax, QWORD PTR [rbp - %d]\n",
-                  r_offset - size);
-          fprintf(output, "\tmov  QWORD PTR [rbp - %d], rax\n",
-                  l_offset - size);
-          size -= 8;
-        }
-        if (size >= 4) {
-          fprintf(output, "\tmov  eax, DWORD PTR [rbp - %d]\n",
-                  r_offset - size);
-          fprintf(output, "\tmov  DWORD PTR [rbp - %d], eax\n",
-                  l_offset - size);
-          size -= 4;
-        }
-        if (size >= 2) {
-          fprintf(output, "\tmov  ax, WORD PTR [rbp - %d]\n", r_offset - size);
-          fprintf(output, "\tmov  WORD PTR [rbp - %d], ax\n", l_offset - size);
-          size -= 2;
-        }
-        if (size >= 1) {
-          fprintf(output, "\tmov  al, BYTE PTR [rbp - %d]\n", r_offset - size);
-          fprintf(output, "\tmov  BYTE PTR [rbp - %d], al\n", l_offset - size);
-          size -= 1;
-        }
-        return;
-      }
+
       gen_lval_to_rax(node->lhs);
       fprintf(output, "\tpush rax\n");
-      gen(node->rhs);
-      fprintf(output, "\tpop  rdi\n");
-      fprintf(output, "\tpop  rax\n");
-      fprintf(output, "\tmov  [rax], %s\n", reg_r[reg_size(type(node->lhs))]);
-      fprintf(output, "\tpush rdi\n");
+      if (is_struct(l_ty) && is_struct(r_ty)) {
+        gen_lval_to_rax(node->rhs);
+        fprintf(output, "\tpush rax\n");
+        fprintf(output, "\tpop  rdi\n");
+        fprintf(output, "\tpop  rsi\n");
+
+        int size = sizeof_type(l_ty);
+        while (size >= 0) {
+          fprintf(output, "\tmov  al, BYTE PTR [rdi + %d]\n", size);
+          fprintf(output, "\tmov  BYTE PTR [rsi + %d], al\n", size);
+          size -= 1;
+        }
+      } else {
+        gen(node->rhs);
+        fprintf(output, "\tpop  rdi\n");
+        fprintf(output, "\tpop  rax\n");
+        fprintf(output, "\tmov  [rax], %s\n", reg_r[reg_size(type(node->lhs))]);
+        fprintf(output, "\tpush rdi\n");
+      }
       return;
     case ND_CALL:
       gen_call(node);

@@ -25,11 +25,14 @@ Token *dup_token(Token *src) {
 
 /// Copy token from src to dest.
 void copy_token(Token *src, Token *dest) {
+  *dest = *src;
+  /*
   dest->kind = src->kind;
   dest->next = src->next;
   dest->str = src->str;
   dest->len = src->len;
   dest->int_val = src->int_val;
+  */
 }
 
 bool is_ident_char(char c) { return isalnum(c) || c == '_'; }
