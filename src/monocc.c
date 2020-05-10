@@ -123,7 +123,18 @@ void emit_basic_global(Type *type, Node *init) {
   }
 }
 
+Token *create_token(TokenKind kind, char *str, int len) {
+  Token *new_token = calloc(1, sizeof(Token));
+  new_token->kind = kind;
+  new_token->str = str;
+  new_token->len = len;
+  return new_token;
+}
+
 void compile(char *file) {
+  char *s = "__builtin_va_start";
+  Token *t = create_token(TK_IDENT, s, strlen(s));
+  new_func(t, new_type_func(new_type_void()), NULL);
   tokenize(file, source_text, true);
   pp();
   print_tokens(output, token);

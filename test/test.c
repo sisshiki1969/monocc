@@ -16,6 +16,17 @@ int (**M)();  // * * func() int
 int *(*N)[];  // * [] * int
 void (*signal(int, void (*)(int)))(int);
 
+typedef struct Leaf Leaf;
+
+struct Leaf {
+  struct Vec {
+    int row;
+    int col;
+  } ary[17];
+  int size;
+  char ch;
+} leaf_global;
+
 int fibo(int x) {
   if (x < 2) return 1;
   return fibo(x - 1) + fibo(x - 2);
@@ -53,6 +64,12 @@ char reg[4][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
                      {"edi", "esi", "edx", "ecx", "r8d"},
                      {"di", "si", "dx", "cx", "r8w"},
                      {"dil", "sil", "dl", "cl", "r8b"}};
+
+typedef struct {
+  int a;
+  bool b;
+  void *c;
+} struct1;
 
 int array_global() {
   for (int i = 0; i < 5; i++) assert_expect(__LINE__, i + 1, ary_int[i]);
@@ -213,16 +230,7 @@ void list_() {
 }
 
 void struct_() {
-  typedef struct Leaf Leaf;
-  struct Leaf {
-    struct Vec {
-      int row;
-      int col;
-    } ary[17];
-    int size;
-    char ch;
-  } leaf;
-
+  Leaf leaf;
   struct Tree {
     Leaf *left;
     Leaf *right;
@@ -278,6 +286,18 @@ void struct_() {
   tree.right = &node_new;
   tree.left = &node;
   assert_expect(__LINE__, 195, tree.right->size);
+
+  struct Leaf l1;
+  struct Leaf l2;
+  l1.size = 100;
+  l2.size = 500;
+  l2 = l1;
+  leaf_global.size = 700;
+  assert_expect(__LINE__, 100, l2.size);
+  // l2 = leaf_global;
+  // assert_expect(__LINE__, 700, l2.size);
+  // leaf_global = l1;
+  // assert_expect(__LINE__, 100, leaf_global.size);
 }
 
 int q8_count;
@@ -396,6 +416,9 @@ int main() {
   assert_expect(__LINE__, 1, !0);
   assert_expect(__LINE__, 0, !1);
   assert_expect(__LINE__, 0, !!!1);
+
+  assert_expect(__LINE__, 256, 1 << 8);
+  assert_expect(__LINE__, 32, 512 >> 4);
 
   // assignment operators
   int z;

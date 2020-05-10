@@ -17,6 +17,20 @@ typedef struct {
   int fd;
   char smallbuf[1];
 } FILE;
+
+typedef struct {
+  int gp_offset;
+  int fp_offset;
+  void *overflow_arg_area;
+  void *reg_save_area;
+} va_list[1];
+
+#define va_start(ap, last) __builtin_va_start(ap)
+#define va_end(ap) 0
+
+#define __GNUC_VA_LIST 1
+typedef va_list __gnuc_va_list;
+
 typedef int size_t;
 void *calloc(int n, int size);
 void *malloc(int size);
@@ -37,6 +51,8 @@ void memcpy(void *dest, void *src, int len);
 int memcmp(void *dest, void *src, int len);
 int printf(char *fmt, ...);
 int fprintf(FILE *stream, char *fmt, ...);
+int vfprintf(FILE *stream, char *format, va_list arg);
+
 int sprintf(char *str, char *fmt, ...);
 FILE *fopen(char *p, char *mode);
 int fseek(FILE *fp, int n, int seek_end);
@@ -55,19 +71,6 @@ extern int *__errno_location();
 #define SEEK_END 2
 #define SEEK_SET 0
 #define errno (*__errno_location())
-
-typedef struct {
-  int gp_offset;
-  int fp_offset;
-  void *overflow_arg_area;
-  void *reg_save_area;
-} va_list[1];
-
-#define va_start(ap, last) __builtin_va_start(ap)
-#define va_end(ap) 0
-
-#define __GNUC_VA_LIST 1
-typedef va_list __gnuc_va_list;
 
 #endif
 
@@ -347,6 +350,7 @@ TokContext *new_tok_context(FileInfo *file_info, Token *cur, char *p);
 void print_tokens(FILE *stream, Token *token);
 void tokenize(char *file, char *source, bool is_main);
 bool cmp_token(Token *t1, Token *t2);
+bool cmp_token_str(Token *t, char *c);
 bool read_if(TokContext *ctx, int c);
 void skip_space(TokContext *ctx);
 Token *read_token(TokContext *ctx);
@@ -440,6 +444,9 @@ Macro *new_macro(Token *token, Token *args, Token *subst);
 Macro *find_macro(Token *token);
 
 // Globals
+
+Global *new_gvar(Token *ident, Type *type);
+Global *new_func(Token *ident, Type *type, Node *body);
 
 extern char *source_text;
 extern char *registers[4][6];

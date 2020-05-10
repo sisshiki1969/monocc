@@ -390,6 +390,13 @@ bool cmp_token(Token *t1, Token *t2) {
   return false;
 }
 
+bool cmp_token_str(Token *t, char *c) {
+  if (t->len == strlen(c) && memcmp(t->str, c, t->len) == 0) {
+    return true;
+  }
+  return false;
+}
+
 /// Examine whether the Token is type-specifier.
 bool is_type_specifier(Token *token) {
   switch (token->kind) {
@@ -625,8 +632,9 @@ Node *parse_postfix_expr() {
   while (true) {
     Token *op_token = token;
     if (consume_if(TK_OP_PAREN)) {
+      /*
       if (node->kind != ND_IDENT)
-        error_at_node(node, "Currently, callee must be an identifier.");
+        error_at_node(node, "Currently, callee must be an identifier.");*/
       Global *fn_global = find_func(node->token);
       if (!fn_global) error_at_node(node, "Undefined identifier.");
       node->type = fn_global->type->ptr_to;
