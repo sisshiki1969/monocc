@@ -17,6 +17,8 @@ struct Loop {
   Node *node;
 };
 
+Node *current_fn;
+
 Loop *labels = NULL;
 
 // Methods for handling Node.
@@ -72,6 +74,13 @@ char *new_label() {
 /// Emit assembly for label.
 void emit_label(char *label) { fprintf(output, "%s:\n", label); }
 void emit_jmp(char *label) { fprintf(output, "\tjmp  %s\n", label); }
+
+void emit_return_label(Node *fn) {
+  fprintf(output, ".L.return.%.*s:\n", fn->token->len, fn->token->str);
+}
+void emit_return(Node *fn) {
+  fprintf(output, "\tjmp  .L.return.%.*s\n", fn->token->len, fn->token->str);
+}
 
 void push_loop() {
   char *continue_label = new_label();
@@ -130,9 +139,8 @@ int reg_size(Type *type) {
           data_size);
 }
 
-/// Load [RAX] to RAX.(size sensitive)
-/// using reg: none.
-void emit_deref_rax(Node *node) {
+/// Push [RAX].(size sensitive)
+void deref_rax(Node *node) {
   switch (reg_size(type(node))) {
     case 0:
       fprintf(output, "\tmov  rax, [rax]\n");
@@ -146,6 +154,7 @@ void emit_deref_rax(Node *node) {
     default:
       error_at_node(node, "Size of the variable is unknown.");
   }
+  fprintf(output, "\tpush rax\n");
 }
 
 /// Push address of local var.
@@ -156,7 +165,7 @@ void emit_lvar_addr(LVar *lvar) {
 
 /// Generate address.
 /// using reg: none.
-void gen_lval_to_rax(Node *node) {
+void gen_addr_to_rax(Node *node) {
   if (node->kind == ND_LVAR) {
     emit_lvar_addr(node->lvar);
     return;
@@ -166,16 +175,21 @@ void gen_lval_to_rax(Node *node) {
     return;
   } else if (node->kind == ND_DEREF) {
     gen(node->lhs);
-    fprintf(output, "\tpop rax\n");
+    fprintf(output, "\tpop  rax\n");
   } else if (node->kind == ND_STR) {
     fprintf(output, "\tlea  rax, .LS%06d[rip]\n", node->int_val);
     return;
   } else if (node->kind == ND_MEMBER) {
-    gen_lval_to_rax(node->lhs);
+    gen_addr_to_rax(node->lhs);
     fprintf(output, "\tadd  rax, %d\n", node->offset);
   } else {
-    error_at_node(node, "Expected l-value.");
+    error_at_node(node, "Can not get address.");
   }
+}
+
+void gen_addr(Node *node) {
+  gen_addr_to_rax(node);
+  fprintf(output, "\tpush rax\n");
 }
 
 // Codegen
@@ -248,6 +262,22 @@ void gen_call(Node *node) {
   }
   Token *name = node->lhs->token;  // node->lhs: callee
   if (cmp_token_str(name, "__builtin_va_start")) {
+    int gp = len;
+    int fp = 0;
+    /*
+        for (Var *var = current_fn->params; var; var = var->next) {
+          if (is_flonum(var->ty))
+           fp++;
+           else
+          gp++;
+        }
+    */
+
+    printf("\tmov  rax, [rbp - %d]\n", node->nodes->data[0]->offset);
+    printf("\tmov  DWORD PTR [rax], %d\n", gp * 8);
+    printf("\tmov  DWORD PTR [rax + 4], %d\n", 48 + fp * 8);
+    printf("\tmov  [rax + 16], rbp\n");
+    printf("\tsub  QWORD PTR [rax + 16], 128\n");
     error_at_token(name, "woo!");
   }
 
@@ -272,13 +302,27 @@ void gen_call(Node *node) {
 
 void gen_fdecl(Node *node) {
   if (!node->lhs) return;
+  current_fn = node;
 
   fprintf(output, "%.*s:\n", node->token->len, node->token->str);
-
+  // Prologue
   fprintf(output, "\tpush rbp\n");
   fprintf(output, "\tmov  rbp, rsp\n");
   int offset = (node->offset & (-16)) + 16;
   fprintf(output, "\tsub  rsp, %d\n", offset);
+  fprintf(output, "\tmov  [rbp -  8], r12\n");
+  fprintf(output, "\tmov  [rbp - 16], r13\n");
+  fprintf(output, "\tmov  [rbp - 24], r14\n");
+  fprintf(output, "\tmov  [rbp - 32], r15\n");
+
+  if (node->type->variadic) {
+    fprintf(output, "\tmov  [rbp - 128], rdi\n");
+    fprintf(output, "\tmov  [rbp - 120], rsi\n");
+    fprintf(output, "\tmov  [rbp - 112], rdx\n");
+    fprintf(output, "\tmov  [rbp - 104], rcx\n");
+    fprintf(output, "\tmov  [rbp -  96], r8\n");
+    fprintf(output, "\tmov  [rbp -  88], r9\n");
+  }
 
   int len = vec_len(node->nodes);
   Node **params = node->nodes->data;
@@ -289,6 +333,12 @@ void gen_fdecl(Node *node) {
 
   gen_block(node->lhs);
 
+  // Epilogue
+  emit_return_label(node);
+  fprintf(output, "\tmov  r12, [rbp -  8]\n");
+  fprintf(output, "\tmov  r13, [rbp - 16]\n");
+  fprintf(output, "\tmov  r14, [rbp - 24]\n");
+  fprintf(output, "\tmov  r15, [rbp - 32]\n");
   fprintf(output, "\tmov  rsp, rbp\n");
   fprintf(output, "\tpop  rbp\n");
   fprintf(output, "\tret\n");
@@ -410,26 +460,88 @@ void gen_lnot(Node *node) {
   emit_label(exit_label);
 }
 
+void store(Type *ty) {
+  if (is_struct(ty)) {
+    fprintf(output, "\tpop  rax\n");
+    fprintf(output, "\tpop  rsi\n");
+
+    int size = sizeof_type(ty);
+    int i = 0;
+    while (i <= size - 8) {
+      fprintf(output, "\tmov  rdi, QWORD PTR [rax + %d]\n", i);
+      fprintf(output, "\tmov  QWORD PTR [rsi + %d], rdi\n", i);
+      i += 8;
+    }
+    while (i < size) {
+      fprintf(output, "\tmov  dil, BYTE PTR [rax + %d]\n", i);
+      fprintf(output, "\tmov  BYTE PTR [rsi + %d], dil\n", i);
+      i++;
+    }
+    fprintf(output, "\tpush rsi\n");
+  } else {
+    fprintf(output, "\tpop  rdi\n");
+    fprintf(output, "\tpop  rax\n");
+    fprintf(output, "\tmov  [rax], %s\n", reg_r[reg_size(ty)]);
+    fprintf(output, "\tpush rdi\n");
+  }
+}
+
+void gen_assign(Node *node) {
+  Node *lhs = node->lhs;
+  Node *rhs = node->rhs;
+  Type *l_ty = type(lhs);
+  Type *r_ty = type(rhs);
+  if (is_array_of_char(l_ty) && is_array_of_char(r_ty)) {
+    // initialization of char[] by string
+    if (lhs->kind != ND_LVAR || rhs->kind != ND_STR)
+      error_at_node(node, "Invalid assignment.");
+    int offset = lhs->lvar->offset;
+    char *p = rhs->label;
+    int len = strlen(p);
+
+    while (len >= 4) {
+      int data = 0;
+      for (int i = 0; i < 4; i++) {
+        data += *p << (8 * i);
+        p++;
+      }
+      fprintf(output, "\tmov  DWORD PTR [rbp - %d], %d\n", offset, data);
+      offset -= 4;
+      len -= 4;
+    }
+
+    while (len >= 0) {
+      fprintf(output, "\tmov  BYTE PTR [rbp - %d], %d\n", offset--, *p++);
+      len--;
+    }
+    fprintf(output, "\tpush rdi\n");
+    return;
+  }
+
+  if (!is_assignable_type(l_ty, r_ty)) {
+    error_types(l_ty, r_ty);
+    error_at_node(lhs, "Type mismatch in assignment operation.");
+  }
+
+  gen_addr(lhs);
+  gen(rhs);
+  store(l_ty);
+}
+
 void gen(Node *node) {
   if (!node) return;
   if (verbose) {
-    // int line = get_line(node->token->str, source_text);
-    fprintf(output, "// Line %d ", get_line(node->token->str, source_text));
+    int line = get_line(node->token->str, source_text);
+    int file_no = get_file_no(node->token->str);
+    fprintf(output, "// Line %d ", line);
     print_node(node);
     fprintf(output, "\n");
-    fprintf(output, "\t.loc %d %d\n", get_file_no(node->token->str),
-            get_line(node->token->str, source_text));
+    fprintf(output, "\t.loc %d %d\n", file_no, line);
   }
 
-  Node *parent;
-  char *label;
-  int i;
-  Type *l_ty;
-  Type *r_ty;
-
   if (is_binary_op(node->kind)) {
-    l_ty = type(node->lhs);
-    r_ty = type(node->rhs);
+    Type *l_ty = type(node->lhs);
+    Type *r_ty = type(node->rhs);
     int reg_mode;
     if (node->kind == ND_LAND) {
       gen_land(node);
@@ -555,6 +667,8 @@ void gen(Node *node) {
     fprintf(output, "\tpush rax\n");
     return;
   }
+  char *label;
+  Node *parent;
   switch (node->kind) {
     // statement
     case ND_IF:
@@ -577,8 +691,8 @@ void gen(Node *node) {
       fprintf(output, "\tmov  [rax], edi\n");
       gen_stmt(node->rhs);
       emit_jmp(get_break(NULL));
-      for (i = 0; i < vec_len(node->nodes); i++) {
-        parent = node->nodes->data[i];
+      for (int i = 0; i < vec_len(node->nodes); i++) {
+        Node *parent = node->nodes->data[i];
         emit_label(parent->label);
         gen_stmt(parent);
       }
@@ -594,10 +708,7 @@ void gen(Node *node) {
         gen(node->lhs);
         fprintf(output, "\tpop  rax\n");
       }
-
-      fprintf(output, "\tmov  rsp, rbp\n");
-      fprintf(output, "\tpop  rbp\n");
-      fprintf(output, "\tret\n");
+      emit_return(current_fn);
       return;
     case ND_CASE:
       parent = get_inner_switch();
@@ -617,92 +728,45 @@ void gen(Node *node) {
       node->lhs->label = label;
       vec_push(parent->nodes, node->lhs);
       return;
-
     case ND_BREAK:
       emit_jmp(get_break(node->token));
       return;
     case ND_CONTINUE:
       emit_jmp(get_continue(node->token));
       return;
+
     // expression
     case ND_NUM:
       fprintf(output, "\tpush %d\n", node->int_val);
       return;
     case ND_LVAR:
     case ND_GVAR:
-      gen_lval_to_rax(node);
-      emit_deref_rax(node);
-      fprintf(output, "\tpush rax\n");
-      return;
     case ND_MEMBER:
-      gen_lval_to_rax(node);
-      emit_deref_rax(node);
-      fprintf(output, "\tpush rax\n");
+      if (is_struct(type(node))) {
+        gen_addr(node);
+      } else {
+        gen_addr_to_rax(node);
+        deref_rax(node);
+      }
+      return;
+    case ND_ADDR:
+      gen_addr(node->lhs);
+      return;
+    case ND_DEREF:
+      if (!is_ptr(type(node->lhs)))
+        error_at_node(node->lhs,
+                      "Illegal operation. (dereference of non-pointer type)");
+      gen(node->lhs);
+      if (!is_struct(type(node))) {
+        fprintf(output, "\tpop  rax\n");
+        deref_rax(node);
+      }
       return;
     case ND_CAST:
       gen(node->lhs);
       return;
     case ND_ASSIGN:
-      l_ty = type(node->lhs);
-      r_ty = type(node->rhs);
-      if (is_array_of_char(l_ty) && is_array_of_char(r_ty)) {
-        // initialization of char[] by string
-        if (node->lhs->kind != ND_LVAR || node->rhs->kind != ND_STR)
-          error_at_node(node, "Invalid assignment.");
-        int offset = node->lhs->lvar->offset;
-        char *p = node->rhs->label;
-        int len = strlen(p);
-
-        while (len >= 4) {
-          int data = 0;
-          for (i = 0; i < 4; i++) {
-            data += *p << (8 * i);
-            p++;
-          }
-          fprintf(output, "\tmov  DWORD PTR [rbp - %d], %d\n", offset, data);
-          offset -= 4;
-          len -= 4;
-        }
-
-        while (len >= 0) {
-          fprintf(output, "\tmov  BYTE PTR [rbp - %d], %d\n", offset--, *p++);
-          len--;
-        }
-        fprintf(output, "\tpush rdi\n");
-        return;
-      } else if (!is_assignable_type(l_ty, r_ty)) {
-        error_types(l_ty, r_ty);
-        error_at_node(node->lhs, "Type mismatch in assignment operation.");
-      }
-
-      gen_lval_to_rax(node->lhs);
-      fprintf(output, "\tpush rax\n");
-      if (is_struct(l_ty) && is_struct(r_ty)) {
-        gen_lval_to_rax(node->rhs);
-        fprintf(output, "\tpush rax\n");
-        fprintf(output, "\tpop  rdi\n");
-        fprintf(output, "\tpop  rsi\n");
-
-        int size = sizeof_type(l_ty);
-        int i = 0;
-        while (i <= size - 8) {
-          fprintf(output, "\tmov  rax, QWORD PTR [rdi + %d]\n", i);
-          fprintf(output, "\tmov  QWORD PTR [rsi + %d], rax\n", i);
-          i += 8;
-        }
-        while (i < size) {
-          fprintf(output, "\tmov  al, BYTE PTR [rdi + %d]\n", i);
-          fprintf(output, "\tmov  BYTE PTR [rsi + %d], al\n", i);
-          i++;
-        }
-        fprintf(output, "\tpush rdi\n");
-      } else {
-        gen(node->rhs);
-        fprintf(output, "\tpop  rdi\n");
-        fprintf(output, "\tpop  rax\n");
-        fprintf(output, "\tmov  [rax], %s\n", reg_r[reg_size(type(node->lhs))]);
-        fprintf(output, "\tpush rdi\n");
-      }
+      gen_assign(node);
       return;
     case ND_CALL:
       gen_call(node);
@@ -710,22 +774,9 @@ void gen(Node *node) {
     case ND_FDECL:
       gen_fdecl(node);
       return;
-    case ND_ADDR:
-      gen_lval_to_rax(node->lhs);
-      fprintf(output, "\tpush rax\n");
-      return;
+
     case ND_STR:
-      gen_lval_to_rax(node);
-      fprintf(output, "\tpush rax\n");
-      return;
-    case ND_DEREF:
-      if (!is_ptr(type(node->lhs)))
-        error_at_node(node->lhs,
-                      "Illegal operation. (dereference of non-pointer type)");
-      gen(node->lhs);
-      fprintf(output, "\tpop  rax\n");
-      emit_deref_rax(node);
-      fprintf(output, "\tpush rax\n");
+      gen_addr(node);
       return;
     case ND_NOT:
       gen_lnot(node);

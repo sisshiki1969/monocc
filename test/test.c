@@ -1,4 +1,7 @@
-#include "test.h"
+void assert_expect(int line, int expected, int actual);
+void print(int a);
+void printf_(char *str);
+void *calloc_(int size);
 
 #include <stdbool.h>
 
@@ -300,10 +303,12 @@ void struct_() {
   assert_expect(__LINE__, 700, l2.size);
   leaf_global = l1;
   assert_expect(__LINE__, 100, leaf_global.size);
+  l1.size = 999;
   Leaf *l1p = &l1;
   Leaf *l2p = &l2;
-  *l2p = *l1p;
-  assert_expect(__LINE__, 100, l2p->size);
+  leaf_global = *l2p = *l1p;
+  assert_expect(__LINE__, 999, l2p->size);
+  assert_expect(__LINE__, 999, leaf_global.size);
 }
 
 int q8_count;

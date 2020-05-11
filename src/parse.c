@@ -427,7 +427,7 @@ LVar *new_lvar(Token *token, Type *type) {
   if (locals) {
     offset = locals->offset + size;
   } else {
-    offset = size;
+    offset = size;  // + cur_fn->type->variadic ? 128 : 32;
   }
   lvar->offset = offset;
   lvar->type = type;
@@ -644,8 +644,8 @@ Node *parse_postfix_expr() {
       Token *op_token = token;
       MemberInfo *param = fn_global->type->params;
       while (!peek(TK_CL_PAREN)) {
-        // if(!param)
-        //    error_at_token(token, "Too many arguments is func call.");
+        if (!param && !fn_global->type->variadic)
+          error_at_token(token, "Too many arguments in func call.");
         Node *arg = parse_assign_expr();
         if (is_array(type(arg)))
           arg = new_node_expr(ND_ADDR, arg, NULL, arg->token);
@@ -658,7 +658,7 @@ Node *parse_postfix_expr() {
         if (param) param = param->next;
         if (!consume_if(TK_COMMA)) break;
       }
-      if (param) error_at_token(token, "Too few arguments is func call.");
+      if (param) error_at_token(token, "Too few arguments in func call.");
       expect(TK_CL_PAREN);
       node = new_node_call(node, vec, node->token);
     } else if (consume_if(TK_OP_BRACKET)) {
@@ -1137,8 +1137,8 @@ MemberInfo *parse_declaretor(Type *type) {
     head.next = NULL;
     MemberInfo *cursor = &head;
     while (!peek(TK_CL_PAREN)) {
-      if (peek(TK_ELLIPSIS)) {
-        consume();
+      if (consume_if(TK_ELLIPSIS)) {
+        type->variadic = true;
         break;
       }
       MemberInfo *pinfo = parse_decl(false);
@@ -1292,7 +1292,7 @@ Node *parse_func_definition(MemberInfo *ty_ident) {
     cursor = cursor->next;
   }
   Node *body = parse_block();
-  int max_offset = 0;
+  int max_offset = 0;  // type->variadic ? 128 : 32;
   if (locals) max_offset = locals->offset;
   decl = new_node_fdecl(ident, params, max_offset, body, type);
   func->body = decl;
@@ -1392,10 +1392,12 @@ void parse_program() {
       // function definition
 
       decl = parse_func_definition(ty_ident);
-      fprintf(output, "// ");
-      print_node(decl);
-      fprintf(output, "\n");
-      print_locals();
+      if (verbose) {
+        fprintf(output, "// ");
+        print_node(decl);
+        fprintf(output, "\n");
+        print_locals();
+      }
       vec_push(ext_declarations, decl);
     } else
       error_at_token(token, "U6nexpected token.");

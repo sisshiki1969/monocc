@@ -58,8 +58,7 @@ void error(char *fmt, ...) {
 }
 
 void print_error_line(FileInfo *fi, PosInfo *pos, int len) {
-  fprintf(stderr, "error in file: %s\n", fi->file_name);
-  fprintf(stderr, "line: %d\n", pos->line);
+  fprintf(stderr, "error in file: %s:%d\n", fi->file_name, pos->line);
   fprintf(stderr, "%.*s\n", pos->line_len, pos->line_start);
   fprintf(stderr, "%*s%.*s\n", pos->pos_in_line, "", len,
           "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");

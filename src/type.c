@@ -45,6 +45,7 @@ Type *new_type_func(Type *return_type) {
   Type *type = calloc(1, sizeof(Type));
   type->ty = FUNC;
   type->ptr_to = return_type;
+  type->variadic = false;
   return type;
 }
 
