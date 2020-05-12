@@ -269,6 +269,8 @@ struct LVar {
 
 typedef struct Node Node;
 typedef struct Vector Vector;
+typedef struct Global Global;
+typedef struct Function Function;
 
 struct Node {
   NodeKind kind;
@@ -285,11 +287,10 @@ struct Node {
   Vector *nodes;
   Token *token;
   Type *type;
+  Function *func;
 };
 
 // Global variables and functions
-
-typedef struct Global Global;
 
 struct Global {
   Global *next;
@@ -298,8 +299,6 @@ struct Global {
   Node *body;
   bool is_extern;
 };
-
-typedef struct Function Function;
 
 struct Function {
   Function *next;

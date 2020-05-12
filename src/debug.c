@@ -305,7 +305,7 @@ void print_node(Node *node) {
   if (node->kind == ND_FDECL) {
     fprintf(output, "FDECL %.*s ", node->token->len, node->token->str);
     print_type(output, node->type);
-    fprintf(output, "\n//    ");
+    fprintf(output, " max_offset:%d\n//    ", node->offset);
     if (node->nodes) {
       Vector *params = node->nodes;
       int len = vec_len(params);
@@ -353,6 +353,7 @@ void print_type(FILE *stream, Type *type) {
     print_type(stream, type->ptr_to);
   } else if (type->ty == FUNC) {
     fprintf(stream, "func ");
+    if (type->variadic) fprintf(stream, "VARIADIC ");
     MemberInfo *param = type->params;
     fprintf(stream, "( ");
     bool first = true;

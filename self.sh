@@ -15,4 +15,5 @@ $CC/monocc -v $DIR/codegen.c
 $CC/monocc -v $DIR/type.c
 $CC/monocc -v $DIR/test.c
 $CC/monocc -v $DIR/pp.c
-gcc -static -o $DIR/monocc $DIR/*.s $DIR/error.c -L /usr/lib -L /usr/local/lib -L /usr/include/
+$CC/monocc -v $DIR/error.c
+gcc -static -o $DIR/monocc $DIR/*.s -L /usr/lib -L /usr/local/lib -L /usr/include/

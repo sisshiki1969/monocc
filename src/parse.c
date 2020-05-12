@@ -5,6 +5,8 @@
 /// the level of switch-statement.
 int switch_level;
 
+Function *cur_fn;
+
 // Methods for Node
 
 /// number(int)
@@ -427,7 +429,12 @@ LVar *new_lvar(Token *token, Type *type) {
   if (locals) {
     offset = locals->offset + size;
   } else {
-    offset = size;  // + cur_fn->type->variadic ? 128 : 32;
+    offset = size;
+    if (cur_fn->type->variadic) {
+      offset += 128;
+    } else {
+      offset += 32;
+    };
   }
   lvar->offset = offset;
   lvar->type = type;
@@ -637,14 +644,14 @@ Node *parse_postfix_expr() {
       /*
       if (node->kind != ND_IDENT)
         error_at_node(node, "Currently, callee must be an identifier.");*/
-      Function *fn_global = find_func(node->token);
-      if (!fn_global) error_at_node(node, "Undefined identifier.");
-      node->type = fn_global->type->ptr_to;
+      Function *fn = find_func(node->token);
+      if (!fn) error_at_node(node, "Undefined identifier.");
+      node->type = fn->type->ptr_to;
       Vector *vec = vec_new();
       Token *op_token = token;
-      MemberInfo *param = fn_global->type->params;
+      MemberInfo *param = fn->type->params;
       while (!peek(TK_CL_PAREN)) {
-        if (!param && !fn_global->type->variadic)
+        if (!param && !fn->type->variadic)
           error_at_token(token, "Too many arguments in func call.");
         Node *arg = parse_assign_expr();
         if (is_array(type(arg)))
@@ -1282,7 +1289,7 @@ Node *parse_func_definition(MemberInfo *ty_ident) {
   Node *decl;
   Token *ident = ty_ident->ident;
   Type *type = ty_ident->type;
-  Function *func = new_func(ident, type, NULL);
+  cur_fn = new_func(ident, type, NULL);
   // function definition
   Vector *params = vec_new();
   MemberInfo *cursor = type->params;
@@ -1291,11 +1298,17 @@ Node *parse_func_definition(MemberInfo *ty_ident) {
                                    cursor->ident));
     cursor = cursor->next;
   }
+
   Node *body = parse_block();
-  int max_offset = 0;  // type->variadic ? 128 : 32;
+  int max_offset;
+  if (type->variadic) {
+    max_offset = 128;
+  } else {
+    max_offset = 32;
+  };
   if (locals) max_offset = locals->offset;
   decl = new_node_fdecl(ident, params, max_offset, body, type);
-  func->body = decl;
+  cur_fn->body = decl;
   return decl;
 }
 

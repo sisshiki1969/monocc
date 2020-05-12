@@ -1,121 +1,121 @@
-// FDECL fibo func ( int  x ) int 
-//    (LVAR 4) 
-//    (BLOCK(IF (<  2  (LVAR 4)) (RETURN  1 ) NULL ):(RETURN (+ (CALL fibo ((- (LVAR 4)  1 ):) ) (CALL fibo ((- (LVAR 4)  2 ):) ))):))
-//    x  offset:4  int 
+// FDECL fibo func ( int  x ) int  max_offset:36
+//    (LVAR 36) 
+//    (BLOCK(IF (<  2  (LVAR 36)) (RETURN  1 ) NULL ):(RETURN (+ (CALL fibo ((- (LVAR 36)  1 ):) ) (CALL fibo ((- (LVAR 36)  2 ):) ))):))
+//    x  offset:36  int 
 
-// FDECL array_local func ( ) int 
+// FDECL array_local func ( ) int  max_offset:360
 //    
-//    (BLOCK(= (LVAR 324)  0 ):(= (LVAR 328)  0 ):(WHILE cond:(<=  9  (LVAR 324))body: (BLOCK(= (LVAR 328)  0 ):(WHILE cond:(<=  7  (LVAR 328))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320)) (LVAR 324)))) (LVAR 328))) (+ (* (LVAR 324)  10 ) (LVAR 328))):(++ (= (LVAR 328) (++ (LVAR 328)  1 ))  1 ):)):(= (LVAR 324) (+= (LVAR 324)  1 )):)):(CALL assert_expect ( 52 : 1 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320))  0 )))  1 )):) ):(CALL assert_expect ( 53 : 97 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320))  9 )))  7 )):) ):(CALL assert_expect ( 54 : 84 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320))  8 )))  4 )):) ):(RETURN  0 ):))
-//    j  offset:328  int 
-//    i  offset:324  int 
-//    a  offset:320  [10] [8] int 
+//    (BLOCK(= (LVAR 356)  0 ):(= (LVAR 360)  0 ):(WHILE cond:(<=  9  (LVAR 356))body: (BLOCK(= (LVAR 360)  0 ):(WHILE cond:(<=  7  (LVAR 360))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352)) (LVAR 356)))) (LVAR 360))) (+ (* (LVAR 356)  10 ) (LVAR 360))):(++ (= (LVAR 360) (++ (LVAR 360)  1 ))  1 ):)):(= (LVAR 356) (+= (LVAR 356)  1 )):)):(CALL assert_expect ( 52 : 1 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352))  0 )))  1 )):) ):(CALL assert_expect ( 53 : 97 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352))  9 )))  7 )):) ):(CALL assert_expect ( 54 : 84 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352))  8 )))  4 )):) ):(RETURN  0 ):))
+//    j  offset:360  int 
+//    i  offset:356  int 
+//    a  offset:352  [10] [8] int 
 
-// FDECL array_global func ( ) int 
+// FDECL array_global func ( ) int  max_offset:36
 //    
-//    (BLOCK(FOR init: (= (LVAR 4)  0 )cond: (<  5  (LVAR 4)) post: (++ (= (LVAR 4) (++ (LVAR 4)  1 ))  1 ) body (CALL assert_expect ( 80 :(+ (LVAR 4)  1 ):(DEREF (] (ADDR (GVAR ary_int)) (LVAR 4))):) )):(CALL assert_expect ( 81 : 105 :(DEREF (] (ADDR (DEREF (] (ADDR (DEREF (] (ADDR (GVAR reg))  2 )))  1 )))  1 )):) ):(CALL assert_expect ( 82 : 119 :(DEREF (] (ADDR (DEREF (] (ADDR (DEREF (] (ADDR (GVAR reg))  2 )))  4 )))  2 )):) ):(= (GVAR i)  0 ):(WHILE cond:(<=  9  (GVAR i))body: (BLOCK(= (GVAR j)  0 ):(WHILE cond:(<=  7  (GVAR j))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (GVAR a)) (GVAR i)))) (GVAR j))) (+ (* (GVAR i)  10 ) (GVAR j))):(++ (= (GVAR j) (++ (GVAR j)  1 ))  1 ):)):(++ (= (GVAR i) (++ (GVAR i)  1 ))  1 ):)):(CALL assert_expect ( 93 :(DEREF (] (ADDR (DEREF (] (ADDR (GVAR a))  0 )))  1 )): 1 :) ):(CALL assert_expect ( 94 :(DEREF (] (ADDR (DEREF (] (ADDR (GVAR a))  9 )))  7 )): 97 :) ):(CALL assert_expect ( 95 :(DEREF (] (ADDR (DEREF (] (ADDR (GVAR a))  8 )))  4 )): 84 :) ):(RETURN  0 ):))
-//    i  offset:4  int 
+//    (BLOCK(FOR init: (= (LVAR 36)  0 )cond: (<  5  (LVAR 36)) post: (++ (= (LVAR 36) (++ (LVAR 36)  1 ))  1 ) body (CALL assert_expect ( 80 :(+ (LVAR 36)  1 ):(DEREF (] (ADDR (GVAR ary_int)) (LVAR 36))):) )):(CALL assert_expect ( 81 : 105 :(DEREF (] (ADDR (DEREF (] (ADDR (DEREF (] (ADDR (GVAR reg))  2 )))  1 )))  1 )):) ):(CALL assert_expect ( 82 : 119 :(DEREF (] (ADDR (DEREF (] (ADDR (DEREF (] (ADDR (GVAR reg))  2 )))  4 )))  2 )):) ):(= (GVAR i)  0 ):(WHILE cond:(<=  9  (GVAR i))body: (BLOCK(= (GVAR j)  0 ):(WHILE cond:(<=  7  (GVAR j))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (GVAR a)) (GVAR i)))) (GVAR j))) (+ (* (GVAR i)  10 ) (GVAR j))):(++ (= (GVAR j) (++ (GVAR j)  1 ))  1 ):)):(++ (= (GVAR i) (++ (GVAR i)  1 ))  1 ):)):(CALL assert_expect ( 93 :(DEREF (] (ADDR (DEREF (] (ADDR (GVAR a))  0 )))  1 )): 1 :) ):(CALL assert_expect ( 94 :(DEREF (] (ADDR (DEREF (] (ADDR (GVAR a))  9 )))  7 )): 97 :) ):(CALL assert_expect ( 95 :(DEREF (] (ADDR (DEREF (] (ADDR (GVAR a))  8 )))  4 )): 84 :) ):(RETURN  0 ):))
+//    i  offset:36  int 
 
-// FDECL string func ( ) int 
+// FDECL string func ( ) int  max_offset:63
 //    
-//    (BLOCK(= (LVAR 8) (ADDR  "Hello world!\n" )):(CALL printf_ ((LVAR 8):) ):(= (LVAR 31)  "\tHello---" ):(CALL printf_ ((ADDR (LVAR 31)):) ):(CALL assert_expect ( 106 : 9 :(DEREF (] (ADDR (LVAR 31))  15 )):) ):(CALL assert_expect ( 108 : 119 : 119 :) ):(CALL assert_expect ( 109 : 119 :(DEREF (] (LVAR 8)  6 )):) ):))
-//    str_ary9  offset:31  [23] char 
-//    str  offset:8  * char 
+//    (BLOCK(= (LVAR 40) (ADDR  "Hello world!\n" )):(CALL printf_ ((LVAR 40):) ):(= (LVAR 63)  "\tHello---" ):(CALL printf_ ((ADDR (LVAR 63)):) ):(CALL assert_expect ( 106 : 9 :(DEREF (] (ADDR (LVAR 63))  15 )):) ):(CALL assert_expect ( 108 : 119 : 119 :) ):(CALL assert_expect ( 109 : 119 :(DEREF (] (LVAR 40)  6 )):) ):))
+//    str_ary9  offset:63  [23] char 
+//    str  offset:40  * char 
 
-// FDECL block_scope func ( ) void 
+// FDECL block_scope func ( ) void  max_offset:48
 //    
-//    (BLOCK(= (GVAR i)  1 ):(CALL assert_expect ( 114 : 1 :(GVAR i):) ):(= (LVAR 4)  5 ):(CALL assert_expect ( 116 : 5 :(LVAR 4):) ):(BLOCK(= (LVAR 8)  2 ):(BLOCK(= (LVAR 12)  3 ):(BLOCK(= (LVAR 16)  4 ):(CALL assert_expect ( 123 : 4 :(LVAR 16):) ):):(CALL assert_expect ( 125 : 3 :(LVAR 12):) ):):(CALL assert_expect ( 127 : 2 :(LVAR 8):) ):):(CALL assert_expect ( 129 : 5 :(LVAR 4):) ):))
-//    i  offset:16  int 
-//    i  offset:12  int 
-//    i  offset:8  int 
-//    i  offset:4  int 
+//    (BLOCK(= (GVAR i)  1 ):(CALL assert_expect ( 114 : 1 :(GVAR i):) ):(= (LVAR 36)  5 ):(CALL assert_expect ( 116 : 5 :(LVAR 36):) ):(BLOCK(= (LVAR 40)  2 ):(BLOCK(= (LVAR 44)  3 ):(BLOCK(= (LVAR 48)  4 ):(CALL assert_expect ( 123 : 4 :(LVAR 48):) ):):(CALL assert_expect ( 125 : 3 :(LVAR 44):) ):):(CALL assert_expect ( 127 : 2 :(LVAR 40):) ):):(CALL assert_expect ( 129 : 5 :(LVAR 36):) ):))
+//    i  offset:48  int 
+//    i  offset:44  int 
+//    i  offset:40  int 
+//    i  offset:36  int 
 
-// FDECL for_ func ( ) void 
+// FDECL for_ func ( ) void  max_offset:44
 //    
-//    (BLOCK(= (LVAR 4)  100 ):(CALL assert_expect ( 134 : 100 :(LVAR 4):) ):(FOR init: (= (LVAR 8)  10 )cond: (<  100  (LVAR 8)) post: (= (LVAR 8) (+= (LVAR 8)  1 )) body (BLOCK(IF (== (LVAR 8)  15 ) BREAK  NULL ):(IF (== (LVAR 8) (* (/ (LVAR 8)  3 )  3 )) (CALL assert_expect ( 137 : 12 :(LVAR 8):) ) NULL ):(= (LVAR 12)  9 ):(CALL assert_expect ( 139 : 9 :(LVAR 12):) ):)):(CALL assert_expect ( 141 : 100 :(LVAR 4):) ):(= (LVAR 4)  0 ):(FOR init: NULL cond:  1  post: NULL  body (BLOCK(IF (== (LVAR 4)  6 ) BREAK  NULL ):(= (LVAR 4) (+ (LVAR 4)  1 )):)):(CALL assert_expect ( 147 : 6 :(LVAR 4):) ):))
-//    x  offset:12  int 
-//    x  offset:8  int 
-//    x  offset:4  int 
+//    (BLOCK(= (LVAR 36)  100 ):(CALL assert_expect ( 134 : 100 :(LVAR 36):) ):(FOR init: (= (LVAR 40)  10 )cond: (<  100  (LVAR 40)) post: (= (LVAR 40) (+= (LVAR 40)  1 )) body (BLOCK(IF (== (LVAR 40)  15 ) BREAK  NULL ):(IF (== (LVAR 40) (* (/ (LVAR 40)  3 )  3 )) (CALL assert_expect ( 137 : 12 :(LVAR 40):) ) NULL ):(= (LVAR 44)  9 ):(CALL assert_expect ( 139 : 9 :(LVAR 44):) ):)):(CALL assert_expect ( 141 : 100 :(LVAR 36):) ):(= (LVAR 36)  0 ):(FOR init: NULL cond:  1  post: NULL  body (BLOCK(IF (== (LVAR 36)  6 ) BREAK  NULL ):(= (LVAR 36) (+ (LVAR 36)  1 )):)):(CALL assert_expect ( 147 : 6 :(LVAR 36):) ):))
+//    x  offset:44  int 
+//    x  offset:40  int 
+//    x  offset:36  int 
 
-// FDECL switch_ func ( int  s ) int 
-//    (LVAR 4) 
-//    (BLOCK(SWITCH cond: (LVAR 4) body: (BLOCK(CASE cond: 1  body:(BLOCK(= (LVAR 8)  11 ):BREAK :)):(CASE cond: 2  body:(BLOCK)):(CASE cond: 3  body:(BLOCK(= (LVAR 8)  12 ):)):(CASE cond: 4  body:(BLOCK(= (LVAR 8)  13 ):(RETURN (LVAR 8)):)):(CASE cond: 5  body:(BLOCK(= (LVAR 8)  14 ):)):(DEFAULT body:(= (LVAR 8)  15 )):)):(RETURN (LVAR 8)):))
-//    switch  offset:12  int 
-//    i  offset:8  int 
-//    s  offset:4  int 
+// FDECL switch_ func ( int  s ) int  max_offset:44
+//    (LVAR 36) 
+//    (BLOCK(SWITCH cond: (LVAR 36) body: (BLOCK(CASE cond: 1  body:(BLOCK(= (LVAR 40)  11 ):BREAK :)):(CASE cond: 2  body:(BLOCK)):(CASE cond: 3  body:(BLOCK(= (LVAR 40)  12 ):)):(CASE cond: 4  body:(BLOCK(= (LVAR 40)  13 ):(RETURN (LVAR 40)):)):(CASE cond: 5  body:(BLOCK(= (LVAR 40)  14 ):)):(DEFAULT body:(= (LVAR 40)  15 )):)):(RETURN (LVAR 40)):))
+//    switch  offset:44  int 
+//    i  offset:40  int 
+//    s  offset:36  int 
 
-// FDECL switch2_ func ( char  s ) int 
-//    (LVAR 1) 
-//    (BLOCK(SWITCH cond: (LVAR 1) body: (BLOCK(CASE cond: 97  body:(BLOCK(= (LVAR 5)  11 ):BREAK :)):(CASE cond: 98  body:(BLOCK)):(CASE cond: 99  body:(BLOCK(= (LVAR 5)  12 ):BREAK :)):(DEFAULT body:(= (LVAR 5)  15 )):)):(RETURN (LVAR 5)):))
-//    switch  offset:9  int 
-//    i  offset:5  int 
-//    s  offset:1  char 
+// FDECL switch2_ func ( char  s ) int  max_offset:41
+//    (LVAR 33) 
+//    (BLOCK(SWITCH cond: (LVAR 33) body: (BLOCK(CASE cond: 97  body:(BLOCK(= (LVAR 37)  11 ):BREAK :)):(CASE cond: 98  body:(BLOCK)):(CASE cond: 99  body:(BLOCK(= (LVAR 37)  12 ):BREAK :)):(DEFAULT body:(= (LVAR 37)  15 )):)):(RETURN (LVAR 37)):))
+//    switch  offset:41  int 
+//    i  offset:37  int 
+//    s  offset:33  char 
 
-// FDECL list_ func ( ) void 
+// FDECL list_ func ( ) void  max_offset:56
 //    
-//    (BLOCK(= (LVAR 4)  16 ):(= (LVAR 12)  0 ):(FOR init: (= (LVAR 16)  0 )cond: (<  6  (LVAR 16)) post: (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ) body (BLOCK(= (LVAR 24) (CALL calloc_ ((LVAR 4):) )):(= (MEMBER (DEREF (LVAR 24)) payloads 8) (LVAR 16)):(= (MEMBER (DEREF (LVAR 24)) next 0) (LVAR 12)):(= (LVAR 12) (LVAR 24)):)):(CALL assert_expect ( 221 : 5 :(MEMBER (DEREF (LVAR 12)) payloads 8):) ):(= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0)):(CALL assert_expect ( 223 : 4 :(MEMBER (DEREF (LVAR 12)) payloads 8):) ):(= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0)):(CALL assert_expect ( 225 : 3 :(MEMBER (DEREF (LVAR 12)) payloads 8):) ):(= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0)):(CALL assert_expect ( 227 : 2 :(MEMBER (DEREF (LVAR 12)) payloads 8):) ):(= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0)):(CALL assert_expect ( 229 : 1 :(MEMBER (DEREF (LVAR 12)) payloads 8):) ):(= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0)):(CALL assert_expect ( 231 : 0 :(MEMBER (DEREF (LVAR 12)) payloads 8):) ):(= (MEMBER (GVAR def) payload 0)  777 ):(CALL assert_expect ( 234 : 777 :(MEMBER (GVAR def) payload 0):) ):))
-//    new  offset:24  * struct <List> 
-//    i  offset:16  int 
-//    cursor  offset:12  * struct <List> 
-//    size  offset:4  int 
+//    (BLOCK(= (LVAR 36)  16 ):(= (LVAR 44)  0 ):(FOR init: (= (LVAR 48)  0 )cond: (<  6  (LVAR 48)) post: (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ) body (BLOCK(= (LVAR 56) (CALL calloc_ ((LVAR 36):) )):(= (MEMBER (DEREF (LVAR 56)) payloads 8) (LVAR 48)):(= (MEMBER (DEREF (LVAR 56)) next 0) (LVAR 44)):(= (LVAR 44) (LVAR 56)):)):(CALL assert_expect ( 221 : 5 :(MEMBER (DEREF (LVAR 44)) payloads 8):) ):(= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0)):(CALL assert_expect ( 223 : 4 :(MEMBER (DEREF (LVAR 44)) payloads 8):) ):(= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0)):(CALL assert_expect ( 225 : 3 :(MEMBER (DEREF (LVAR 44)) payloads 8):) ):(= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0)):(CALL assert_expect ( 227 : 2 :(MEMBER (DEREF (LVAR 44)) payloads 8):) ):(= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0)):(CALL assert_expect ( 229 : 1 :(MEMBER (DEREF (LVAR 44)) payloads 8):) ):(= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0)):(CALL assert_expect ( 231 : 0 :(MEMBER (DEREF (LVAR 44)) payloads 8):) ):(= (MEMBER (GVAR def) payload 0)  777 ):(CALL assert_expect ( 234 : 777 :(MEMBER (GVAR def) payload 0):) ):))
+//    new  offset:56  * struct <List> 
+//    i  offset:48  int 
+//    cursor  offset:44  * struct <List> 
+//    size  offset:36  int 
 
-// FDECL struct_ func ( ) void 
+// FDECL struct_ func ( ) void  max_offset:832
 //    
-//    (BLOCK(CALL assert_expect ( 257 : 32 : 32 :) ):(CALL assert_expect ( 258 : 8 : 8 :) ):(= (MEMBER (GVAR pos) col 4)  9 ):(= (MEMBER (GVAR pos) row 0)  45 ):(CALL assert_expect ( 263 : 9 :(MEMBER (GVAR pos) col 4):) ):(CALL assert_expect ( 264 : 45 :(MEMBER (GVAR pos) row 0):) ):(CALL assert_expect ( 266 : 4 : 4 :) ):(CALL assert_expect ( 267 : 4 : 4 :) ):(= (LVAR 336) (ADDR (LVAR 328))):(= (MEMBER (LVAR 328) size 136)  10 ):(= (MEMBER (LVAR 328) ch 140)  5 ):(= (MEMBER (LVAR 480) size 136)  195 ):(= (MEMBER (LVAR 480) ch 140)  39 ):(= (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  0 )) row 0)  184 ):(= (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  16 )) col 4)  984 ):(CALL assert_expect ( 278 : 10 :(MEMBER (LVAR 328) size 136):) ):(CALL assert_expect ( 279 : 5 :(MEMBER (LVAR 328) ch 140):) ):(= (MEMBER (LVAR 328) size 136)  110 ):(= (MEMBER (LVAR 328) ch 140)  79 ):(CALL assert_expect ( 282 : 110 :(MEMBER (DEREF (LVAR 336)) size 136):) ):(CALL assert_expect ( 283 : 79 :(MEMBER (DEREF (LVAR 336)) ch 140):) ):(CALL assert_expect ( 284 : 110 :(MEMBER (DEREF (LVAR 336)) size 136):) ):(CALL assert_expect ( 285 : 79 :(MEMBER (DEREF (LVAR 336)) ch 140):) ):(CALL assert_expect ( 286 : 195 :(MEMBER (LVAR 480) size 136):) ):(CALL assert_expect ( 287 : 39 :(MEMBER (LVAR 480) ch 140):) ):(CALL assert_expect ( 288 : 184 :(MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  0 )) row 0):) ):(CALL assert_expect ( 289 : 984 :(MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  16 )) col 4):) ):(= (MEMBER (LVAR 496) right 8) (ADDR (LVAR 480))):(= (MEMBER (LVAR 496) left 0) (ADDR (LVAR 328))):(CALL assert_expect ( 293 : 195 :(MEMBER (DEREF (MEMBER (LVAR 496) right 8)) size 136):) ):(= (MEMBER (LVAR 640) size 136)  100 ):(= (MEMBER (LVAR 784) size 136)  500 ):(= (LVAR 784) (LVAR 640)):(= (MEMBER (GVAR leaf_global) size 136)  700 ):(CALL assert_expect ( 301 : 100 :(MEMBER (LVAR 784) size 136):) ):(= (LVAR 784) (GVAR leaf_global)):(CALL assert_expect ( 303 : 700 :(MEMBER (LVAR 784) size 136):) ):(= (GVAR leaf_global) (LVAR 640)):(CALL assert_expect ( 305 : 100 :(MEMBER (GVAR leaf_global) size 136):) ):(= (MEMBER (LVAR 640) size 136)  999 ):(= (LVAR 792) (ADDR (LVAR 640))):(= (LVAR 800) (ADDR (LVAR 784))):(= (GVAR leaf_global) (= (DEREF (LVAR 800)) (DEREF (LVAR 792)))):(CALL assert_expect ( 310 : 999 :(MEMBER (DEREF (LVAR 800)) size 136):) ):(CALL assert_expect ( 311 : 999 :(MEMBER (GVAR leaf_global) size 136):) ):))
-//    l2p  offset:800  * struct <Leaf> 
-//    l1p  offset:792  * struct <Leaf> 
-//    l2  offset:784  struct <Leaf> 
-//    l1  offset:640  struct <Leaf> 
-//    tree  offset:496  struct <Tree> 
-//    node_new  offset:480  struct <Leaf> 
-//    node_ptr  offset:336  * struct <Leaf> 
-//    node  offset:328  struct <Leaf> 
-//    s1  offset:184  struct <S1> 
-//    s2  offset:152  struct <S2> 
-//    leaf  offset:144  struct <Leaf> 
+//    (BLOCK(CALL assert_expect ( 257 : 32 : 32 :) ):(CALL assert_expect ( 258 : 8 : 8 :) ):(= (MEMBER (GVAR pos) col 4)  9 ):(= (MEMBER (GVAR pos) row 0)  45 ):(CALL assert_expect ( 263 : 9 :(MEMBER (GVAR pos) col 4):) ):(CALL assert_expect ( 264 : 45 :(MEMBER (GVAR pos) row 0):) ):(CALL assert_expect ( 266 : 4 : 4 :) ):(CALL assert_expect ( 267 : 4 : 4 :) ):(= (LVAR 368) (ADDR (LVAR 360))):(= (MEMBER (LVAR 360) size 136)  10 ):(= (MEMBER (LVAR 360) ch 140)  5 ):(= (MEMBER (LVAR 512) size 136)  195 ):(= (MEMBER (LVAR 512) ch 140)  39 ):(= (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  0 )) row 0)  184 ):(= (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  16 )) col 4)  984 ):(CALL assert_expect ( 278 : 10 :(MEMBER (LVAR 360) size 136):) ):(CALL assert_expect ( 279 : 5 :(MEMBER (LVAR 360) ch 140):) ):(= (MEMBER (LVAR 360) size 136)  110 ):(= (MEMBER (LVAR 360) ch 140)  79 ):(CALL assert_expect ( 282 : 110 :(MEMBER (DEREF (LVAR 368)) size 136):) ):(CALL assert_expect ( 283 : 79 :(MEMBER (DEREF (LVAR 368)) ch 140):) ):(CALL assert_expect ( 284 : 110 :(MEMBER (DEREF (LVAR 368)) size 136):) ):(CALL assert_expect ( 285 : 79 :(MEMBER (DEREF (LVAR 368)) ch 140):) ):(CALL assert_expect ( 286 : 195 :(MEMBER (LVAR 512) size 136):) ):(CALL assert_expect ( 287 : 39 :(MEMBER (LVAR 512) ch 140):) ):(CALL assert_expect ( 288 : 184 :(MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  0 )) row 0):) ):(CALL assert_expect ( 289 : 984 :(MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  16 )) col 4):) ):(= (MEMBER (LVAR 528) right 8) (ADDR (LVAR 512))):(= (MEMBER (LVAR 528) left 0) (ADDR (LVAR 360))):(CALL assert_expect ( 293 : 195 :(MEMBER (DEREF (MEMBER (LVAR 528) right 8)) size 136):) ):(= (MEMBER (LVAR 672) size 136)  100 ):(= (MEMBER (LVAR 816) size 136)  500 ):(= (LVAR 816) (LVAR 672)):(= (MEMBER (GVAR leaf_global) size 136)  700 ):(CALL assert_expect ( 301 : 100 :(MEMBER (LVAR 816) size 136):) ):(= (LVAR 816) (GVAR leaf_global)):(CALL assert_expect ( 303 : 700 :(MEMBER (LVAR 816) size 136):) ):(= (GVAR leaf_global) (LVAR 672)):(CALL assert_expect ( 305 : 100 :(MEMBER (GVAR leaf_global) size 136):) ):(= (MEMBER (LVAR 672) size 136)  999 ):(= (LVAR 824) (ADDR (LVAR 672))):(= (LVAR 832) (ADDR (LVAR 816))):(= (GVAR leaf_global) (= (DEREF (LVAR 832)) (DEREF (LVAR 824)))):(CALL assert_expect ( 310 : 999 :(MEMBER (DEREF (LVAR 832)) size 136):) ):(CALL assert_expect ( 311 : 999 :(MEMBER (GVAR leaf_global) size 136):) ):))
+//    l2p  offset:832  * struct <Leaf> 
+//    l1p  offset:824  * struct <Leaf> 
+//    l2  offset:816  struct <Leaf> 
+//    l1  offset:672  struct <Leaf> 
+//    tree  offset:528  struct <Tree> 
+//    node_new  offset:512  struct <Leaf> 
+//    node_ptr  offset:368  * struct <Leaf> 
+//    node  offset:360  struct <Leaf> 
+//    s1  offset:216  struct <S1> 
+//    s2  offset:184  struct <S2> 
+//    leaf  offset:176  struct <Leaf> 
 
-// FDECL print_board func ( * [8] int  board ) void 
-//    (LVAR 8) 
-//    (BLOCK(++ (= (GVAR q8_count) (++ (GVAR q8_count)  1 ))  1 ):(RETURN NULL ):(FOR init: (= (LVAR 12)  0 )cond: (<  8  (LVAR 12)) post: (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ) body (BLOCK(FOR init: (= (LVAR 16)  0 )cond: (<  8  (LVAR 16)) post: (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16))) (CALL printf_ ((ADDR  "Q " ):) ) NULL ):(CALL printf_ ((ADDR  ". " ):) ):)):(CALL printf_ ((ADDR  "\n" ):) ):)):(CALL printf_ ((ADDR  "\n\n" ):) ):))
-//    j  offset:16  int 
-//    i  offset:12  int 
-//    board  offset:8  * [8] int 
+// FDECL print_board func ( * [8] int  board ) void  max_offset:48
+//    (LVAR 40) 
+//    (BLOCK(++ (= (GVAR q8_count) (++ (GVAR q8_count)  1 ))  1 ):(RETURN NULL ):(FOR init: (= (LVAR 44)  0 )cond: (<  8  (LVAR 44)) post: (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ) body (BLOCK(FOR init: (= (LVAR 48)  0 )cond: (<  8  (LVAR 48)) post: (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48))) (CALL printf_ ((ADDR  "Q " ):) ) NULL ):(CALL printf_ ((ADDR  ". " ):) ):)):(CALL printf_ ((ADDR  "\n" ):) ):)):(CALL printf_ ((ADDR  "\n\n" ):) ):))
+//    j  offset:48  int 
+//    i  offset:44  int 
+//    board  offset:40  * [8] int 
 
-// FDECL conflict func ( * [8] int  board , * struct <Pos>  p ) int 
-//    (LVAR 8) (LVAR 16) 
-//    (BLOCK(FOR init: (= (LVAR 20)  0 )cond: (< (MEMBER (DEREF (LVAR 16)) row 0) (LVAR 20)) post: (++ (= (LVAR 20) (++ (LVAR 20)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (MEMBER (DEREF (LVAR 16)) col 4))) (RETURN  1 ) NULL ):(= (LVAR 24) (- (MEMBER (DEREF (LVAR 16)) row 0) (LVAR 20))):(IF (< (+ (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))  1 )  0 ) (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))) (RETURN  1 ) NULL ) NULL ):(IF (<  8  (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))) (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))) (RETURN  1 ) NULL ) NULL ):)):(RETURN  0 ):))
-//    j  offset:24  int 
-//    i  offset:20  int 
-//    p  offset:16  * struct <Pos> 
-//    board  offset:8  * [8] int 
+// FDECL conflict func ( * [8] int  board , * struct <Pos>  p ) int  max_offset:56
+//    (LVAR 40) (LVAR 48) 
+//    (BLOCK(FOR init: (= (LVAR 52)  0 )cond: (< (MEMBER (DEREF (LVAR 48)) row 0) (LVAR 52)) post: (++ (= (LVAR 52) (++ (LVAR 52)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (MEMBER (DEREF (LVAR 48)) col 4))) (RETURN  1 ) NULL ):(= (LVAR 56) (- (MEMBER (DEREF (LVAR 48)) row 0) (LVAR 52))):(IF (< (+ (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))  1 )  0 ) (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))) (RETURN  1 ) NULL ) NULL ):(IF (<  8  (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))) (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))) (RETURN  1 ) NULL ) NULL ):)):(RETURN  0 ):))
+//    j  offset:56  int 
+//    i  offset:52  int 
+//    p  offset:48  * struct <Pos> 
+//    board  offset:40  * [8] int 
 
-// FDECL solve func ( * [8] int  board , int  row ) void 
-//    (LVAR 8) (LVAR 12) 
-//    (BLOCK(IF (== (LVAR 12)  8 ) (BLOCK(CALL print_board ((LVAR 8):) ):(RETURN NULL ):) NULL ):(FOR init: (= (LVAR 16)  0 )cond: (<  8  (LVAR 16)) post: (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ) body (BLOCK(= (MEMBER (LVAR 24) row 0) (LVAR 12)):(= (MEMBER (LVAR 24) col 4) (LVAR 16)):(IF (== (CALL conflict ((LVAR 8):(ADDR (LVAR 24)):) )  0 ) (BLOCK(= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  1 ):(CALL solve ((LVAR 8):(+ (LVAR 12)  1 ):) ):(= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  0 ):) NULL ):)):))
-//    p  offset:24  struct <Pos> 
-//    i  offset:16  int 
-//    row  offset:12  int 
-//    board  offset:8  * [8] int 
+// FDECL solve func ( * [8] int  board , int  row ) void  max_offset:56
+//    (LVAR 40) (LVAR 44) 
+//    (BLOCK(IF (== (LVAR 44)  8 ) (BLOCK(CALL print_board ((LVAR 40):) ):(RETURN NULL ):) NULL ):(FOR init: (= (LVAR 48)  0 )cond: (<  8  (LVAR 48)) post: (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ) body (BLOCK(= (MEMBER (LVAR 56) row 0) (LVAR 44)):(= (MEMBER (LVAR 56) col 4) (LVAR 48)):(IF (== (CALL conflict ((LVAR 40):(ADDR (LVAR 56)):) )  0 ) (BLOCK(= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  1 ):(CALL solve ((LVAR 40):(+ (LVAR 44)  1 ):) ):(= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  0 ):) NULL ):)):))
+//    p  offset:56  struct <Pos> 
+//    i  offset:48  int 
+//    row  offset:44  int 
+//    board  offset:40  * [8] int 
 
-// FDECL q8 func ( ) int 
+// FDECL q8 func ( ) int  max_offset:296
 //    
-//    (BLOCK(= (GVAR q8_count)  0 ):(FOR init: (= (LVAR 260)  0 )cond: (<  8  (LVAR 260)) post: (++ (= (LVAR 260) (++ (LVAR 260)  1 ))  1 ) body (FOR init: (= (LVAR 264)  0 )cond: (<  8  (LVAR 264)) post: (++ (= (LVAR 264) (++ (LVAR 264)  1 ))  1 ) body (= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 256)) (LVAR 260)))) (LVAR 264)))  0 ))):(CALL solve ((ADDR (LVAR 256)): 0 :) ):(RETURN (GVAR q8_count)):))
-//    j  offset:264  int 
-//    i  offset:260  int 
-//    board  offset:256  [8] [8] int 
+//    (BLOCK(= (GVAR q8_count)  0 ):(FOR init: (= (LVAR 292)  0 )cond: (<  8  (LVAR 292)) post: (++ (= (LVAR 292) (++ (LVAR 292)  1 ))  1 ) body (FOR init: (= (LVAR 296)  0 )cond: (<  8  (LVAR 296)) post: (++ (= (LVAR 296) (++ (LVAR 296)  1 ))  1 ) body (= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 288)) (LVAR 292)))) (LVAR 296)))  0 ))):(CALL solve ((ADDR (LVAR 288)): 0 :) ):(RETURN (GVAR q8_count)):))
+//    j  offset:296  int 
+//    i  offset:292  int 
+//    board  offset:288  [8] [8] int 
 
-// FDECL fun func ( * int  p ) int 
-//    (LVAR 8) 
-//    (BLOCK(RETURN (DEREF (LVAR 8))):))
-//    p  offset:8  * int 
+// FDECL fun func ( * int  p ) int  max_offset:40
+//    (LVAR 40) 
+//    (BLOCK(RETURN (DEREF (LVAR 40))):))
+//    p  offset:40  * int 
 
-// FDECL main func ( ) int 
+// FDECL main func ( ) int  max_offset:56
 //    
-//    (BLOCK(= (LVAR 8) (CAST * void   0 )):(CALL assert_expect ( 375 : 1 : 1 :) ):(CALL assert_expect ( 376 : 0 : 0 :) ):(CALL assert_expect ( 377 : 0 :(CAST int  (CAST * void   0 )):) ):(CALL assert_expect ( 379 : 70 :(*  10  (+  2   5 )):) ):(CALL printf_ ((ADDR (GVAR str_ary)):) ):(CALL assert_expect ( 382 : 1979 :(GVAR i):) ):(CALL assert_expect ( 383 : 2015 :(GVAR j):) ):(CALL assert_expect ( 384 : 24 :(GVAR s):) ):(CALL assert_expect ( 386 : 9 : 9 :) ):(CALL assert_expect ( 387 : 4 :(+ (-  0   3 )  7 ):) ):(CALL assert_expect ( 388 : 21 :(- (+  5   20 )  4 ):) ):(CALL assert_expect ( 389 : 21 :(+  5  (*  4   4 )):) ):(CALL assert_expect ( 390 : 24 :(* (*  4  (-  5   2 )) (-  4   2 )):) ):(CALL assert_expect ( 391 : 13 :(- (+  6  (*  3   4 )) (/  15   3 )):) ):(CALL assert_expect ( 392 : 33 :(/ (* (+  6   3 ) (-  15   4 ))  3 ):) ):(CALL assert_expect ( 393 : 0 :(==  3  (+  3   1 )):) ):(CALL assert_expect ( 394 : 1 :(!=  4  (*  4   2 )):) ):(CALL assert_expect ( 395 : 0 :(!=  3  (*  1   3 )):) ):(CALL assert_expect ( 396 : 1 :(>=  5  (-  8   4 )):) ):(CALL assert_expect ( 397 : 1 :(>=  5  (-  7   2 )):) ):(CALL assert_expect ( 398 : 0 :(>= (-  11   8 )  5 ):) ):(CALL assert_expect ( 399 : 1 :(<= (*  2   30 )  3 ):) ):(CALL assert_expect ( 400 : 1 :(<= (/  9   3 )  3 ):) ):(CALL assert_expect ( 401 : 0 :(<= (-  20   18 )  3 ):) ):(CALL assert_expect ( 402 : 1 :(== (+ (* (-  0   5 )  2 )  10 )  0 ):) ):(CALL assert_expect ( 403 : 1 :(== (/  6   2 ) (/  9   3 )):) ):(CALL assert_expect ( 404 : 1 :(< (+  4   1 )  4 ):) ):(CALL assert_expect ( 405 : 1 :(> (+  1   4 )  4 ):) ):(CALL assert_expect ( 406 : 0 :(< (-  4   1 )  4 ):) ):(CALL assert_expect ( 407 : 0 :(> (-  1   4 )  4 ):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 409 : 0 :(&&  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 410 : 0 :(LVAR 12):) ):(CALL assert_expect ( 411 : 0 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 412 : 1 :(LVAR 12):) ):(CALL assert_expect ( 413 : 1 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 414 : 2 :(LVAR 12):) ):(CALL assert_expect ( 415 : 1 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 416 : 3 :(LVAR 12):) ):(CALL assert_expect ( 417 : 1 :(||  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 418 : 3 :(LVAR 12):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 420 : 0 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 421 : 1 :(LVAR 12):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 423 : 0 :(||  0  (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))):) ):(CALL assert_expect ( 424 : 1 :(LVAR 12):) ):(CALL assert_expect ( 425 : 1 :(|| (&&  1   1 ) (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 426 : 1 :(LVAR 12):) ):(CALL assert_expect ( 427 : 1 :(!  0 ):) ):(CALL assert_expect ( 428 : 0 :(!  1 ):) ):(CALL assert_expect ( 429 : 0 :(! (! (!  1 ))):) ):(CALL assert_expect ( 431 : 256 :(<<  1   8 ):) ):(CALL assert_expect ( 432 : 32 :(>>  512   4 ):) ):(= (LVAR 16)  10 ):(CALL assert_expect ( 437 : 15 :(= (LVAR 16) (+= (LVAR 16)  5 )):) ):(CALL assert_expect ( 438 : 15 :(LVAR 16):) ):(CALL assert_expect ( 439 : 8 :(= (LVAR 16) (-= (LVAR 16)  7 )):) ):(CALL assert_expect ( 440 : 8 :(LVAR 16):) ):(CALL assert_expect ( 441 : 40 :(= (LVAR 16) (*= (LVAR 16)  5 )):) ):(CALL assert_expect ( 442 : 40 :(LVAR 16):) ):(CALL assert_expect ( 443 : 4 :(= (LVAR 16) (/= (LVAR 16)  10 )):) ):(CALL assert_expect ( 444 : 4 :(LVAR 16):) ):(CALL assert_expect ( 447 : 4 :(++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ):) ):(CALL assert_expect ( 448 : 5 :(LVAR 16):) ):(CALL assert_expect ( 449 : 5 :(-- (= (LVAR 16) (-- (LVAR 16)  1 ))  1 ):) ):(CALL assert_expect ( 450 : 4 :(LVAR 16):) ):(= (LVAR 20) (/  100  (LVAR 16))):(CALL assert_expect ( 455 : 25 :(LVAR 20):) ):(= (LVAR 24)  77 ):(IF (== (LVAR 24)  77 ) (= (LVAR 24)  55 ) (= (LVAR 24)  66 )):(CALL assert_expect ( 463 : 55 :(LVAR 24):) ):(CALL assert_expect ( 464 : 1346269 :(CALL fibo ( 30 :) ):) ):(CALL array_global () ):(CALL array_local () ):(CALL string () ):(CALL block_scope () ):(CALL for_ () ):(CALL list_ () ):(CALL struct_ () ):(CALL assert_expect ( 477 : 11 :(CALL switch_ ( 1 :) ):) ):(CALL assert_expect ( 478 : 13 :(CALL switch_ ( 2 :) ):) ):(CALL assert_expect ( 479 : 13 :(CALL switch_ ( 3 :) ):) ):(CALL assert_expect ( 480 : 13 :(CALL switch_ ( 4 :) ):) ):(CALL assert_expect ( 481 : 15 :(CALL switch_ ( 5 :) ):) ):(CALL assert_expect ( 482 : 15 :(CALL switch_ ( 6 :) ):) ):(CALL assert_expect ( 485 : 11 :(CALL switch2_ ( 97 :) ):) ):(CALL assert_expect ( 486 : 12 :(CALL switch2_ ( 98 :) ):) ):(CALL assert_expect ( 487 : 12 :(CALL switch2_ ( 99 :) ):) ):(CALL assert_expect ( 488 : 15 :(CALL switch2_ ( 122 :) ):) ):(CALL assert_expect ( 491 : 92 :(CALL q8 () ):) ):(CALL assert_expect ( 494 : 0 : 0 :) ):(CALL assert_expect ( 495 : 1 : 1 :) ):(CALL assert_expect ( 496 : 2 : 2 :) ):(CALL assert_expect ( 497 : 3 : 3 :) ):(CALL assert_expect ( 499 : 15 :(|  13   7 ):) ):(CALL assert_expect ( 500 : 5115 :(|  938   5073 ):) ):(CALL assert_expect ( 501 : 5 :(&  13   7 ):) ):(CALL assert_expect ( 502 : 896 :(&  938   5073 ):) ):(CALL assert_expect ( 503 : 10 :(^  13   7 ):) ):(CALL assert_expect ( 504 : 4219 :(^  938   5073 ):) ):(CALL assert_expect ( 506 : 29 :(>>  938   5 ):) ):(CALL assert_expect ( 507 : 1664 :(<<  13   7 ):) ):(CALL printf_ ((ADDR  "passed tests.\n" ):) ):(RETURN  0 ):))
-//    i  offset:24  int 
-//    init  offset:20  int 
-//    z  offset:16  int 
-//    a  offset:12  int 
-//    jum  offset:8  * int 
+//    (BLOCK(= (LVAR 40) (CAST * void   0 )):(CALL assert_expect ( 375 : 1 : 1 :) ):(CALL assert_expect ( 376 : 0 : 0 :) ):(CALL assert_expect ( 377 : 0 :(CAST int  (CAST * void   0 )):) ):(CALL assert_expect ( 379 : 70 :(*  10  (+  2   5 )):) ):(CALL printf_ ((ADDR (GVAR str_ary)):) ):(CALL assert_expect ( 382 : 1979 :(GVAR i):) ):(CALL assert_expect ( 383 : 2015 :(GVAR j):) ):(CALL assert_expect ( 384 : 24 :(GVAR s):) ):(CALL assert_expect ( 386 : 9 : 9 :) ):(CALL assert_expect ( 387 : 4 :(+ (-  0   3 )  7 ):) ):(CALL assert_expect ( 388 : 21 :(- (+  5   20 )  4 ):) ):(CALL assert_expect ( 389 : 21 :(+  5  (*  4   4 )):) ):(CALL assert_expect ( 390 : 24 :(* (*  4  (-  5   2 )) (-  4   2 )):) ):(CALL assert_expect ( 391 : 13 :(- (+  6  (*  3   4 )) (/  15   3 )):) ):(CALL assert_expect ( 392 : 33 :(/ (* (+  6   3 ) (-  15   4 ))  3 ):) ):(CALL assert_expect ( 393 : 0 :(==  3  (+  3   1 )):) ):(CALL assert_expect ( 394 : 1 :(!=  4  (*  4   2 )):) ):(CALL assert_expect ( 395 : 0 :(!=  3  (*  1   3 )):) ):(CALL assert_expect ( 396 : 1 :(>=  5  (-  8   4 )):) ):(CALL assert_expect ( 397 : 1 :(>=  5  (-  7   2 )):) ):(CALL assert_expect ( 398 : 0 :(>= (-  11   8 )  5 ):) ):(CALL assert_expect ( 399 : 1 :(<= (*  2   30 )  3 ):) ):(CALL assert_expect ( 400 : 1 :(<= (/  9   3 )  3 ):) ):(CALL assert_expect ( 401 : 0 :(<= (-  20   18 )  3 ):) ):(CALL assert_expect ( 402 : 1 :(== (+ (* (-  0   5 )  2 )  10 )  0 ):) ):(CALL assert_expect ( 403 : 1 :(== (/  6   2 ) (/  9   3 )):) ):(CALL assert_expect ( 404 : 1 :(< (+  4   1 )  4 ):) ):(CALL assert_expect ( 405 : 1 :(> (+  1   4 )  4 ):) ):(CALL assert_expect ( 406 : 0 :(< (-  4   1 )  4 ):) ):(CALL assert_expect ( 407 : 0 :(> (-  1   4 )  4 ):) ):(= (LVAR 44)  0 ):(CALL assert_expect ( 409 : 0 :(&&  0  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 410 : 0 :(LVAR 44):) ):(CALL assert_expect ( 411 : 0 :(&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 412 : 1 :(LVAR 44):) ):(CALL assert_expect ( 413 : 1 :(&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 414 : 2 :(LVAR 44):) ):(CALL assert_expect ( 415 : 1 :(||  0  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 416 : 3 :(LVAR 44):) ):(CALL assert_expect ( 417 : 1 :(||  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 418 : 3 :(LVAR 44):) ):(= (LVAR 44)  0 ):(CALL assert_expect ( 420 : 0 :(||  0  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 421 : 1 :(LVAR 44):) ):(= (LVAR 44)  0 ):(CALL assert_expect ( 423 : 0 :(||  0  (&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ))):) ):(CALL assert_expect ( 424 : 1 :(LVAR 44):) ):(CALL assert_expect ( 425 : 1 :(|| (&&  1   1 ) (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 426 : 1 :(LVAR 44):) ):(CALL assert_expect ( 427 : 1 :(!  0 ):) ):(CALL assert_expect ( 428 : 0 :(!  1 ):) ):(CALL assert_expect ( 429 : 0 :(! (! (!  1 ))):) ):(CALL assert_expect ( 431 : 256 :(<<  1   8 ):) ):(CALL assert_expect ( 432 : 32 :(>>  512   4 ):) ):(= (LVAR 48)  10 ):(CALL assert_expect ( 437 : 15 :(= (LVAR 48) (+= (LVAR 48)  5 )):) ):(CALL assert_expect ( 438 : 15 :(LVAR 48):) ):(CALL assert_expect ( 439 : 8 :(= (LVAR 48) (-= (LVAR 48)  7 )):) ):(CALL assert_expect ( 440 : 8 :(LVAR 48):) ):(CALL assert_expect ( 441 : 40 :(= (LVAR 48) (*= (LVAR 48)  5 )):) ):(CALL assert_expect ( 442 : 40 :(LVAR 48):) ):(CALL assert_expect ( 443 : 4 :(= (LVAR 48) (/= (LVAR 48)  10 )):) ):(CALL assert_expect ( 444 : 4 :(LVAR 48):) ):(CALL assert_expect ( 447 : 4 :(++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ):) ):(CALL assert_expect ( 448 : 5 :(LVAR 48):) ):(CALL assert_expect ( 449 : 5 :(-- (= (LVAR 48) (-- (LVAR 48)  1 ))  1 ):) ):(CALL assert_expect ( 450 : 4 :(LVAR 48):) ):(= (LVAR 52) (/  100  (LVAR 48))):(CALL assert_expect ( 455 : 25 :(LVAR 52):) ):(= (LVAR 56)  77 ):(IF (== (LVAR 56)  77 ) (= (LVAR 56)  55 ) (= (LVAR 56)  66 )):(CALL assert_expect ( 463 : 55 :(LVAR 56):) ):(CALL assert_expect ( 464 : 1346269 :(CALL fibo ( 30 :) ):) ):(CALL array_global () ):(CALL array_local () ):(CALL string () ):(CALL block_scope () ):(CALL for_ () ):(CALL list_ () ):(CALL struct_ () ):(CALL assert_expect ( 477 : 11 :(CALL switch_ ( 1 :) ):) ):(CALL assert_expect ( 478 : 13 :(CALL switch_ ( 2 :) ):) ):(CALL assert_expect ( 479 : 13 :(CALL switch_ ( 3 :) ):) ):(CALL assert_expect ( 480 : 13 :(CALL switch_ ( 4 :) ):) ):(CALL assert_expect ( 481 : 15 :(CALL switch_ ( 5 :) ):) ):(CALL assert_expect ( 482 : 15 :(CALL switch_ ( 6 :) ):) ):(CALL assert_expect ( 485 : 11 :(CALL switch2_ ( 97 :) ):) ):(CALL assert_expect ( 486 : 12 :(CALL switch2_ ( 98 :) ):) ):(CALL assert_expect ( 487 : 12 :(CALL switch2_ ( 99 :) ):) ):(CALL assert_expect ( 488 : 15 :(CALL switch2_ ( 122 :) ):) ):(CALL assert_expect ( 491 : 92 :(CALL q8 () ):) ):(CALL assert_expect ( 494 : 0 : 0 :) ):(CALL assert_expect ( 495 : 1 : 1 :) ):(CALL assert_expect ( 496 : 2 : 2 :) ):(CALL assert_expect ( 497 : 3 : 3 :) ):(CALL assert_expect ( 499 : 15 :(|  13   7 ):) ):(CALL assert_expect ( 500 : 5115 :(|  938   5073 ):) ):(CALL assert_expect ( 501 : 5 :(&  13   7 ):) ):(CALL assert_expect ( 502 : 896 :(&  938   5073 ):) ):(CALL assert_expect ( 503 : 10 :(^  13   7 ):) ):(CALL assert_expect ( 504 : 4219 :(^  938   5073 ):) ):(CALL assert_expect ( 506 : 29 :(>>  938   5 ):) ):(CALL assert_expect ( 507 : 1664 :(<<  13   7 ):) ):(CALL printf_ ((ADDR  "passed tests.\n" ):) ):(RETURN  0 ):))
+//    i  offset:56  int 
+//    init  offset:52  int 
+//    z  offset:48  int 
+//    a  offset:44  int 
+//    jum  offset:40  * int 
 
 // <EOF>
 // Globals
@@ -171,7 +171,7 @@
 // printf_ func ( * char  str ) void 
 // print func ( int  a ) void 
 // assert_expect func ( int  line , int  expected , int  actual ) void 
-// __builtin_va_start func ( ) void 
+// __builtin_va_start func VARIADIC ( ) void 
 // Strings
 // "Hi, guys.\tAre you hungry"
 // "Hey, girls.\nAre you angry?"
@@ -415,29 +415,29 @@ A:
 	.file 1 "./test/test.c"
 	.text
 	.global fibo
-// Line 35 FDECL fibo func ( int  x ) int 
-//    (LVAR 4) 
-//    (BLOCK(IF (<  2  (LVAR 4)) (RETURN  1 ) NULL ):(RETURN (+ (CALL fibo ((- (LVAR 4)  1 ):) ) (CALL fibo ((- (LVAR 4)  2 ):) ))):))
+// Line 35 FDECL fibo func ( int  x ) int  max_offset:36
+//    (LVAR 36) 
+//    (BLOCK(IF (<  2  (LVAR 36)) (RETURN  1 ) NULL ):(RETURN (+ (CALL fibo ((- (LVAR 36)  1 ):) ) (CALL fibo ((- (LVAR 36)  2 ):) ))):))
 	.loc 1 35
 fibo:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 16
+	sub  rsp, 48
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-	mov  [rbp - 4], edi
-// Line 37 (IF (<  2  (LVAR 4)) (RETURN  1 ) NULL )
+	mov  [rbp - 36], edi
+// Line 37 (IF (<  2  (LVAR 36)) (RETURN  1 ) NULL )
 	.loc 1 37
-// Line 36 (<  2  (LVAR 4))
+// Line 36 (<  2  (LVAR 36))
 	.loc 1 36
 // Line 36  2 
 	.loc 1 36
 	push 2
-// Line 36 (LVAR 4)
+// Line 36 (LVAR 36)
 	.loc 1 36
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -459,17 +459,17 @@ fibo:
 	jmp  .L000001
 .L000000:
 .L000001:
-// Line 37 (RETURN (+ (CALL fibo ((- (LVAR 4)  1 ):) ) (CALL fibo ((- (LVAR 4)  2 ):) )))
+// Line 37 (RETURN (+ (CALL fibo ((- (LVAR 36)  1 ):) ) (CALL fibo ((- (LVAR 36)  2 ):) )))
 	.loc 1 37
-// Line 37 (+ (CALL fibo ((- (LVAR 4)  1 ):) ) (CALL fibo ((- (LVAR 4)  2 ):) ))
+// Line 37 (+ (CALL fibo ((- (LVAR 36)  1 ):) ) (CALL fibo ((- (LVAR 36)  2 ):) ))
 	.loc 1 37
-// Line 37 (CALL fibo ((- (LVAR 4)  1 ):) )
+// Line 37 (CALL fibo ((- (LVAR 36)  1 ):) )
 	.loc 1 37
-// Line 37 (- (LVAR 4)  1 )
+// Line 37 (- (LVAR 36)  1 )
 	.loc 1 37
-// Line 37 (LVAR 4)
+// Line 37 (LVAR 36)
 	.loc 1 37
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 // Line 37  1 
@@ -493,13 +493,13 @@ fibo:
 	add  rsp, 8
 .L000003:
 	push rax
-// Line 37 (CALL fibo ((- (LVAR 4)  2 ):) )
+// Line 37 (CALL fibo ((- (LVAR 36)  2 ):) )
 	.loc 1 37
-// Line 37 (- (LVAR 4)  2 )
+// Line 37 (- (LVAR 36)  2 )
 	.loc 1 37
-// Line 37 (LVAR 4)
+// Line 37 (LVAR 36)
 	.loc 1 37
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 // Line 37  2 
@@ -538,21 +538,21 @@ fibo:
 	pop  rbp
 	ret
 	.global array_local
-// Line 40 FDECL array_local func ( ) int 
+// Line 40 FDECL array_local func ( ) int  max_offset:360
 //    
-//    (BLOCK(= (LVAR 324)  0 ):(= (LVAR 328)  0 ):(WHILE cond:(<=  9  (LVAR 324))body: (BLOCK(= (LVAR 328)  0 ):(WHILE cond:(<=  7  (LVAR 328))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320)) (LVAR 324)))) (LVAR 328))) (+ (* (LVAR 324)  10 ) (LVAR 328))):(++ (= (LVAR 328) (++ (LVAR 328)  1 ))  1 ):)):(= (LVAR 324) (+= (LVAR 324)  1 )):)):(CALL assert_expect ( 52 : 1 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320))  0 )))  1 )):) ):(CALL assert_expect ( 53 : 97 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320))  9 )))  7 )):) ):(CALL assert_expect ( 54 : 84 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320))  8 )))  4 )):) ):(RETURN  0 ):))
+//    (BLOCK(= (LVAR 356)  0 ):(= (LVAR 360)  0 ):(WHILE cond:(<=  9  (LVAR 356))body: (BLOCK(= (LVAR 360)  0 ):(WHILE cond:(<=  7  (LVAR 360))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352)) (LVAR 356)))) (LVAR 360))) (+ (* (LVAR 356)  10 ) (LVAR 360))):(++ (= (LVAR 360) (++ (LVAR 360)  1 ))  1 ):)):(= (LVAR 356) (+= (LVAR 356)  1 )):)):(CALL assert_expect ( 52 : 1 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352))  0 )))  1 )):) ):(CALL assert_expect ( 53 : 97 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352))  9 )))  7 )):) ):(CALL assert_expect ( 54 : 84 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352))  8 )))  4 )):) ):(RETURN  0 ):))
 	.loc 1 40
 array_local:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 336
+	sub  rsp, 368
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-// Line 42 (= (LVAR 324)  0 )
+// Line 42 (= (LVAR 356)  0 )
 	.loc 1 42
-	lea  rax, [rbp - 324]
+	lea  rax, [rbp - 356]
 	push rax
 // Line 42  0 
 	.loc 1 42
@@ -562,9 +562,9 @@ array_local:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 43 (= (LVAR 328)  0 )
+// Line 43 (= (LVAR 360)  0 )
 	.loc 1 43
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	push rax
 // Line 43  0 
 	.loc 1 43
@@ -574,17 +574,17 @@ array_local:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 52 (WHILE cond:(<=  9  (LVAR 324))body: (BLOCK(= (LVAR 328)  0 ):(WHILE cond:(<=  7  (LVAR 328))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320)) (LVAR 324)))) (LVAR 328))) (+ (* (LVAR 324)  10 ) (LVAR 328))):(++ (= (LVAR 328) (++ (LVAR 328)  1 ))  1 ):)):(= (LVAR 324) (+= (LVAR 324)  1 )):))
+// Line 52 (WHILE cond:(<=  9  (LVAR 356))body: (BLOCK(= (LVAR 360)  0 ):(WHILE cond:(<=  7  (LVAR 360))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352)) (LVAR 356)))) (LVAR 360))) (+ (* (LVAR 356)  10 ) (LVAR 360))):(++ (= (LVAR 360) (++ (LVAR 360)  1 ))  1 ):)):(= (LVAR 356) (+= (LVAR 356)  1 )):))
 	.loc 1 52
 .L000006:
-// Line 44 (<=  9  (LVAR 324))
+// Line 44 (<=  9  (LVAR 356))
 	.loc 1 44
 // Line 44  9 
 	.loc 1 44
 	push 9
-// Line 44 (LVAR 324)
+// Line 44 (LVAR 356)
 	.loc 1 44
-	lea  rax, [rbp - 324]
+	lea  rax, [rbp - 356]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -596,11 +596,11 @@ array_local:
 	pop  rax
 	cmp  rax, 0
 	je   .L000007
-// Line 52 (BLOCK(= (LVAR 328)  0 ):(WHILE cond:(<=  7  (LVAR 328))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320)) (LVAR 324)))) (LVAR 328))) (+ (* (LVAR 324)  10 ) (LVAR 328))):(++ (= (LVAR 328) (++ (LVAR 328)  1 ))  1 ):)):(= (LVAR 324) (+= (LVAR 324)  1 )):)
+// Line 52 (BLOCK(= (LVAR 360)  0 ):(WHILE cond:(<=  7  (LVAR 360))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352)) (LVAR 356)))) (LVAR 360))) (+ (* (LVAR 356)  10 ) (LVAR 360))):(++ (= (LVAR 360) (++ (LVAR 360)  1 ))  1 ):)):(= (LVAR 356) (+= (LVAR 356)  1 )):)
 	.loc 1 52
-// Line 45 (= (LVAR 328)  0 )
+// Line 45 (= (LVAR 360)  0 )
 	.loc 1 45
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	push rax
 // Line 45  0 
 	.loc 1 45
@@ -610,17 +610,17 @@ array_local:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 50 (WHILE cond:(<=  7  (LVAR 328))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320)) (LVAR 324)))) (LVAR 328))) (+ (* (LVAR 324)  10 ) (LVAR 328))):(++ (= (LVAR 328) (++ (LVAR 328)  1 ))  1 ):))
+// Line 50 (WHILE cond:(<=  7  (LVAR 360))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352)) (LVAR 356)))) (LVAR 360))) (+ (* (LVAR 356)  10 ) (LVAR 360))):(++ (= (LVAR 360) (++ (LVAR 360)  1 ))  1 ):))
 	.loc 1 50
 .L000008:
-// Line 46 (<=  7  (LVAR 328))
+// Line 46 (<=  7  (LVAR 360))
 	.loc 1 46
 // Line 46  7 
 	.loc 1 46
 	push 7
-// Line 46 (LVAR 328)
+// Line 46 (LVAR 360)
 	.loc 1 46
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -632,23 +632,23 @@ array_local:
 	pop  rax
 	cmp  rax, 0
 	je   .L000009
-// Line 50 (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320)) (LVAR 324)))) (LVAR 328))) (+ (* (LVAR 324)  10 ) (LVAR 328))):(++ (= (LVAR 328) (++ (LVAR 328)  1 ))  1 ):)
+// Line 50 (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352)) (LVAR 356)))) (LVAR 360))) (+ (* (LVAR 356)  10 ) (LVAR 360))):(++ (= (LVAR 360) (++ (LVAR 360)  1 ))  1 ):)
 	.loc 1 50
-// Line 47 (= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320)) (LVAR 324)))) (LVAR 328))) (+ (* (LVAR 324)  10 ) (LVAR 328)))
+// Line 47 (= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352)) (LVAR 356)))) (LVAR 360))) (+ (* (LVAR 356)  10 ) (LVAR 360)))
 	.loc 1 47
-// Line 47 (] (ADDR (DEREF (] (ADDR (LVAR 320)) (LVAR 324)))) (LVAR 328))
+// Line 47 (] (ADDR (DEREF (] (ADDR (LVAR 352)) (LVAR 356)))) (LVAR 360))
 	.loc 1 47
-// Line 47 (ADDR (DEREF (] (ADDR (LVAR 320)) (LVAR 324))))
+// Line 47 (ADDR (DEREF (] (ADDR (LVAR 352)) (LVAR 356))))
 	.loc 1 47
-// Line 47 (] (ADDR (LVAR 320)) (LVAR 324))
+// Line 47 (] (ADDR (LVAR 352)) (LVAR 356))
 	.loc 1 47
-// Line 47 (ADDR (LVAR 320))
+// Line 47 (ADDR (LVAR 352))
 	.loc 1 47
-	lea  rax, [rbp - 320]
+	lea  rax, [rbp - 352]
 	push rax
-// Line 47 (LVAR 324)
+// Line 47 (LVAR 356)
 	.loc 1 47
-	lea  rax, [rbp - 324]
+	lea  rax, [rbp - 356]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -658,9 +658,9 @@ array_local:
 	push rax
 	pop  rax
 	push rax
-// Line 47 (LVAR 328)
+// Line 47 (LVAR 360)
 	.loc 1 47
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -670,13 +670,13 @@ array_local:
 	push rax
 	pop  rax
 	push rax
-// Line 47 (+ (* (LVAR 324)  10 ) (LVAR 328))
+// Line 47 (+ (* (LVAR 356)  10 ) (LVAR 360))
 	.loc 1 47
-// Line 47 (* (LVAR 324)  10 )
+// Line 47 (* (LVAR 356)  10 )
 	.loc 1 47
-// Line 47 (LVAR 324)
+// Line 47 (LVAR 356)
 	.loc 1 47
-	lea  rax, [rbp - 324]
+	lea  rax, [rbp - 356]
 	mov  eax, [rax]
 	push rax
 // Line 47  10 
@@ -686,9 +686,9 @@ array_local:
 	pop  rax
 	imul rax, rdi
 	push rax
-// Line 47 (LVAR 328)
+// Line 47 (LVAR 360)
 	.loc 1 47
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -700,17 +700,17 @@ array_local:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 48 (++ (= (LVAR 328) (++ (LVAR 328)  1 ))  1 )
+// Line 48 (++ (= (LVAR 360) (++ (LVAR 360)  1 ))  1 )
 	.loc 1 48
-// Line 48 (= (LVAR 328) (++ (LVAR 328)  1 ))
+// Line 48 (= (LVAR 360) (++ (LVAR 360)  1 ))
 	.loc 1 48
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	push rax
-// Line 48 (++ (LVAR 328)  1 )
+// Line 48 (++ (LVAR 360)  1 )
 	.loc 1 48
-// Line 48 (LVAR 328)
+// Line 48 (LVAR 360)
 	.loc 1 48
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	mov  eax, [rax]
 	push rax
 // Line 48  1 
@@ -734,15 +734,15 @@ array_local:
 	pop  rax
 	jmp  .L000008
 .L000009:
-// Line 50 (= (LVAR 324) (+= (LVAR 324)  1 ))
+// Line 50 (= (LVAR 356) (+= (LVAR 356)  1 ))
 	.loc 1 50
-	lea  rax, [rbp - 324]
+	lea  rax, [rbp - 356]
 	push rax
-// Line 50 (+= (LVAR 324)  1 )
+// Line 50 (+= (LVAR 356)  1 )
 	.loc 1 50
-// Line 50 (LVAR 324)
+// Line 50 (LVAR 356)
 	.loc 1 50
-	lea  rax, [rbp - 324]
+	lea  rax, [rbp - 356]
 	mov  eax, [rax]
 	push rax
 // Line 50  1 
@@ -759,19 +759,19 @@ array_local:
 	pop  rax
 	jmp  .L000006
 .L000007:
-// Line 52 (CALL assert_expect ( 52 : 1 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320))  0 )))  1 )):) )
+// Line 52 (CALL assert_expect ( 52 : 1 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352))  0 )))  1 )):) )
 	.loc 1 52
-// Line 52 (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320))  0 )))  1 ))
+// Line 52 (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352))  0 )))  1 ))
 	.loc 1 52
-// Line 52 (] (ADDR (DEREF (] (ADDR (LVAR 320))  0 )))  1 )
+// Line 52 (] (ADDR (DEREF (] (ADDR (LVAR 352))  0 )))  1 )
 	.loc 1 52
-// Line 52 (ADDR (DEREF (] (ADDR (LVAR 320))  0 )))
+// Line 52 (ADDR (DEREF (] (ADDR (LVAR 352))  0 )))
 	.loc 1 52
-// Line 52 (] (ADDR (LVAR 320))  0 )
+// Line 52 (] (ADDR (LVAR 352))  0 )
 	.loc 1 52
-// Line 52 (ADDR (LVAR 320))
+// Line 52 (ADDR (LVAR 352))
 	.loc 1 52
-	lea  rax, [rbp - 320]
+	lea  rax, [rbp - 352]
 	push rax
 // Line 52  0 
 	.loc 1 52
@@ -817,19 +817,19 @@ array_local:
 .L000011:
 	push rax
 	pop  rax
-// Line 53 (CALL assert_expect ( 53 : 97 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320))  9 )))  7 )):) )
+// Line 53 (CALL assert_expect ( 53 : 97 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352))  9 )))  7 )):) )
 	.loc 1 53
-// Line 53 (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320))  9 )))  7 ))
+// Line 53 (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352))  9 )))  7 ))
 	.loc 1 53
-// Line 53 (] (ADDR (DEREF (] (ADDR (LVAR 320))  9 )))  7 )
+// Line 53 (] (ADDR (DEREF (] (ADDR (LVAR 352))  9 )))  7 )
 	.loc 1 53
-// Line 53 (ADDR (DEREF (] (ADDR (LVAR 320))  9 )))
+// Line 53 (ADDR (DEREF (] (ADDR (LVAR 352))  9 )))
 	.loc 1 53
-// Line 53 (] (ADDR (LVAR 320))  9 )
+// Line 53 (] (ADDR (LVAR 352))  9 )
 	.loc 1 53
-// Line 53 (ADDR (LVAR 320))
+// Line 53 (ADDR (LVAR 352))
 	.loc 1 53
-	lea  rax, [rbp - 320]
+	lea  rax, [rbp - 352]
 	push rax
 // Line 53  9 
 	.loc 1 53
@@ -875,19 +875,19 @@ array_local:
 .L000013:
 	push rax
 	pop  rax
-// Line 54 (CALL assert_expect ( 54 : 84 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320))  8 )))  4 )):) )
+// Line 54 (CALL assert_expect ( 54 : 84 :(DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352))  8 )))  4 )):) )
 	.loc 1 54
-// Line 54 (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 320))  8 )))  4 ))
+// Line 54 (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 352))  8 )))  4 ))
 	.loc 1 54
-// Line 54 (] (ADDR (DEREF (] (ADDR (LVAR 320))  8 )))  4 )
+// Line 54 (] (ADDR (DEREF (] (ADDR (LVAR 352))  8 )))  4 )
 	.loc 1 54
-// Line 54 (ADDR (DEREF (] (ADDR (LVAR 320))  8 )))
+// Line 54 (ADDR (DEREF (] (ADDR (LVAR 352))  8 )))
 	.loc 1 54
-// Line 54 (] (ADDR (LVAR 320))  8 )
+// Line 54 (] (ADDR (LVAR 352))  8 )
 	.loc 1 54
-// Line 54 (ADDR (LVAR 320))
+// Line 54 (ADDR (LVAR 352))
 	.loc 1 54
-	lea  rax, [rbp - 320]
+	lea  rax, [rbp - 352]
 	push rax
 // Line 54  8 
 	.loc 1 54
@@ -949,23 +949,23 @@ array_local:
 	pop  rbp
 	ret
 	.global array_global
-// Line 79 FDECL array_global func ( ) int 
+// Line 79 FDECL array_global func ( ) int  max_offset:36
 //    
-//    (BLOCK(FOR init: (= (LVAR 4)  0 )cond: (<  5  (LVAR 4)) post: (++ (= (LVAR 4) (++ (LVAR 4)  1 ))  1 ) body (CALL assert_expect ( 80 :(+ (LVAR 4)  1 ):(DEREF (] (ADDR (GVAR ary_int)) (LVAR 4))):) )):(CALL assert_expect ( 81 : 105 :(DEREF (] (ADDR (DEREF (] (ADDR (DEREF (] (ADDR (GVAR reg))  2 )))  1 )))  1 )):) ):(CALL assert_expect ( 82 : 119 :(DEREF (] (ADDR (DEREF (] (ADDR (DEREF (] (ADDR (GVAR reg))  2 )))  4 )))  2 )):) ):(= (GVAR i)  0 ):(WHILE cond:(<=  9  (GVAR i))body: (BLOCK(= (GVAR j)  0 ):(WHILE cond:(<=  7  (GVAR j))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (GVAR a)) (GVAR i)))) (GVAR j))) (+ (* (GVAR i)  10 ) (GVAR j))):(++ (= (GVAR j) (++ (GVAR j)  1 ))  1 ):)):(++ (= (GVAR i) (++ (GVAR i)  1 ))  1 ):)):(CALL assert_expect ( 93 :(DEREF (] (ADDR (DEREF (] (ADDR (GVAR a))  0 )))  1 )): 1 :) ):(CALL assert_expect ( 94 :(DEREF (] (ADDR (DEREF (] (ADDR (GVAR a))  9 )))  7 )): 97 :) ):(CALL assert_expect ( 95 :(DEREF (] (ADDR (DEREF (] (ADDR (GVAR a))  8 )))  4 )): 84 :) ):(RETURN  0 ):))
+//    (BLOCK(FOR init: (= (LVAR 36)  0 )cond: (<  5  (LVAR 36)) post: (++ (= (LVAR 36) (++ (LVAR 36)  1 ))  1 ) body (CALL assert_expect ( 80 :(+ (LVAR 36)  1 ):(DEREF (] (ADDR (GVAR ary_int)) (LVAR 36))):) )):(CALL assert_expect ( 81 : 105 :(DEREF (] (ADDR (DEREF (] (ADDR (DEREF (] (ADDR (GVAR reg))  2 )))  1 )))  1 )):) ):(CALL assert_expect ( 82 : 119 :(DEREF (] (ADDR (DEREF (] (ADDR (DEREF (] (ADDR (GVAR reg))  2 )))  4 )))  2 )):) ):(= (GVAR i)  0 ):(WHILE cond:(<=  9  (GVAR i))body: (BLOCK(= (GVAR j)  0 ):(WHILE cond:(<=  7  (GVAR j))body: (BLOCK(= (DEREF (] (ADDR (DEREF (] (ADDR (GVAR a)) (GVAR i)))) (GVAR j))) (+ (* (GVAR i)  10 ) (GVAR j))):(++ (= (GVAR j) (++ (GVAR j)  1 ))  1 ):)):(++ (= (GVAR i) (++ (GVAR i)  1 ))  1 ):)):(CALL assert_expect ( 93 :(DEREF (] (ADDR (DEREF (] (ADDR (GVAR a))  0 )))  1 )): 1 :) ):(CALL assert_expect ( 94 :(DEREF (] (ADDR (DEREF (] (ADDR (GVAR a))  9 )))  7 )): 97 :) ):(CALL assert_expect ( 95 :(DEREF (] (ADDR (DEREF (] (ADDR (GVAR a))  8 )))  4 )): 84 :) ):(RETURN  0 ):))
 	.loc 1 79
 array_global:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 16
+	sub  rsp, 48
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-// Line 80 (FOR init: (= (LVAR 4)  0 )cond: (<  5  (LVAR 4)) post: (++ (= (LVAR 4) (++ (LVAR 4)  1 ))  1 ) body (CALL assert_expect ( 80 :(+ (LVAR 4)  1 ):(DEREF (] (ADDR (GVAR ary_int)) (LVAR 4))):) ))
+// Line 80 (FOR init: (= (LVAR 36)  0 )cond: (<  5  (LVAR 36)) post: (++ (= (LVAR 36) (++ (LVAR 36)  1 ))  1 ) body (CALL assert_expect ( 80 :(+ (LVAR 36)  1 ):(DEREF (] (ADDR (GVAR ary_int)) (LVAR 36))):) ))
 	.loc 1 80
-// Line 80 (= (LVAR 4)  0 )
+// Line 80 (= (LVAR 36)  0 )
 	.loc 1 80
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	push rax
 // Line 80  0 
 	.loc 1 80
@@ -975,14 +975,14 @@ array_global:
 	mov  [rax], edi
 	push rdi
 .L000018:
-// Line 80 (<  5  (LVAR 4))
+// Line 80 (<  5  (LVAR 36))
 	.loc 1 80
 // Line 80  5 
 	.loc 1 80
 	push 5
-// Line 80 (LVAR 4)
+// Line 80 (LVAR 36)
 	.loc 1 80
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -994,19 +994,19 @@ array_global:
 	pop  rax
 	cmp  rax, 0
 	je   .L000017
-// Line 80 (CALL assert_expect ( 80 :(+ (LVAR 4)  1 ):(DEREF (] (ADDR (GVAR ary_int)) (LVAR 4))):) )
+// Line 80 (CALL assert_expect ( 80 :(+ (LVAR 36)  1 ):(DEREF (] (ADDR (GVAR ary_int)) (LVAR 36))):) )
 	.loc 1 80
-// Line 80 (DEREF (] (ADDR (GVAR ary_int)) (LVAR 4)))
+// Line 80 (DEREF (] (ADDR (GVAR ary_int)) (LVAR 36)))
 	.loc 1 80
-// Line 80 (] (ADDR (GVAR ary_int)) (LVAR 4))
+// Line 80 (] (ADDR (GVAR ary_int)) (LVAR 36))
 	.loc 1 80
 // Line 80 (ADDR (GVAR ary_int))
 	.loc 1 80
 	lea  rax, ary_int[rip]
 	push rax
-// Line 80 (LVAR 4)
+// Line 80 (LVAR 36)
 	.loc 1 80
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -1017,11 +1017,11 @@ array_global:
 	pop  rax
 	mov  eax, [rax]
 	push rax
-// Line 80 (+ (LVAR 4)  1 )
+// Line 80 (+ (LVAR 36)  1 )
 	.loc 1 80
-// Line 80 (LVAR 4)
+// Line 80 (LVAR 36)
 	.loc 1 80
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 // Line 80  1 
@@ -1052,17 +1052,17 @@ array_global:
 	push rax
 	pop  rax
 .L000016:
-// Line 80 (++ (= (LVAR 4) (++ (LVAR 4)  1 ))  1 )
+// Line 80 (++ (= (LVAR 36) (++ (LVAR 36)  1 ))  1 )
 	.loc 1 80
-// Line 80 (= (LVAR 4) (++ (LVAR 4)  1 ))
+// Line 80 (= (LVAR 36) (++ (LVAR 36)  1 ))
 	.loc 1 80
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	push rax
-// Line 80 (++ (LVAR 4)  1 )
+// Line 80 (++ (LVAR 36)  1 )
 	.loc 1 80
-// Line 80 (LVAR 4)
+// Line 80 (LVAR 36)
 	.loc 1 80
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 // Line 80  1 
@@ -1626,21 +1626,21 @@ array_global:
 	pop  rbp
 	ret
 	.global string
-// Line 99 FDECL string func ( ) int 
+// Line 99 FDECL string func ( ) int  max_offset:63
 //    
-//    (BLOCK(= (LVAR 8) (ADDR  "Hello world!\n" )):(CALL printf_ ((LVAR 8):) ):(= (LVAR 31)  "\tHello---" ):(CALL printf_ ((ADDR (LVAR 31)):) ):(CALL assert_expect ( 106 : 9 :(DEREF (] (ADDR (LVAR 31))  15 )):) ):(CALL assert_expect ( 108 : 119 : 119 :) ):(CALL assert_expect ( 109 : 119 :(DEREF (] (LVAR 8)  6 )):) ):))
+//    (BLOCK(= (LVAR 40) (ADDR  "Hello world!\n" )):(CALL printf_ ((LVAR 40):) ):(= (LVAR 63)  "\tHello---" ):(CALL printf_ ((ADDR (LVAR 63)):) ):(CALL assert_expect ( 106 : 9 :(DEREF (] (ADDR (LVAR 63))  15 )):) ):(CALL assert_expect ( 108 : 119 : 119 :) ):(CALL assert_expect ( 109 : 119 :(DEREF (] (LVAR 40)  6 )):) ):))
 	.loc 1 99
 string:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 32
+	sub  rsp, 64
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-// Line 100 (= (LVAR 8) (ADDR  "Hello world!\n" ))
+// Line 100 (= (LVAR 40) (ADDR  "Hello world!\n" ))
 	.loc 1 100
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	push rax
 // Line 100 (ADDR  "Hello world!\n" )
 	.loc 1 100
@@ -1651,11 +1651,11 @@ string:
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 101 (CALL printf_ ((LVAR 8):) )
+// Line 101 (CALL printf_ ((LVAR 40):) )
 	.loc 1 101
-// Line 101 (LVAR 8)
+// Line 101 (LVAR 40)
 	.loc 1 101
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  rax, [rax]
 	push rax
 	pop  rdi
@@ -1673,23 +1673,23 @@ string:
 .L000036:
 	push rax
 	pop  rax
-// Line 102 (= (LVAR 31)  "\tHello---" )
+// Line 102 (= (LVAR 63)  "\tHello---" )
 	.loc 1 102
-	mov  DWORD PTR [rbp - 31], 1818576905
-	mov  DWORD PTR [rbp - 27], 757952364
-	mov  DWORD PTR [rbp - 23], 1919907629
-	mov  DWORD PTR [rbp - 19], 153904236
-	mov  DWORD PTR [rbp - 15], 1767991137
-	mov  BYTE PTR [rbp - 11], 110
-	mov  BYTE PTR [rbp - 10], 10
-	mov  BYTE PTR [rbp - 9], 0
+	mov  DWORD PTR [rbp - 63], 1818576905
+	mov  DWORD PTR [rbp - 59], 757952364
+	mov  DWORD PTR [rbp - 55], 1919907629
+	mov  DWORD PTR [rbp - 51], 153904236
+	mov  DWORD PTR [rbp - 47], 1767991137
+	mov  BYTE PTR [rbp - 43], 110
+	mov  BYTE PTR [rbp - 42], 10
+	mov  BYTE PTR [rbp - 41], 0
 	push rdi
 	pop  rax
-// Line 105 (CALL printf_ ((ADDR (LVAR 31)):) )
+// Line 105 (CALL printf_ ((ADDR (LVAR 63)):) )
 	.loc 1 105
-// Line 105 (ADDR (LVAR 31))
+// Line 105 (ADDR (LVAR 63))
 	.loc 1 105
-	lea  rax, [rbp - 31]
+	lea  rax, [rbp - 63]
 	push rax
 	pop  rdi
 	mov  rax, rsp
@@ -1706,15 +1706,15 @@ string:
 .L000038:
 	push rax
 	pop  rax
-// Line 106 (CALL assert_expect ( 106 : 9 :(DEREF (] (ADDR (LVAR 31))  15 )):) )
+// Line 106 (CALL assert_expect ( 106 : 9 :(DEREF (] (ADDR (LVAR 63))  15 )):) )
 	.loc 1 106
-// Line 106 (DEREF (] (ADDR (LVAR 31))  15 ))
+// Line 106 (DEREF (] (ADDR (LVAR 63))  15 ))
 	.loc 1 106
-// Line 106 (] (ADDR (LVAR 31))  15 )
+// Line 106 (] (ADDR (LVAR 63))  15 )
 	.loc 1 106
-// Line 106 (ADDR (LVAR 31))
+// Line 106 (ADDR (LVAR 63))
 	.loc 1 106
-	lea  rax, [rbp - 31]
+	lea  rax, [rbp - 63]
 	push rax
 // Line 106  15 
 	.loc 1 106
@@ -1778,15 +1778,15 @@ string:
 .L000042:
 	push rax
 	pop  rax
-// Line 109 (CALL assert_expect ( 109 : 119 :(DEREF (] (LVAR 8)  6 )):) )
+// Line 109 (CALL assert_expect ( 109 : 119 :(DEREF (] (LVAR 40)  6 )):) )
 	.loc 1 109
-// Line 109 (DEREF (] (LVAR 8)  6 ))
+// Line 109 (DEREF (] (LVAR 40)  6 ))
 	.loc 1 109
-// Line 109 (] (LVAR 8)  6 )
+// Line 109 (] (LVAR 40)  6 )
 	.loc 1 109
-// Line 109 (LVAR 8)
+// Line 109 (LVAR 40)
 	.loc 1 109
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  rax, [rax]
 	push rax
 // Line 109  6 
@@ -1832,14 +1832,14 @@ string:
 	pop  rbp
 	ret
 	.global block_scope
-// Line 112 FDECL block_scope func ( ) void 
+// Line 112 FDECL block_scope func ( ) void  max_offset:48
 //    
-//    (BLOCK(= (GVAR i)  1 ):(CALL assert_expect ( 114 : 1 :(GVAR i):) ):(= (LVAR 4)  5 ):(CALL assert_expect ( 116 : 5 :(LVAR 4):) ):(BLOCK(= (LVAR 8)  2 ):(BLOCK(= (LVAR 12)  3 ):(BLOCK(= (LVAR 16)  4 ):(CALL assert_expect ( 123 : 4 :(LVAR 16):) ):):(CALL assert_expect ( 125 : 3 :(LVAR 12):) ):):(CALL assert_expect ( 127 : 2 :(LVAR 8):) ):):(CALL assert_expect ( 129 : 5 :(LVAR 4):) ):))
+//    (BLOCK(= (GVAR i)  1 ):(CALL assert_expect ( 114 : 1 :(GVAR i):) ):(= (LVAR 36)  5 ):(CALL assert_expect ( 116 : 5 :(LVAR 36):) ):(BLOCK(= (LVAR 40)  2 ):(BLOCK(= (LVAR 44)  3 ):(BLOCK(= (LVAR 48)  4 ):(CALL assert_expect ( 123 : 4 :(LVAR 48):) ):):(CALL assert_expect ( 125 : 3 :(LVAR 44):) ):):(CALL assert_expect ( 127 : 2 :(LVAR 40):) ):):(CALL assert_expect ( 129 : 5 :(LVAR 36):) ):))
 	.loc 1 112
 block_scope:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 32
+	sub  rsp, 48
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
@@ -1886,9 +1886,9 @@ block_scope:
 .L000046:
 	push rax
 	pop  rax
-// Line 115 (= (LVAR 4)  5 )
+// Line 115 (= (LVAR 36)  5 )
 	.loc 1 115
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	push rax
 // Line 115  5 
 	.loc 1 115
@@ -1898,11 +1898,11 @@ block_scope:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 116 (CALL assert_expect ( 116 : 5 :(LVAR 4):) )
+// Line 116 (CALL assert_expect ( 116 : 5 :(LVAR 36):) )
 	.loc 1 116
-// Line 116 (LVAR 4)
+// Line 116 (LVAR 36)
 	.loc 1 116
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 // Line 116  5 
@@ -1928,11 +1928,11 @@ block_scope:
 .L000048:
 	push rax
 	pop  rax
-// Line 129 (BLOCK(= (LVAR 8)  2 ):(BLOCK(= (LVAR 12)  3 ):(BLOCK(= (LVAR 16)  4 ):(CALL assert_expect ( 123 : 4 :(LVAR 16):) ):):(CALL assert_expect ( 125 : 3 :(LVAR 12):) ):):(CALL assert_expect ( 127 : 2 :(LVAR 8):) ):)
+// Line 129 (BLOCK(= (LVAR 40)  2 ):(BLOCK(= (LVAR 44)  3 ):(BLOCK(= (LVAR 48)  4 ):(CALL assert_expect ( 123 : 4 :(LVAR 48):) ):):(CALL assert_expect ( 125 : 3 :(LVAR 44):) ):):(CALL assert_expect ( 127 : 2 :(LVAR 40):) ):)
 	.loc 1 129
-// Line 118 (= (LVAR 8)  2 )
+// Line 118 (= (LVAR 40)  2 )
 	.loc 1 118
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	push rax
 // Line 118  2 
 	.loc 1 118
@@ -1942,11 +1942,11 @@ block_scope:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 127 (BLOCK(= (LVAR 12)  3 ):(BLOCK(= (LVAR 16)  4 ):(CALL assert_expect ( 123 : 4 :(LVAR 16):) ):):(CALL assert_expect ( 125 : 3 :(LVAR 12):) ):)
+// Line 127 (BLOCK(= (LVAR 44)  3 ):(BLOCK(= (LVAR 48)  4 ):(CALL assert_expect ( 123 : 4 :(LVAR 48):) ):):(CALL assert_expect ( 125 : 3 :(LVAR 44):) ):)
 	.loc 1 127
-// Line 120 (= (LVAR 12)  3 )
+// Line 120 (= (LVAR 44)  3 )
 	.loc 1 120
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
 // Line 120  3 
 	.loc 1 120
@@ -1956,11 +1956,11 @@ block_scope:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 125 (BLOCK(= (LVAR 16)  4 ):(CALL assert_expect ( 123 : 4 :(LVAR 16):) ):)
+// Line 125 (BLOCK(= (LVAR 48)  4 ):(CALL assert_expect ( 123 : 4 :(LVAR 48):) ):)
 	.loc 1 125
-// Line 122 (= (LVAR 16)  4 )
+// Line 122 (= (LVAR 48)  4 )
 	.loc 1 122
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
 // Line 122  4 
 	.loc 1 122
@@ -1970,11 +1970,11 @@ block_scope:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 123 (CALL assert_expect ( 123 : 4 :(LVAR 16):) )
+// Line 123 (CALL assert_expect ( 123 : 4 :(LVAR 48):) )
 	.loc 1 123
-// Line 123 (LVAR 16)
+// Line 123 (LVAR 48)
 	.loc 1 123
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 123  4 
@@ -2000,11 +2000,11 @@ block_scope:
 .L000050:
 	push rax
 	pop  rax
-// Line 125 (CALL assert_expect ( 125 : 3 :(LVAR 12):) )
+// Line 125 (CALL assert_expect ( 125 : 3 :(LVAR 44):) )
 	.loc 1 125
-// Line 125 (LVAR 12)
+// Line 125 (LVAR 44)
 	.loc 1 125
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 125  3 
@@ -2030,11 +2030,11 @@ block_scope:
 .L000052:
 	push rax
 	pop  rax
-// Line 127 (CALL assert_expect ( 127 : 2 :(LVAR 8):) )
+// Line 127 (CALL assert_expect ( 127 : 2 :(LVAR 40):) )
 	.loc 1 127
-// Line 127 (LVAR 8)
+// Line 127 (LVAR 40)
 	.loc 1 127
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  eax, [rax]
 	push rax
 // Line 127  2 
@@ -2060,11 +2060,11 @@ block_scope:
 .L000054:
 	push rax
 	pop  rax
-// Line 129 (CALL assert_expect ( 129 : 5 :(LVAR 4):) )
+// Line 129 (CALL assert_expect ( 129 : 5 :(LVAR 36):) )
 	.loc 1 129
-// Line 129 (LVAR 4)
+// Line 129 (LVAR 36)
 	.loc 1 129
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 // Line 129  5 
@@ -2099,21 +2099,21 @@ block_scope:
 	pop  rbp
 	ret
 	.global for_
-// Line 132 FDECL for_ func ( ) void 
+// Line 132 FDECL for_ func ( ) void  max_offset:44
 //    
-//    (BLOCK(= (LVAR 4)  100 ):(CALL assert_expect ( 134 : 100 :(LVAR 4):) ):(FOR init: (= (LVAR 8)  10 )cond: (<  100  (LVAR 8)) post: (= (LVAR 8) (+= (LVAR 8)  1 )) body (BLOCK(IF (== (LVAR 8)  15 ) BREAK  NULL ):(IF (== (LVAR 8) (* (/ (LVAR 8)  3 )  3 )) (CALL assert_expect ( 137 : 12 :(LVAR 8):) ) NULL ):(= (LVAR 12)  9 ):(CALL assert_expect ( 139 : 9 :(LVAR 12):) ):)):(CALL assert_expect ( 141 : 100 :(LVAR 4):) ):(= (LVAR 4)  0 ):(FOR init: NULL cond:  1  post: NULL  body (BLOCK(IF (== (LVAR 4)  6 ) BREAK  NULL ):(= (LVAR 4) (+ (LVAR 4)  1 )):)):(CALL assert_expect ( 147 : 6 :(LVAR 4):) ):))
+//    (BLOCK(= (LVAR 36)  100 ):(CALL assert_expect ( 134 : 100 :(LVAR 36):) ):(FOR init: (= (LVAR 40)  10 )cond: (<  100  (LVAR 40)) post: (= (LVAR 40) (+= (LVAR 40)  1 )) body (BLOCK(IF (== (LVAR 40)  15 ) BREAK  NULL ):(IF (== (LVAR 40) (* (/ (LVAR 40)  3 )  3 )) (CALL assert_expect ( 137 : 12 :(LVAR 40):) ) NULL ):(= (LVAR 44)  9 ):(CALL assert_expect ( 139 : 9 :(LVAR 44):) ):)):(CALL assert_expect ( 141 : 100 :(LVAR 36):) ):(= (LVAR 36)  0 ):(FOR init: NULL cond:  1  post: NULL  body (BLOCK(IF (== (LVAR 36)  6 ) BREAK  NULL ):(= (LVAR 36) (+ (LVAR 36)  1 )):)):(CALL assert_expect ( 147 : 6 :(LVAR 36):) ):))
 	.loc 1 132
 for_:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 16
+	sub  rsp, 48
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-// Line 133 (= (LVAR 4)  100 )
+// Line 133 (= (LVAR 36)  100 )
 	.loc 1 133
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	push rax
 // Line 133  100 
 	.loc 1 133
@@ -2123,11 +2123,11 @@ for_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 134 (CALL assert_expect ( 134 : 100 :(LVAR 4):) )
+// Line 134 (CALL assert_expect ( 134 : 100 :(LVAR 36):) )
 	.loc 1 134
-// Line 134 (LVAR 4)
+// Line 134 (LVAR 36)
 	.loc 1 134
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 // Line 134  100 
@@ -2153,11 +2153,11 @@ for_:
 .L000058:
 	push rax
 	pop  rax
-// Line 135 (FOR init: (= (LVAR 8)  10 )cond: (<  100  (LVAR 8)) post: (= (LVAR 8) (+= (LVAR 8)  1 )) body (BLOCK(IF (== (LVAR 8)  15 ) BREAK  NULL ):(IF (== (LVAR 8) (* (/ (LVAR 8)  3 )  3 )) (CALL assert_expect ( 137 : 12 :(LVAR 8):) ) NULL ):(= (LVAR 12)  9 ):(CALL assert_expect ( 139 : 9 :(LVAR 12):) ):))
+// Line 135 (FOR init: (= (LVAR 40)  10 )cond: (<  100  (LVAR 40)) post: (= (LVAR 40) (+= (LVAR 40)  1 )) body (BLOCK(IF (== (LVAR 40)  15 ) BREAK  NULL ):(IF (== (LVAR 40) (* (/ (LVAR 40)  3 )  3 )) (CALL assert_expect ( 137 : 12 :(LVAR 40):) ) NULL ):(= (LVAR 44)  9 ):(CALL assert_expect ( 139 : 9 :(LVAR 44):) ):))
 	.loc 1 135
-// Line 135 (= (LVAR 8)  10 )
+// Line 135 (= (LVAR 40)  10 )
 	.loc 1 135
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	push rax
 // Line 135  10 
 	.loc 1 135
@@ -2167,14 +2167,14 @@ for_:
 	mov  [rax], edi
 	push rdi
 .L000061:
-// Line 135 (<  100  (LVAR 8))
+// Line 135 (<  100  (LVAR 40))
 	.loc 1 135
 // Line 135  100 
 	.loc 1 135
 	push 100
-// Line 135 (LVAR 8)
+// Line 135 (LVAR 40)
 	.loc 1 135
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -2186,15 +2186,15 @@ for_:
 	pop  rax
 	cmp  rax, 0
 	je   .L000060
-// Line 141 (BLOCK(IF (== (LVAR 8)  15 ) BREAK  NULL ):(IF (== (LVAR 8) (* (/ (LVAR 8)  3 )  3 )) (CALL assert_expect ( 137 : 12 :(LVAR 8):) ) NULL ):(= (LVAR 12)  9 ):(CALL assert_expect ( 139 : 9 :(LVAR 12):) ):)
+// Line 141 (BLOCK(IF (== (LVAR 40)  15 ) BREAK  NULL ):(IF (== (LVAR 40) (* (/ (LVAR 40)  3 )  3 )) (CALL assert_expect ( 137 : 12 :(LVAR 40):) ) NULL ):(= (LVAR 44)  9 ):(CALL assert_expect ( 139 : 9 :(LVAR 44):) ):)
 	.loc 1 141
-// Line 137 (IF (== (LVAR 8)  15 ) BREAK  NULL )
+// Line 137 (IF (== (LVAR 40)  15 ) BREAK  NULL )
 	.loc 1 137
-// Line 136 (== (LVAR 8)  15 )
+// Line 136 (== (LVAR 40)  15 )
 	.loc 1 136
-// Line 136 (LVAR 8)
+// Line 136 (LVAR 40)
 	.loc 1 136
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  eax, [rax]
 	push rax
 // Line 136  15 
@@ -2215,22 +2215,22 @@ for_:
 	jmp  .L000063
 .L000062:
 .L000063:
-// Line 138 (IF (== (LVAR 8) (* (/ (LVAR 8)  3 )  3 )) (CALL assert_expect ( 137 : 12 :(LVAR 8):) ) NULL )
+// Line 138 (IF (== (LVAR 40) (* (/ (LVAR 40)  3 )  3 )) (CALL assert_expect ( 137 : 12 :(LVAR 40):) ) NULL )
 	.loc 1 138
-// Line 137 (== (LVAR 8) (* (/ (LVAR 8)  3 )  3 ))
+// Line 137 (== (LVAR 40) (* (/ (LVAR 40)  3 )  3 ))
 	.loc 1 137
-// Line 137 (LVAR 8)
+// Line 137 (LVAR 40)
 	.loc 1 137
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  eax, [rax]
 	push rax
-// Line 137 (* (/ (LVAR 8)  3 )  3 )
+// Line 137 (* (/ (LVAR 40)  3 )  3 )
 	.loc 1 137
-// Line 137 (/ (LVAR 8)  3 )
+// Line 137 (/ (LVAR 40)  3 )
 	.loc 1 137
-// Line 137 (LVAR 8)
+// Line 137 (LVAR 40)
 	.loc 1 137
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  eax, [rax]
 	push rax
 // Line 137  3 
@@ -2257,11 +2257,11 @@ for_:
 	pop  rax
 	cmp  rax, 0
 	je   .L000064
-// Line 137 (CALL assert_expect ( 137 : 12 :(LVAR 8):) )
+// Line 137 (CALL assert_expect ( 137 : 12 :(LVAR 40):) )
 	.loc 1 137
-// Line 137 (LVAR 8)
+// Line 137 (LVAR 40)
 	.loc 1 137
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  eax, [rax]
 	push rax
 // Line 137  12 
@@ -2290,9 +2290,9 @@ for_:
 	jmp  .L000065
 .L000064:
 .L000065:
-// Line 138 (= (LVAR 12)  9 )
+// Line 138 (= (LVAR 44)  9 )
 	.loc 1 138
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
 // Line 138  9 
 	.loc 1 138
@@ -2302,11 +2302,11 @@ for_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 139 (CALL assert_expect ( 139 : 9 :(LVAR 12):) )
+// Line 139 (CALL assert_expect ( 139 : 9 :(LVAR 44):) )
 	.loc 1 139
-// Line 139 (LVAR 12)
+// Line 139 (LVAR 44)
 	.loc 1 139
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 139  9 
@@ -2333,15 +2333,15 @@ for_:
 	push rax
 	pop  rax
 .L000059:
-// Line 135 (= (LVAR 8) (+= (LVAR 8)  1 ))
+// Line 135 (= (LVAR 40) (+= (LVAR 40)  1 ))
 	.loc 1 135
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	push rax
-// Line 135 (+= (LVAR 8)  1 )
+// Line 135 (+= (LVAR 40)  1 )
 	.loc 1 135
-// Line 135 (LVAR 8)
+// Line 135 (LVAR 40)
 	.loc 1 135
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  eax, [rax]
 	push rax
 // Line 135  1 
@@ -2358,11 +2358,11 @@ for_:
 	pop  rax
 	jmp  .L000061
 .L000060:
-// Line 141 (CALL assert_expect ( 141 : 100 :(LVAR 4):) )
+// Line 141 (CALL assert_expect ( 141 : 100 :(LVAR 36):) )
 	.loc 1 141
-// Line 141 (LVAR 4)
+// Line 141 (LVAR 36)
 	.loc 1 141
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 // Line 141  100 
@@ -2388,9 +2388,9 @@ for_:
 .L000071:
 	push rax
 	pop  rax
-// Line 142 (= (LVAR 4)  0 )
+// Line 142 (= (LVAR 36)  0 )
 	.loc 1 142
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	push rax
 // Line 142  0 
 	.loc 1 142
@@ -2400,7 +2400,7 @@ for_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 143 (FOR init: NULL cond:  1  post: NULL  body (BLOCK(IF (== (LVAR 4)  6 ) BREAK  NULL ):(= (LVAR 4) (+ (LVAR 4)  1 )):))
+// Line 143 (FOR init: NULL cond:  1  post: NULL  body (BLOCK(IF (== (LVAR 36)  6 ) BREAK  NULL ):(= (LVAR 36) (+ (LVAR 36)  1 )):))
 	.loc 1 143
 .L000074:
 // Line 143  1 
@@ -2409,15 +2409,15 @@ for_:
 	pop  rax
 	cmp  rax, 0
 	je   .L000073
-// Line 147 (BLOCK(IF (== (LVAR 4)  6 ) BREAK  NULL ):(= (LVAR 4) (+ (LVAR 4)  1 )):)
+// Line 147 (BLOCK(IF (== (LVAR 36)  6 ) BREAK  NULL ):(= (LVAR 36) (+ (LVAR 36)  1 )):)
 	.loc 1 147
-// Line 145 (IF (== (LVAR 4)  6 ) BREAK  NULL )
+// Line 145 (IF (== (LVAR 36)  6 ) BREAK  NULL )
 	.loc 1 145
-// Line 144 (== (LVAR 4)  6 )
+// Line 144 (== (LVAR 36)  6 )
 	.loc 1 144
-// Line 144 (LVAR 4)
+// Line 144 (LVAR 36)
 	.loc 1 144
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 // Line 144  6 
@@ -2438,15 +2438,15 @@ for_:
 	jmp  .L000076
 .L000075:
 .L000076:
-// Line 145 (= (LVAR 4) (+ (LVAR 4)  1 ))
+// Line 145 (= (LVAR 36) (+ (LVAR 36)  1 ))
 	.loc 1 145
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	push rax
-// Line 145 (+ (LVAR 4)  1 )
+// Line 145 (+ (LVAR 36)  1 )
 	.loc 1 145
-// Line 145 (LVAR 4)
+// Line 145 (LVAR 36)
 	.loc 1 145
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 // Line 145  1 
@@ -2464,11 +2464,11 @@ for_:
 .L000072:
 	jmp  .L000074
 .L000073:
-// Line 147 (CALL assert_expect ( 147 : 6 :(LVAR 4):) )
+// Line 147 (CALL assert_expect ( 147 : 6 :(LVAR 36):) )
 	.loc 1 147
-// Line 147 (LVAR 4)
+// Line 147 (LVAR 36)
 	.loc 1 147
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 // Line 147  6 
@@ -2503,39 +2503,39 @@ for_:
 	pop  rbp
 	ret
 	.global switch_
-// Line 150 FDECL switch_ func ( int  s ) int 
-//    (LVAR 4) 
-//    (BLOCK(SWITCH cond: (LVAR 4) body: (BLOCK(CASE cond: 1  body:(BLOCK(= (LVAR 8)  11 ):BREAK :)):(CASE cond: 2  body:(BLOCK)):(CASE cond: 3  body:(BLOCK(= (LVAR 8)  12 ):)):(CASE cond: 4  body:(BLOCK(= (LVAR 8)  13 ):(RETURN (LVAR 8)):)):(CASE cond: 5  body:(BLOCK(= (LVAR 8)  14 ):)):(DEFAULT body:(= (LVAR 8)  15 )):)):(RETURN (LVAR 8)):))
+// Line 150 FDECL switch_ func ( int  s ) int  max_offset:44
+//    (LVAR 36) 
+//    (BLOCK(SWITCH cond: (LVAR 36) body: (BLOCK(CASE cond: 1  body:(BLOCK(= (LVAR 40)  11 ):BREAK :)):(CASE cond: 2  body:(BLOCK)):(CASE cond: 3  body:(BLOCK(= (LVAR 40)  12 ):)):(CASE cond: 4  body:(BLOCK(= (LVAR 40)  13 ):(RETURN (LVAR 40)):)):(CASE cond: 5  body:(BLOCK(= (LVAR 40)  14 ):)):(DEFAULT body:(= (LVAR 40)  15 )):)):(RETURN (LVAR 40)):))
 	.loc 1 150
 switch_:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 16
+	sub  rsp, 48
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-	mov  [rbp - 4], edi
-// Line 152 (SWITCH cond: (LVAR 4) body: (BLOCK(CASE cond: 1  body:(BLOCK(= (LVAR 8)  11 ):BREAK :)):(CASE cond: 2  body:(BLOCK)):(CASE cond: 3  body:(BLOCK(= (LVAR 8)  12 ):)):(CASE cond: 4  body:(BLOCK(= (LVAR 8)  13 ):(RETURN (LVAR 8)):)):(CASE cond: 5  body:(BLOCK(= (LVAR 8)  14 ):)):(DEFAULT body:(= (LVAR 8)  15 )):))
+	mov  [rbp - 36], edi
+// Line 152 (SWITCH cond: (LVAR 36) body: (BLOCK(CASE cond: 1  body:(BLOCK(= (LVAR 40)  11 ):BREAK :)):(CASE cond: 2  body:(BLOCK)):(CASE cond: 3  body:(BLOCK(= (LVAR 40)  12 ):)):(CASE cond: 4  body:(BLOCK(= (LVAR 40)  13 ):(RETURN (LVAR 40)):)):(CASE cond: 5  body:(BLOCK(= (LVAR 40)  14 ):)):(DEFAULT body:(= (LVAR 40)  15 )):))
 	.loc 1 152
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 152 (LVAR 4)
+// Line 152 (LVAR 36)
 	.loc 1 152
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
 	pop  rax
 	mov  [rax], edi
-// Line 167 (BLOCK(CASE cond: 1  body:(BLOCK(= (LVAR 8)  11 ):BREAK :)):(CASE cond: 2  body:(BLOCK)):(CASE cond: 3  body:(BLOCK(= (LVAR 8)  12 ):)):(CASE cond: 4  body:(BLOCK(= (LVAR 8)  13 ):(RETURN (LVAR 8)):)):(CASE cond: 5  body:(BLOCK(= (LVAR 8)  14 ):)):(DEFAULT body:(= (LVAR 8)  15 )):)
+// Line 167 (BLOCK(CASE cond: 1  body:(BLOCK(= (LVAR 40)  11 ):BREAK :)):(CASE cond: 2  body:(BLOCK)):(CASE cond: 3  body:(BLOCK(= (LVAR 40)  12 ):)):(CASE cond: 4  body:(BLOCK(= (LVAR 40)  13 ):(RETURN (LVAR 40)):)):(CASE cond: 5  body:(BLOCK(= (LVAR 40)  14 ):)):(DEFAULT body:(= (LVAR 40)  15 )):)
 	.loc 1 167
-// Line 153 (CASE cond: 1  body:(BLOCK(= (LVAR 8)  11 ):BREAK :))
+// Line 153 (CASE cond: 1  body:(BLOCK(= (LVAR 40)  11 ):BREAK :))
 	.loc 1 153
 // Line 153  1 
 	.loc 1 153
 	push 1
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	pop  rdi
 	cmp  eax, edi
@@ -2545,51 +2545,51 @@ switch_:
 // Line 156  2 
 	.loc 1 156
 	push 2
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	pop  rdi
 	cmp  eax, edi
 	je   .L000081
-// Line 157 (CASE cond: 3  body:(BLOCK(= (LVAR 8)  12 ):))
+// Line 157 (CASE cond: 3  body:(BLOCK(= (LVAR 40)  12 ):))
 	.loc 1 157
 // Line 157  3 
 	.loc 1 157
 	push 3
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	pop  rdi
 	cmp  eax, edi
 	je   .L000082
-// Line 159 (CASE cond: 4  body:(BLOCK(= (LVAR 8)  13 ):(RETURN (LVAR 8)):))
+// Line 159 (CASE cond: 4  body:(BLOCK(= (LVAR 40)  13 ):(RETURN (LVAR 40)):))
 	.loc 1 159
 // Line 159  4 
 	.loc 1 159
 	push 4
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	pop  rdi
 	cmp  eax, edi
 	je   .L000083
-// Line 162 (CASE cond: 5  body:(BLOCK(= (LVAR 8)  14 ):))
+// Line 162 (CASE cond: 5  body:(BLOCK(= (LVAR 40)  14 ):))
 	.loc 1 162
 // Line 162  5 
 	.loc 1 162
 	push 5
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	pop  rdi
 	cmp  eax, edi
 	je   .L000084
-// Line 164 (DEFAULT body:(= (LVAR 8)  15 ))
+// Line 164 (DEFAULT body:(= (LVAR 40)  15 ))
 	.loc 1 164
 	jmp  .L000085
 	jmp  .L000079
 .L000080:
-// Line 154 (BLOCK(= (LVAR 8)  11 ):BREAK :)
+// Line 154 (BLOCK(= (LVAR 40)  11 ):BREAK :)
 	.loc 1 154
-// Line 154 (= (LVAR 8)  11 )
+// Line 154 (= (LVAR 40)  11 )
 	.loc 1 154
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	push rax
 // Line 154  11 
 	.loc 1 154
@@ -2606,11 +2606,11 @@ switch_:
 // Line 157 (BLOCK)
 	.loc 1 157
 .L000082:
-// Line 158 (BLOCK(= (LVAR 8)  12 ):)
+// Line 158 (BLOCK(= (LVAR 40)  12 ):)
 	.loc 1 158
-// Line 158 (= (LVAR 8)  12 )
+// Line 158 (= (LVAR 40)  12 )
 	.loc 1 158
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	push rax
 // Line 158  12 
 	.loc 1 158
@@ -2621,11 +2621,11 @@ switch_:
 	push rdi
 	pop  rax
 .L000083:
-// Line 160 (BLOCK(= (LVAR 8)  13 ):(RETURN (LVAR 8)):)
+// Line 160 (BLOCK(= (LVAR 40)  13 ):(RETURN (LVAR 40)):)
 	.loc 1 160
-// Line 160 (= (LVAR 8)  13 )
+// Line 160 (= (LVAR 40)  13 )
 	.loc 1 160
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	push rax
 // Line 160  13 
 	.loc 1 160
@@ -2635,21 +2635,21 @@ switch_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 161 (RETURN (LVAR 8))
+// Line 161 (RETURN (LVAR 40))
 	.loc 1 161
-// Line 161 (LVAR 8)
+// Line 161 (LVAR 40)
 	.loc 1 161
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  eax, [rax]
 	push rax
 	pop  rax
 	jmp  .L.return.switch_
 .L000084:
-// Line 163 (BLOCK(= (LVAR 8)  14 ):)
+// Line 163 (BLOCK(= (LVAR 40)  14 ):)
 	.loc 1 163
-// Line 163 (= (LVAR 8)  14 )
+// Line 163 (= (LVAR 40)  14 )
 	.loc 1 163
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	push rax
 // Line 163  14 
 	.loc 1 163
@@ -2660,9 +2660,9 @@ switch_:
 	push rdi
 	pop  rax
 .L000085:
-// Line 165 (= (LVAR 8)  15 )
+// Line 165 (= (LVAR 40)  15 )
 	.loc 1 165
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	push rax
 // Line 165  15 
 	.loc 1 165
@@ -2673,11 +2673,11 @@ switch_:
 	push rdi
 	pop  rax
 .L000079:
-// Line 167 (RETURN (LVAR 8))
+// Line 167 (RETURN (LVAR 40))
 	.loc 1 167
-// Line 167 (LVAR 8)
+// Line 167 (LVAR 40)
 	.loc 1 167
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  eax, [rax]
 	push rax
 	pop  rax
@@ -2691,39 +2691,39 @@ switch_:
 	pop  rbp
 	ret
 	.global switch2_
-// Line 170 FDECL switch2_ func ( char  s ) int 
-//    (LVAR 1) 
-//    (BLOCK(SWITCH cond: (LVAR 1) body: (BLOCK(CASE cond: 97  body:(BLOCK(= (LVAR 5)  11 ):BREAK :)):(CASE cond: 98  body:(BLOCK)):(CASE cond: 99  body:(BLOCK(= (LVAR 5)  12 ):BREAK :)):(DEFAULT body:(= (LVAR 5)  15 )):)):(RETURN (LVAR 5)):))
+// Line 170 FDECL switch2_ func ( char  s ) int  max_offset:41
+//    (LVAR 33) 
+//    (BLOCK(SWITCH cond: (LVAR 33) body: (BLOCK(CASE cond: 97  body:(BLOCK(= (LVAR 37)  11 ):BREAK :)):(CASE cond: 98  body:(BLOCK)):(CASE cond: 99  body:(BLOCK(= (LVAR 37)  12 ):BREAK :)):(DEFAULT body:(= (LVAR 37)  15 )):)):(RETURN (LVAR 37)):))
 	.loc 1 170
 switch2_:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 16
+	sub  rsp, 48
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-	mov  [rbp - 1], dil
-// Line 172 (SWITCH cond: (LVAR 1) body: (BLOCK(CASE cond: 97  body:(BLOCK(= (LVAR 5)  11 ):BREAK :)):(CASE cond: 98  body:(BLOCK)):(CASE cond: 99  body:(BLOCK(= (LVAR 5)  12 ):BREAK :)):(DEFAULT body:(= (LVAR 5)  15 )):))
+	mov  [rbp - 33], dil
+// Line 172 (SWITCH cond: (LVAR 33) body: (BLOCK(CASE cond: 97  body:(BLOCK(= (LVAR 37)  11 ):BREAK :)):(CASE cond: 98  body:(BLOCK)):(CASE cond: 99  body:(BLOCK(= (LVAR 37)  12 ):BREAK :)):(DEFAULT body:(= (LVAR 37)  15 )):))
 	.loc 1 172
-	lea  rax, [rbp - 9]
+	lea  rax, [rbp - 41]
 	push rax
-// Line 172 (LVAR 1)
+// Line 172 (LVAR 33)
 	.loc 1 172
-	lea  rax, [rbp - 1]
+	lea  rax, [rbp - 33]
 	movsx eax, BYTE PTR [rax]
 	push rax
 	pop  rdi
 	pop  rax
 	mov  [rax], edi
-// Line 183 (BLOCK(CASE cond: 97  body:(BLOCK(= (LVAR 5)  11 ):BREAK :)):(CASE cond: 98  body:(BLOCK)):(CASE cond: 99  body:(BLOCK(= (LVAR 5)  12 ):BREAK :)):(DEFAULT body:(= (LVAR 5)  15 )):)
+// Line 183 (BLOCK(CASE cond: 97  body:(BLOCK(= (LVAR 37)  11 ):BREAK :)):(CASE cond: 98  body:(BLOCK)):(CASE cond: 99  body:(BLOCK(= (LVAR 37)  12 ):BREAK :)):(DEFAULT body:(= (LVAR 37)  15 )):)
 	.loc 1 183
-// Line 173 (CASE cond: 97  body:(BLOCK(= (LVAR 5)  11 ):BREAK :))
+// Line 173 (CASE cond: 97  body:(BLOCK(= (LVAR 37)  11 ):BREAK :))
 	.loc 1 173
 // Line 173  97 
 	.loc 1 173
 	push 97
-	lea  rax, [rbp - 9]
+	lea  rax, [rbp - 41]
 	mov  eax, [rax]
 	pop  rdi
 	cmp  eax, edi
@@ -2733,31 +2733,31 @@ switch2_:
 // Line 176  98 
 	.loc 1 176
 	push 98
-	lea  rax, [rbp - 9]
+	lea  rax, [rbp - 41]
 	mov  eax, [rax]
 	pop  rdi
 	cmp  eax, edi
 	je   .L000088
-// Line 177 (CASE cond: 99  body:(BLOCK(= (LVAR 5)  12 ):BREAK :))
+// Line 177 (CASE cond: 99  body:(BLOCK(= (LVAR 37)  12 ):BREAK :))
 	.loc 1 177
 // Line 177  99 
 	.loc 1 177
 	push 99
-	lea  rax, [rbp - 9]
+	lea  rax, [rbp - 41]
 	mov  eax, [rax]
 	pop  rdi
 	cmp  eax, edi
 	je   .L000089
-// Line 180 (DEFAULT body:(= (LVAR 5)  15 ))
+// Line 180 (DEFAULT body:(= (LVAR 37)  15 ))
 	.loc 1 180
 	jmp  .L000090
 	jmp  .L000086
 .L000087:
-// Line 174 (BLOCK(= (LVAR 5)  11 ):BREAK :)
+// Line 174 (BLOCK(= (LVAR 37)  11 ):BREAK :)
 	.loc 1 174
-// Line 174 (= (LVAR 5)  11 )
+// Line 174 (= (LVAR 37)  11 )
 	.loc 1 174
-	lea  rax, [rbp - 5]
+	lea  rax, [rbp - 37]
 	push rax
 // Line 174  11 
 	.loc 1 174
@@ -2774,11 +2774,11 @@ switch2_:
 // Line 177 (BLOCK)
 	.loc 1 177
 .L000089:
-// Line 178 (BLOCK(= (LVAR 5)  12 ):BREAK :)
+// Line 178 (BLOCK(= (LVAR 37)  12 ):BREAK :)
 	.loc 1 178
-// Line 178 (= (LVAR 5)  12 )
+// Line 178 (= (LVAR 37)  12 )
 	.loc 1 178
-	lea  rax, [rbp - 5]
+	lea  rax, [rbp - 37]
 	push rax
 // Line 178  12 
 	.loc 1 178
@@ -2792,9 +2792,9 @@ switch2_:
 	.loc 1 179
 	jmp  .L000086
 .L000090:
-// Line 181 (= (LVAR 5)  15 )
+// Line 181 (= (LVAR 37)  15 )
 	.loc 1 181
-	lea  rax, [rbp - 5]
+	lea  rax, [rbp - 37]
 	push rax
 // Line 181  15 
 	.loc 1 181
@@ -2805,11 +2805,11 @@ switch2_:
 	push rdi
 	pop  rax
 .L000086:
-// Line 183 (RETURN (LVAR 5))
+// Line 183 (RETURN (LVAR 37))
 	.loc 1 183
-// Line 183 (LVAR 5)
+// Line 183 (LVAR 37)
 	.loc 1 183
-	lea  rax, [rbp - 5]
+	lea  rax, [rbp - 37]
 	mov  eax, [rax]
 	push rax
 	pop  rax
@@ -2823,21 +2823,21 @@ switch2_:
 	pop  rbp
 	ret
 	.global list_
-// Line 212 FDECL list_ func ( ) void 
+// Line 212 FDECL list_ func ( ) void  max_offset:56
 //    
-//    (BLOCK(= (LVAR 4)  16 ):(= (LVAR 12)  0 ):(FOR init: (= (LVAR 16)  0 )cond: (<  6  (LVAR 16)) post: (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ) body (BLOCK(= (LVAR 24) (CALL calloc_ ((LVAR 4):) )):(= (MEMBER (DEREF (LVAR 24)) payloads 8) (LVAR 16)):(= (MEMBER (DEREF (LVAR 24)) next 0) (LVAR 12)):(= (LVAR 12) (LVAR 24)):)):(CALL assert_expect ( 221 : 5 :(MEMBER (DEREF (LVAR 12)) payloads 8):) ):(= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0)):(CALL assert_expect ( 223 : 4 :(MEMBER (DEREF (LVAR 12)) payloads 8):) ):(= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0)):(CALL assert_expect ( 225 : 3 :(MEMBER (DEREF (LVAR 12)) payloads 8):) ):(= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0)):(CALL assert_expect ( 227 : 2 :(MEMBER (DEREF (LVAR 12)) payloads 8):) ):(= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0)):(CALL assert_expect ( 229 : 1 :(MEMBER (DEREF (LVAR 12)) payloads 8):) ):(= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0)):(CALL assert_expect ( 231 : 0 :(MEMBER (DEREF (LVAR 12)) payloads 8):) ):(= (MEMBER (GVAR def) payload 0)  777 ):(CALL assert_expect ( 234 : 777 :(MEMBER (GVAR def) payload 0):) ):))
+//    (BLOCK(= (LVAR 36)  16 ):(= (LVAR 44)  0 ):(FOR init: (= (LVAR 48)  0 )cond: (<  6  (LVAR 48)) post: (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ) body (BLOCK(= (LVAR 56) (CALL calloc_ ((LVAR 36):) )):(= (MEMBER (DEREF (LVAR 56)) payloads 8) (LVAR 48)):(= (MEMBER (DEREF (LVAR 56)) next 0) (LVAR 44)):(= (LVAR 44) (LVAR 56)):)):(CALL assert_expect ( 221 : 5 :(MEMBER (DEREF (LVAR 44)) payloads 8):) ):(= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0)):(CALL assert_expect ( 223 : 4 :(MEMBER (DEREF (LVAR 44)) payloads 8):) ):(= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0)):(CALL assert_expect ( 225 : 3 :(MEMBER (DEREF (LVAR 44)) payloads 8):) ):(= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0)):(CALL assert_expect ( 227 : 2 :(MEMBER (DEREF (LVAR 44)) payloads 8):) ):(= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0)):(CALL assert_expect ( 229 : 1 :(MEMBER (DEREF (LVAR 44)) payloads 8):) ):(= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0)):(CALL assert_expect ( 231 : 0 :(MEMBER (DEREF (LVAR 44)) payloads 8):) ):(= (MEMBER (GVAR def) payload 0)  777 ):(CALL assert_expect ( 234 : 777 :(MEMBER (GVAR def) payload 0):) ):))
 	.loc 1 212
 list_:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 32
+	sub  rsp, 64
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-// Line 213 (= (LVAR 4)  16 )
+// Line 213 (= (LVAR 36)  16 )
 	.loc 1 213
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	push rax
 // Line 213  16 
 	.loc 1 213
@@ -2847,9 +2847,9 @@ list_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 214 (= (LVAR 12)  0 )
+// Line 214 (= (LVAR 44)  0 )
 	.loc 1 214
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
 // Line 214  0 
 	.loc 1 214
@@ -2859,11 +2859,11 @@ list_:
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 215 (FOR init: (= (LVAR 16)  0 )cond: (<  6  (LVAR 16)) post: (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ) body (BLOCK(= (LVAR 24) (CALL calloc_ ((LVAR 4):) )):(= (MEMBER (DEREF (LVAR 24)) payloads 8) (LVAR 16)):(= (MEMBER (DEREF (LVAR 24)) next 0) (LVAR 12)):(= (LVAR 12) (LVAR 24)):))
+// Line 215 (FOR init: (= (LVAR 48)  0 )cond: (<  6  (LVAR 48)) post: (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ) body (BLOCK(= (LVAR 56) (CALL calloc_ ((LVAR 36):) )):(= (MEMBER (DEREF (LVAR 56)) payloads 8) (LVAR 48)):(= (MEMBER (DEREF (LVAR 56)) next 0) (LVAR 44)):(= (LVAR 44) (LVAR 56)):))
 	.loc 1 215
-// Line 215 (= (LVAR 16)  0 )
+// Line 215 (= (LVAR 48)  0 )
 	.loc 1 215
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
 // Line 215  0 
 	.loc 1 215
@@ -2873,14 +2873,14 @@ list_:
 	mov  [rax], edi
 	push rdi
 .L000093:
-// Line 215 (<  6  (LVAR 16))
+// Line 215 (<  6  (LVAR 48))
 	.loc 1 215
 // Line 215  6 
 	.loc 1 215
 	push 6
-// Line 215 (LVAR 16)
+// Line 215 (LVAR 48)
 	.loc 1 215
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -2892,17 +2892,17 @@ list_:
 	pop  rax
 	cmp  rax, 0
 	je   .L000092
-// Line 221 (BLOCK(= (LVAR 24) (CALL calloc_ ((LVAR 4):) )):(= (MEMBER (DEREF (LVAR 24)) payloads 8) (LVAR 16)):(= (MEMBER (DEREF (LVAR 24)) next 0) (LVAR 12)):(= (LVAR 12) (LVAR 24)):)
+// Line 221 (BLOCK(= (LVAR 56) (CALL calloc_ ((LVAR 36):) )):(= (MEMBER (DEREF (LVAR 56)) payloads 8) (LVAR 48)):(= (MEMBER (DEREF (LVAR 56)) next 0) (LVAR 44)):(= (LVAR 44) (LVAR 56)):)
 	.loc 1 221
-// Line 216 (= (LVAR 24) (CALL calloc_ ((LVAR 4):) ))
+// Line 216 (= (LVAR 56) (CALL calloc_ ((LVAR 36):) ))
 	.loc 1 216
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	push rax
-// Line 216 (CALL calloc_ ((LVAR 4):) )
+// Line 216 (CALL calloc_ ((LVAR 36):) )
 	.loc 1 216
-// Line 216 (LVAR 4)
+// Line 216 (LVAR 36)
 	.loc 1 216
-	lea  rax, [rbp - 4]
+	lea  rax, [rbp - 36]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -2924,19 +2924,19 @@ list_:
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 217 (= (MEMBER (DEREF (LVAR 24)) payloads 8) (LVAR 16))
+// Line 217 (= (MEMBER (DEREF (LVAR 56)) payloads 8) (LVAR 48))
 	.loc 1 217
-// Line 217 (LVAR 24)
+// Line 217 (LVAR 56)
 	.loc 1 217
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	mov  rax, [rax]
 	push rax
 	pop  rax
 	add  rax, 8
 	push rax
-// Line 217 (LVAR 16)
+// Line 217 (LVAR 48)
 	.loc 1 217
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -2944,19 +2944,19 @@ list_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 218 (= (MEMBER (DEREF (LVAR 24)) next 0) (LVAR 12))
+// Line 218 (= (MEMBER (DEREF (LVAR 56)) next 0) (LVAR 44))
 	.loc 1 218
-// Line 218 (LVAR 24)
+// Line 218 (LVAR 56)
 	.loc 1 218
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	mov  rax, [rax]
 	push rax
 	pop  rax
 	add  rax, 0
 	push rax
-// Line 218 (LVAR 12)
+// Line 218 (LVAR 44)
 	.loc 1 218
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  rax, [rax]
 	push rax
 	pop  rdi
@@ -2964,13 +2964,13 @@ list_:
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 219 (= (LVAR 12) (LVAR 24))
+// Line 219 (= (LVAR 44) (LVAR 56))
 	.loc 1 219
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 219 (LVAR 24)
+// Line 219 (LVAR 56)
 	.loc 1 219
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	mov  rax, [rax]
 	push rax
 	pop  rdi
@@ -2979,17 +2979,17 @@ list_:
 	push rdi
 	pop  rax
 .L000091:
-// Line 215 (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 )
+// Line 215 (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 )
 	.loc 1 215
-// Line 215 (= (LVAR 16) (++ (LVAR 16)  1 ))
+// Line 215 (= (LVAR 48) (++ (LVAR 48)  1 ))
 	.loc 1 215
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
-// Line 215 (++ (LVAR 16)  1 )
+// Line 215 (++ (LVAR 48)  1 )
 	.loc 1 215
-// Line 215 (LVAR 16)
+// Line 215 (LVAR 48)
 	.loc 1 215
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 215  1 
@@ -3013,13 +3013,13 @@ list_:
 	pop  rax
 	jmp  .L000093
 .L000092:
-// Line 221 (CALL assert_expect ( 221 : 5 :(MEMBER (DEREF (LVAR 12)) payloads 8):) )
+// Line 221 (CALL assert_expect ( 221 : 5 :(MEMBER (DEREF (LVAR 44)) payloads 8):) )
 	.loc 1 221
-// Line 221 (MEMBER (DEREF (LVAR 12)) payloads 8)
+// Line 221 (MEMBER (DEREF (LVAR 44)) payloads 8)
 	.loc 1 221
-// Line 221 (LVAR 12)
+// Line 221 (LVAR 44)
 	.loc 1 221
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3049,15 +3049,15 @@ list_:
 .L000097:
 	push rax
 	pop  rax
-// Line 222 (= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0))
+// Line 222 (= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0))
 	.loc 1 222
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 222 (MEMBER (DEREF (LVAR 12)) next 0)
+// Line 222 (MEMBER (DEREF (LVAR 44)) next 0)
 	.loc 1 222
-// Line 222 (LVAR 12)
+// Line 222 (LVAR 44)
 	.loc 1 222
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3069,13 +3069,13 @@ list_:
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 223 (CALL assert_expect ( 223 : 4 :(MEMBER (DEREF (LVAR 12)) payloads 8):) )
+// Line 223 (CALL assert_expect ( 223 : 4 :(MEMBER (DEREF (LVAR 44)) payloads 8):) )
 	.loc 1 223
-// Line 223 (MEMBER (DEREF (LVAR 12)) payloads 8)
+// Line 223 (MEMBER (DEREF (LVAR 44)) payloads 8)
 	.loc 1 223
-// Line 223 (LVAR 12)
+// Line 223 (LVAR 44)
 	.loc 1 223
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3105,15 +3105,15 @@ list_:
 .L000099:
 	push rax
 	pop  rax
-// Line 224 (= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0))
+// Line 224 (= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0))
 	.loc 1 224
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 224 (MEMBER (DEREF (LVAR 12)) next 0)
+// Line 224 (MEMBER (DEREF (LVAR 44)) next 0)
 	.loc 1 224
-// Line 224 (LVAR 12)
+// Line 224 (LVAR 44)
 	.loc 1 224
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3125,13 +3125,13 @@ list_:
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 225 (CALL assert_expect ( 225 : 3 :(MEMBER (DEREF (LVAR 12)) payloads 8):) )
+// Line 225 (CALL assert_expect ( 225 : 3 :(MEMBER (DEREF (LVAR 44)) payloads 8):) )
 	.loc 1 225
-// Line 225 (MEMBER (DEREF (LVAR 12)) payloads 8)
+// Line 225 (MEMBER (DEREF (LVAR 44)) payloads 8)
 	.loc 1 225
-// Line 225 (LVAR 12)
+// Line 225 (LVAR 44)
 	.loc 1 225
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3161,15 +3161,15 @@ list_:
 .L000101:
 	push rax
 	pop  rax
-// Line 226 (= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0))
+// Line 226 (= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0))
 	.loc 1 226
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 226 (MEMBER (DEREF (LVAR 12)) next 0)
+// Line 226 (MEMBER (DEREF (LVAR 44)) next 0)
 	.loc 1 226
-// Line 226 (LVAR 12)
+// Line 226 (LVAR 44)
 	.loc 1 226
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3181,13 +3181,13 @@ list_:
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 227 (CALL assert_expect ( 227 : 2 :(MEMBER (DEREF (LVAR 12)) payloads 8):) )
+// Line 227 (CALL assert_expect ( 227 : 2 :(MEMBER (DEREF (LVAR 44)) payloads 8):) )
 	.loc 1 227
-// Line 227 (MEMBER (DEREF (LVAR 12)) payloads 8)
+// Line 227 (MEMBER (DEREF (LVAR 44)) payloads 8)
 	.loc 1 227
-// Line 227 (LVAR 12)
+// Line 227 (LVAR 44)
 	.loc 1 227
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3217,15 +3217,15 @@ list_:
 .L000103:
 	push rax
 	pop  rax
-// Line 228 (= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0))
+// Line 228 (= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0))
 	.loc 1 228
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 228 (MEMBER (DEREF (LVAR 12)) next 0)
+// Line 228 (MEMBER (DEREF (LVAR 44)) next 0)
 	.loc 1 228
-// Line 228 (LVAR 12)
+// Line 228 (LVAR 44)
 	.loc 1 228
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3237,13 +3237,13 @@ list_:
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 229 (CALL assert_expect ( 229 : 1 :(MEMBER (DEREF (LVAR 12)) payloads 8):) )
+// Line 229 (CALL assert_expect ( 229 : 1 :(MEMBER (DEREF (LVAR 44)) payloads 8):) )
 	.loc 1 229
-// Line 229 (MEMBER (DEREF (LVAR 12)) payloads 8)
+// Line 229 (MEMBER (DEREF (LVAR 44)) payloads 8)
 	.loc 1 229
-// Line 229 (LVAR 12)
+// Line 229 (LVAR 44)
 	.loc 1 229
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3273,15 +3273,15 @@ list_:
 .L000105:
 	push rax
 	pop  rax
-// Line 230 (= (LVAR 12) (MEMBER (DEREF (LVAR 12)) next 0))
+// Line 230 (= (LVAR 44) (MEMBER (DEREF (LVAR 44)) next 0))
 	.loc 1 230
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 230 (MEMBER (DEREF (LVAR 12)) next 0)
+// Line 230 (MEMBER (DEREF (LVAR 44)) next 0)
 	.loc 1 230
-// Line 230 (LVAR 12)
+// Line 230 (LVAR 44)
 	.loc 1 230
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3293,13 +3293,13 @@ list_:
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 231 (CALL assert_expect ( 231 : 0 :(MEMBER (DEREF (LVAR 12)) payloads 8):) )
+// Line 231 (CALL assert_expect ( 231 : 0 :(MEMBER (DEREF (LVAR 44)) payloads 8):) )
 	.loc 1 231
-// Line 231 (MEMBER (DEREF (LVAR 12)) payloads 8)
+// Line 231 (MEMBER (DEREF (LVAR 44)) payloads 8)
 	.loc 1 231
-// Line 231 (LVAR 12)
+// Line 231 (LVAR 44)
 	.loc 1 231
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3382,14 +3382,14 @@ list_:
 	pop  rbp
 	ret
 	.global struct_
-// Line 237 FDECL struct_ func ( ) void 
+// Line 237 FDECL struct_ func ( ) void  max_offset:832
 //    
-//    (BLOCK(CALL assert_expect ( 257 : 32 : 32 :) ):(CALL assert_expect ( 258 : 8 : 8 :) ):(= (MEMBER (GVAR pos) col 4)  9 ):(= (MEMBER (GVAR pos) row 0)  45 ):(CALL assert_expect ( 263 : 9 :(MEMBER (GVAR pos) col 4):) ):(CALL assert_expect ( 264 : 45 :(MEMBER (GVAR pos) row 0):) ):(CALL assert_expect ( 266 : 4 : 4 :) ):(CALL assert_expect ( 267 : 4 : 4 :) ):(= (LVAR 336) (ADDR (LVAR 328))):(= (MEMBER (LVAR 328) size 136)  10 ):(= (MEMBER (LVAR 328) ch 140)  5 ):(= (MEMBER (LVAR 480) size 136)  195 ):(= (MEMBER (LVAR 480) ch 140)  39 ):(= (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  0 )) row 0)  184 ):(= (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  16 )) col 4)  984 ):(CALL assert_expect ( 278 : 10 :(MEMBER (LVAR 328) size 136):) ):(CALL assert_expect ( 279 : 5 :(MEMBER (LVAR 328) ch 140):) ):(= (MEMBER (LVAR 328) size 136)  110 ):(= (MEMBER (LVAR 328) ch 140)  79 ):(CALL assert_expect ( 282 : 110 :(MEMBER (DEREF (LVAR 336)) size 136):) ):(CALL assert_expect ( 283 : 79 :(MEMBER (DEREF (LVAR 336)) ch 140):) ):(CALL assert_expect ( 284 : 110 :(MEMBER (DEREF (LVAR 336)) size 136):) ):(CALL assert_expect ( 285 : 79 :(MEMBER (DEREF (LVAR 336)) ch 140):) ):(CALL assert_expect ( 286 : 195 :(MEMBER (LVAR 480) size 136):) ):(CALL assert_expect ( 287 : 39 :(MEMBER (LVAR 480) ch 140):) ):(CALL assert_expect ( 288 : 184 :(MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  0 )) row 0):) ):(CALL assert_expect ( 289 : 984 :(MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  16 )) col 4):) ):(= (MEMBER (LVAR 496) right 8) (ADDR (LVAR 480))):(= (MEMBER (LVAR 496) left 0) (ADDR (LVAR 328))):(CALL assert_expect ( 293 : 195 :(MEMBER (DEREF (MEMBER (LVAR 496) right 8)) size 136):) ):(= (MEMBER (LVAR 640) size 136)  100 ):(= (MEMBER (LVAR 784) size 136)  500 ):(= (LVAR 784) (LVAR 640)):(= (MEMBER (GVAR leaf_global) size 136)  700 ):(CALL assert_expect ( 301 : 100 :(MEMBER (LVAR 784) size 136):) ):(= (LVAR 784) (GVAR leaf_global)):(CALL assert_expect ( 303 : 700 :(MEMBER (LVAR 784) size 136):) ):(= (GVAR leaf_global) (LVAR 640)):(CALL assert_expect ( 305 : 100 :(MEMBER (GVAR leaf_global) size 136):) ):(= (MEMBER (LVAR 640) size 136)  999 ):(= (LVAR 792) (ADDR (LVAR 640))):(= (LVAR 800) (ADDR (LVAR 784))):(= (GVAR leaf_global) (= (DEREF (LVAR 800)) (DEREF (LVAR 792)))):(CALL assert_expect ( 310 : 999 :(MEMBER (DEREF (LVAR 800)) size 136):) ):(CALL assert_expect ( 311 : 999 :(MEMBER (GVAR leaf_global) size 136):) ):))
+//    (BLOCK(CALL assert_expect ( 257 : 32 : 32 :) ):(CALL assert_expect ( 258 : 8 : 8 :) ):(= (MEMBER (GVAR pos) col 4)  9 ):(= (MEMBER (GVAR pos) row 0)  45 ):(CALL assert_expect ( 263 : 9 :(MEMBER (GVAR pos) col 4):) ):(CALL assert_expect ( 264 : 45 :(MEMBER (GVAR pos) row 0):) ):(CALL assert_expect ( 266 : 4 : 4 :) ):(CALL assert_expect ( 267 : 4 : 4 :) ):(= (LVAR 368) (ADDR (LVAR 360))):(= (MEMBER (LVAR 360) size 136)  10 ):(= (MEMBER (LVAR 360) ch 140)  5 ):(= (MEMBER (LVAR 512) size 136)  195 ):(= (MEMBER (LVAR 512) ch 140)  39 ):(= (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  0 )) row 0)  184 ):(= (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  16 )) col 4)  984 ):(CALL assert_expect ( 278 : 10 :(MEMBER (LVAR 360) size 136):) ):(CALL assert_expect ( 279 : 5 :(MEMBER (LVAR 360) ch 140):) ):(= (MEMBER (LVAR 360) size 136)  110 ):(= (MEMBER (LVAR 360) ch 140)  79 ):(CALL assert_expect ( 282 : 110 :(MEMBER (DEREF (LVAR 368)) size 136):) ):(CALL assert_expect ( 283 : 79 :(MEMBER (DEREF (LVAR 368)) ch 140):) ):(CALL assert_expect ( 284 : 110 :(MEMBER (DEREF (LVAR 368)) size 136):) ):(CALL assert_expect ( 285 : 79 :(MEMBER (DEREF (LVAR 368)) ch 140):) ):(CALL assert_expect ( 286 : 195 :(MEMBER (LVAR 512) size 136):) ):(CALL assert_expect ( 287 : 39 :(MEMBER (LVAR 512) ch 140):) ):(CALL assert_expect ( 288 : 184 :(MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  0 )) row 0):) ):(CALL assert_expect ( 289 : 984 :(MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  16 )) col 4):) ):(= (MEMBER (LVAR 528) right 8) (ADDR (LVAR 512))):(= (MEMBER (LVAR 528) left 0) (ADDR (LVAR 360))):(CALL assert_expect ( 293 : 195 :(MEMBER (DEREF (MEMBER (LVAR 528) right 8)) size 136):) ):(= (MEMBER (LVAR 672) size 136)  100 ):(= (MEMBER (LVAR 816) size 136)  500 ):(= (LVAR 816) (LVAR 672)):(= (MEMBER (GVAR leaf_global) size 136)  700 ):(CALL assert_expect ( 301 : 100 :(MEMBER (LVAR 816) size 136):) ):(= (LVAR 816) (GVAR leaf_global)):(CALL assert_expect ( 303 : 700 :(MEMBER (LVAR 816) size 136):) ):(= (GVAR leaf_global) (LVAR 672)):(CALL assert_expect ( 305 : 100 :(MEMBER (GVAR leaf_global) size 136):) ):(= (MEMBER (LVAR 672) size 136)  999 ):(= (LVAR 824) (ADDR (LVAR 672))):(= (LVAR 832) (ADDR (LVAR 816))):(= (GVAR leaf_global) (= (DEREF (LVAR 832)) (DEREF (LVAR 824)))):(CALL assert_expect ( 310 : 999 :(MEMBER (DEREF (LVAR 832)) size 136):) ):(CALL assert_expect ( 311 : 999 :(MEMBER (GVAR leaf_global) size 136):) ):))
 	.loc 1 237
 struct_:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 816
+	sub  rsp, 832
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
@@ -3594,22 +3594,22 @@ struct_:
 .L000121:
 	push rax
 	pop  rax
-// Line 270 (= (LVAR 336) (ADDR (LVAR 328)))
+// Line 270 (= (LVAR 368) (ADDR (LVAR 360)))
 	.loc 1 270
-	lea  rax, [rbp - 336]
+	lea  rax, [rbp - 368]
 	push rax
-// Line 270 (ADDR (LVAR 328))
+// Line 270 (ADDR (LVAR 360))
 	.loc 1 270
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	push rax
 	pop  rdi
 	pop  rax
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 272 (= (MEMBER (LVAR 328) size 136)  10 )
+// Line 272 (= (MEMBER (LVAR 360) size 136)  10 )
 	.loc 1 272
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	add  rax, 136
 	push rax
 // Line 272  10 
@@ -3620,9 +3620,9 @@ struct_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 273 (= (MEMBER (LVAR 328) ch 140)  5 )
+// Line 273 (= (MEMBER (LVAR 360) ch 140)  5 )
 	.loc 1 273
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	add  rax, 140
 	push rax
 // Line 273  5 
@@ -3633,9 +3633,9 @@ struct_:
 	mov  [rax], dil
 	push rdi
 	pop  rax
-// Line 274 (= (MEMBER (LVAR 480) size 136)  195 )
+// Line 274 (= (MEMBER (LVAR 512) size 136)  195 )
 	.loc 1 274
-	lea  rax, [rbp - 480]
+	lea  rax, [rbp - 512]
 	add  rax, 136
 	push rax
 // Line 274  195 
@@ -3646,9 +3646,9 @@ struct_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 275 (= (MEMBER (LVAR 480) ch 140)  39 )
+// Line 275 (= (MEMBER (LVAR 512) ch 140)  39 )
 	.loc 1 275
-	lea  rax, [rbp - 480]
+	lea  rax, [rbp - 512]
 	add  rax, 140
 	push rax
 // Line 275  39 
@@ -3659,13 +3659,13 @@ struct_:
 	mov  [rax], dil
 	push rdi
 	pop  rax
-// Line 276 (= (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  0 )) row 0)  184 )
+// Line 276 (= (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  0 )) row 0)  184 )
 	.loc 1 276
-// Line 276 (] (ADDR (MEMBER (LVAR 480) ary 0))  0 )
+// Line 276 (] (ADDR (MEMBER (LVAR 512) ary 0))  0 )
 	.loc 1 276
-// Line 276 (ADDR (MEMBER (LVAR 480) ary 0))
+// Line 276 (ADDR (MEMBER (LVAR 512) ary 0))
 	.loc 1 276
-	lea  rax, [rbp - 480]
+	lea  rax, [rbp - 512]
 	add  rax, 0
 	push rax
 // Line 276  0 
@@ -3687,13 +3687,13 @@ struct_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 277 (= (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  16 )) col 4)  984 )
+// Line 277 (= (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  16 )) col 4)  984 )
 	.loc 1 277
-// Line 277 (] (ADDR (MEMBER (LVAR 480) ary 0))  16 )
+// Line 277 (] (ADDR (MEMBER (LVAR 512) ary 0))  16 )
 	.loc 1 277
-// Line 277 (ADDR (MEMBER (LVAR 480) ary 0))
+// Line 277 (ADDR (MEMBER (LVAR 512) ary 0))
 	.loc 1 277
-	lea  rax, [rbp - 480]
+	lea  rax, [rbp - 512]
 	add  rax, 0
 	push rax
 // Line 277  16 
@@ -3715,11 +3715,11 @@ struct_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 278 (CALL assert_expect ( 278 : 10 :(MEMBER (LVAR 328) size 136):) )
+// Line 278 (CALL assert_expect ( 278 : 10 :(MEMBER (LVAR 360) size 136):) )
 	.loc 1 278
-// Line 278 (MEMBER (LVAR 328) size 136)
+// Line 278 (MEMBER (LVAR 360) size 136)
 	.loc 1 278
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	add  rax, 136
 	mov  eax, [rax]
 	push rax
@@ -3746,11 +3746,11 @@ struct_:
 .L000123:
 	push rax
 	pop  rax
-// Line 279 (CALL assert_expect ( 279 : 5 :(MEMBER (LVAR 328) ch 140):) )
+// Line 279 (CALL assert_expect ( 279 : 5 :(MEMBER (LVAR 360) ch 140):) )
 	.loc 1 279
-// Line 279 (MEMBER (LVAR 328) ch 140)
+// Line 279 (MEMBER (LVAR 360) ch 140)
 	.loc 1 279
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	add  rax, 140
 	movsx eax, BYTE PTR [rax]
 	push rax
@@ -3777,9 +3777,9 @@ struct_:
 .L000125:
 	push rax
 	pop  rax
-// Line 280 (= (MEMBER (LVAR 328) size 136)  110 )
+// Line 280 (= (MEMBER (LVAR 360) size 136)  110 )
 	.loc 1 280
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	add  rax, 136
 	push rax
 // Line 280  110 
@@ -3790,9 +3790,9 @@ struct_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 281 (= (MEMBER (LVAR 328) ch 140)  79 )
+// Line 281 (= (MEMBER (LVAR 360) ch 140)  79 )
 	.loc 1 281
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	add  rax, 140
 	push rax
 // Line 281  79 
@@ -3803,13 +3803,13 @@ struct_:
 	mov  [rax], dil
 	push rdi
 	pop  rax
-// Line 282 (CALL assert_expect ( 282 : 110 :(MEMBER (DEREF (LVAR 336)) size 136):) )
+// Line 282 (CALL assert_expect ( 282 : 110 :(MEMBER (DEREF (LVAR 368)) size 136):) )
 	.loc 1 282
-// Line 282 (MEMBER (DEREF (LVAR 336)) size 136)
+// Line 282 (MEMBER (DEREF (LVAR 368)) size 136)
 	.loc 1 282
-// Line 282 (LVAR 336)
+// Line 282 (LVAR 368)
 	.loc 1 282
-	lea  rax, [rbp - 336]
+	lea  rax, [rbp - 368]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3839,13 +3839,13 @@ struct_:
 .L000127:
 	push rax
 	pop  rax
-// Line 283 (CALL assert_expect ( 283 : 79 :(MEMBER (DEREF (LVAR 336)) ch 140):) )
+// Line 283 (CALL assert_expect ( 283 : 79 :(MEMBER (DEREF (LVAR 368)) ch 140):) )
 	.loc 1 283
-// Line 283 (MEMBER (DEREF (LVAR 336)) ch 140)
+// Line 283 (MEMBER (DEREF (LVAR 368)) ch 140)
 	.loc 1 283
-// Line 283 (LVAR 336)
+// Line 283 (LVAR 368)
 	.loc 1 283
-	lea  rax, [rbp - 336]
+	lea  rax, [rbp - 368]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3875,13 +3875,13 @@ struct_:
 .L000129:
 	push rax
 	pop  rax
-// Line 284 (CALL assert_expect ( 284 : 110 :(MEMBER (DEREF (LVAR 336)) size 136):) )
+// Line 284 (CALL assert_expect ( 284 : 110 :(MEMBER (DEREF (LVAR 368)) size 136):) )
 	.loc 1 284
-// Line 284 (MEMBER (DEREF (LVAR 336)) size 136)
+// Line 284 (MEMBER (DEREF (LVAR 368)) size 136)
 	.loc 1 284
-// Line 284 (LVAR 336)
+// Line 284 (LVAR 368)
 	.loc 1 284
-	lea  rax, [rbp - 336]
+	lea  rax, [rbp - 368]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3911,13 +3911,13 @@ struct_:
 .L000131:
 	push rax
 	pop  rax
-// Line 285 (CALL assert_expect ( 285 : 79 :(MEMBER (DEREF (LVAR 336)) ch 140):) )
+// Line 285 (CALL assert_expect ( 285 : 79 :(MEMBER (DEREF (LVAR 368)) ch 140):) )
 	.loc 1 285
-// Line 285 (MEMBER (DEREF (LVAR 336)) ch 140)
+// Line 285 (MEMBER (DEREF (LVAR 368)) ch 140)
 	.loc 1 285
-// Line 285 (LVAR 336)
+// Line 285 (LVAR 368)
 	.loc 1 285
-	lea  rax, [rbp - 336]
+	lea  rax, [rbp - 368]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -3947,11 +3947,11 @@ struct_:
 .L000133:
 	push rax
 	pop  rax
-// Line 286 (CALL assert_expect ( 286 : 195 :(MEMBER (LVAR 480) size 136):) )
+// Line 286 (CALL assert_expect ( 286 : 195 :(MEMBER (LVAR 512) size 136):) )
 	.loc 1 286
-// Line 286 (MEMBER (LVAR 480) size 136)
+// Line 286 (MEMBER (LVAR 512) size 136)
 	.loc 1 286
-	lea  rax, [rbp - 480]
+	lea  rax, [rbp - 512]
 	add  rax, 136
 	mov  eax, [rax]
 	push rax
@@ -3978,11 +3978,11 @@ struct_:
 .L000135:
 	push rax
 	pop  rax
-// Line 287 (CALL assert_expect ( 287 : 39 :(MEMBER (LVAR 480) ch 140):) )
+// Line 287 (CALL assert_expect ( 287 : 39 :(MEMBER (LVAR 512) ch 140):) )
 	.loc 1 287
-// Line 287 (MEMBER (LVAR 480) ch 140)
+// Line 287 (MEMBER (LVAR 512) ch 140)
 	.loc 1 287
-	lea  rax, [rbp - 480]
+	lea  rax, [rbp - 512]
 	add  rax, 140
 	movsx eax, BYTE PTR [rax]
 	push rax
@@ -4009,15 +4009,15 @@ struct_:
 .L000137:
 	push rax
 	pop  rax
-// Line 288 (CALL assert_expect ( 288 : 184 :(MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  0 )) row 0):) )
+// Line 288 (CALL assert_expect ( 288 : 184 :(MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  0 )) row 0):) )
 	.loc 1 288
-// Line 288 (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  0 )) row 0)
+// Line 288 (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  0 )) row 0)
 	.loc 1 288
-// Line 288 (] (ADDR (MEMBER (LVAR 480) ary 0))  0 )
+// Line 288 (] (ADDR (MEMBER (LVAR 512) ary 0))  0 )
 	.loc 1 288
-// Line 288 (ADDR (MEMBER (LVAR 480) ary 0))
+// Line 288 (ADDR (MEMBER (LVAR 512) ary 0))
 	.loc 1 288
-	lea  rax, [rbp - 480]
+	lea  rax, [rbp - 512]
 	add  rax, 0
 	push rax
 // Line 288  0 
@@ -4055,15 +4055,15 @@ struct_:
 .L000139:
 	push rax
 	pop  rax
-// Line 289 (CALL assert_expect ( 289 : 984 :(MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  16 )) col 4):) )
+// Line 289 (CALL assert_expect ( 289 : 984 :(MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  16 )) col 4):) )
 	.loc 1 289
-// Line 289 (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 480) ary 0))  16 )) col 4)
+// Line 289 (MEMBER (DEREF (] (ADDR (MEMBER (LVAR 512) ary 0))  16 )) col 4)
 	.loc 1 289
-// Line 289 (] (ADDR (MEMBER (LVAR 480) ary 0))  16 )
+// Line 289 (] (ADDR (MEMBER (LVAR 512) ary 0))  16 )
 	.loc 1 289
-// Line 289 (ADDR (MEMBER (LVAR 480) ary 0))
+// Line 289 (ADDR (MEMBER (LVAR 512) ary 0))
 	.loc 1 289
-	lea  rax, [rbp - 480]
+	lea  rax, [rbp - 512]
 	add  rax, 0
 	push rax
 // Line 289  16 
@@ -4101,41 +4101,41 @@ struct_:
 .L000141:
 	push rax
 	pop  rax
-// Line 291 (= (MEMBER (LVAR 496) right 8) (ADDR (LVAR 480)))
+// Line 291 (= (MEMBER (LVAR 528) right 8) (ADDR (LVAR 512)))
 	.loc 1 291
-	lea  rax, [rbp - 496]
+	lea  rax, [rbp - 528]
 	add  rax, 8
 	push rax
-// Line 291 (ADDR (LVAR 480))
+// Line 291 (ADDR (LVAR 512))
 	.loc 1 291
-	lea  rax, [rbp - 480]
+	lea  rax, [rbp - 512]
 	push rax
 	pop  rdi
 	pop  rax
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 292 (= (MEMBER (LVAR 496) left 0) (ADDR (LVAR 328)))
+// Line 292 (= (MEMBER (LVAR 528) left 0) (ADDR (LVAR 360)))
 	.loc 1 292
-	lea  rax, [rbp - 496]
+	lea  rax, [rbp - 528]
 	add  rax, 0
 	push rax
-// Line 292 (ADDR (LVAR 328))
+// Line 292 (ADDR (LVAR 360))
 	.loc 1 292
-	lea  rax, [rbp - 328]
+	lea  rax, [rbp - 360]
 	push rax
 	pop  rdi
 	pop  rax
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 293 (CALL assert_expect ( 293 : 195 :(MEMBER (DEREF (MEMBER (LVAR 496) right 8)) size 136):) )
+// Line 293 (CALL assert_expect ( 293 : 195 :(MEMBER (DEREF (MEMBER (LVAR 528) right 8)) size 136):) )
 	.loc 1 293
-// Line 293 (MEMBER (DEREF (MEMBER (LVAR 496) right 8)) size 136)
+// Line 293 (MEMBER (DEREF (MEMBER (LVAR 528) right 8)) size 136)
 	.loc 1 293
-// Line 293 (MEMBER (LVAR 496) right 8)
+// Line 293 (MEMBER (LVAR 528) right 8)
 	.loc 1 293
-	lea  rax, [rbp - 496]
+	lea  rax, [rbp - 528]
 	add  rax, 8
 	mov  rax, [rax]
 	push rax
@@ -4166,9 +4166,9 @@ struct_:
 .L000143:
 	push rax
 	pop  rax
-// Line 297 (= (MEMBER (LVAR 640) size 136)  100 )
+// Line 297 (= (MEMBER (LVAR 672) size 136)  100 )
 	.loc 1 297
-	lea  rax, [rbp - 640]
+	lea  rax, [rbp - 672]
 	add  rax, 136
 	push rax
 // Line 297  100 
@@ -4179,9 +4179,9 @@ struct_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 298 (= (MEMBER (LVAR 784) size 136)  500 )
+// Line 298 (= (MEMBER (LVAR 816) size 136)  500 )
 	.loc 1 298
-	lea  rax, [rbp - 784]
+	lea  rax, [rbp - 816]
 	add  rax, 136
 	push rax
 // Line 298  500 
@@ -4192,13 +4192,13 @@ struct_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 299 (= (LVAR 784) (LVAR 640))
+// Line 299 (= (LVAR 816) (LVAR 672))
 	.loc 1 299
-	lea  rax, [rbp - 784]
+	lea  rax, [rbp - 816]
 	push rax
-// Line 299 (LVAR 640)
+// Line 299 (LVAR 672)
 	.loc 1 299
-	lea  rax, [rbp - 640]
+	lea  rax, [rbp - 672]
 	push rax
 	pop  rax
 	pop  rsi
@@ -4253,11 +4253,11 @@ struct_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 301 (CALL assert_expect ( 301 : 100 :(MEMBER (LVAR 784) size 136):) )
+// Line 301 (CALL assert_expect ( 301 : 100 :(MEMBER (LVAR 816) size 136):) )
 	.loc 1 301
-// Line 301 (MEMBER (LVAR 784) size 136)
+// Line 301 (MEMBER (LVAR 816) size 136)
 	.loc 1 301
-	lea  rax, [rbp - 784]
+	lea  rax, [rbp - 816]
 	add  rax, 136
 	mov  eax, [rax]
 	push rax
@@ -4284,9 +4284,9 @@ struct_:
 .L000145:
 	push rax
 	pop  rax
-// Line 302 (= (LVAR 784) (GVAR leaf_global))
+// Line 302 (= (LVAR 816) (GVAR leaf_global))
 	.loc 1 302
-	lea  rax, [rbp - 784]
+	lea  rax, [rbp - 816]
 	push rax
 // Line 302 (GVAR leaf_global)
 	.loc 1 302
@@ -4332,11 +4332,11 @@ struct_:
 	mov  QWORD PTR [rsi + 136], rdi
 	push rsi
 	pop  rax
-// Line 303 (CALL assert_expect ( 303 : 700 :(MEMBER (LVAR 784) size 136):) )
+// Line 303 (CALL assert_expect ( 303 : 700 :(MEMBER (LVAR 816) size 136):) )
 	.loc 1 303
-// Line 303 (MEMBER (LVAR 784) size 136)
+// Line 303 (MEMBER (LVAR 816) size 136)
 	.loc 1 303
-	lea  rax, [rbp - 784]
+	lea  rax, [rbp - 816]
 	add  rax, 136
 	mov  eax, [rax]
 	push rax
@@ -4363,13 +4363,13 @@ struct_:
 .L000147:
 	push rax
 	pop  rax
-// Line 304 (= (GVAR leaf_global) (LVAR 640))
+// Line 304 (= (GVAR leaf_global) (LVAR 672))
 	.loc 1 304
 	lea  rax, leaf_global[rip]
 	push rax
-// Line 304 (LVAR 640)
+// Line 304 (LVAR 672)
 	.loc 1 304
-	lea  rax, [rbp - 640]
+	lea  rax, [rbp - 672]
 	push rax
 	pop  rax
 	pop  rsi
@@ -4442,9 +4442,9 @@ struct_:
 .L000149:
 	push rax
 	pop  rax
-// Line 306 (= (MEMBER (LVAR 640) size 136)  999 )
+// Line 306 (= (MEMBER (LVAR 672) size 136)  999 )
 	.loc 1 306
-	lea  rax, [rbp - 640]
+	lea  rax, [rbp - 672]
 	add  rax, 136
 	push rax
 // Line 306  999 
@@ -4455,50 +4455,50 @@ struct_:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 307 (= (LVAR 792) (ADDR (LVAR 640)))
+// Line 307 (= (LVAR 824) (ADDR (LVAR 672)))
 	.loc 1 307
-	lea  rax, [rbp - 792]
+	lea  rax, [rbp - 824]
 	push rax
-// Line 307 (ADDR (LVAR 640))
+// Line 307 (ADDR (LVAR 672))
 	.loc 1 307
-	lea  rax, [rbp - 640]
+	lea  rax, [rbp - 672]
 	push rax
 	pop  rdi
 	pop  rax
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 308 (= (LVAR 800) (ADDR (LVAR 784)))
+// Line 308 (= (LVAR 832) (ADDR (LVAR 816)))
 	.loc 1 308
-	lea  rax, [rbp - 800]
+	lea  rax, [rbp - 832]
 	push rax
-// Line 308 (ADDR (LVAR 784))
+// Line 308 (ADDR (LVAR 816))
 	.loc 1 308
-	lea  rax, [rbp - 784]
+	lea  rax, [rbp - 816]
 	push rax
 	pop  rdi
 	pop  rax
 	mov  [rax], rdi
 	push rdi
 	pop  rax
-// Line 309 (= (GVAR leaf_global) (= (DEREF (LVAR 800)) (DEREF (LVAR 792))))
+// Line 309 (= (GVAR leaf_global) (= (DEREF (LVAR 832)) (DEREF (LVAR 824))))
 	.loc 1 309
 	lea  rax, leaf_global[rip]
 	push rax
-// Line 309 (= (DEREF (LVAR 800)) (DEREF (LVAR 792)))
+// Line 309 (= (DEREF (LVAR 832)) (DEREF (LVAR 824)))
 	.loc 1 309
-// Line 309 (LVAR 800)
+// Line 309 (LVAR 832)
 	.loc 1 309
-	lea  rax, [rbp - 800]
+	lea  rax, [rbp - 832]
 	mov  rax, [rax]
 	push rax
 	pop  rax
 	push rax
-// Line 309 (DEREF (LVAR 792))
+// Line 309 (DEREF (LVAR 824))
 	.loc 1 309
-// Line 309 (LVAR 792)
+// Line 309 (LVAR 824)
 	.loc 1 309
-	lea  rax, [rbp - 792]
+	lea  rax, [rbp - 824]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -4580,13 +4580,13 @@ struct_:
 	mov  QWORD PTR [rsi + 136], rdi
 	push rsi
 	pop  rax
-// Line 310 (CALL assert_expect ( 310 : 999 :(MEMBER (DEREF (LVAR 800)) size 136):) )
+// Line 310 (CALL assert_expect ( 310 : 999 :(MEMBER (DEREF (LVAR 832)) size 136):) )
 	.loc 1 310
-// Line 310 (MEMBER (DEREF (LVAR 800)) size 136)
+// Line 310 (MEMBER (DEREF (LVAR 832)) size 136)
 	.loc 1 310
-// Line 310 (LVAR 800)
+// Line 310 (LVAR 832)
 	.loc 1 310
-	lea  rax, [rbp - 800]
+	lea  rax, [rbp - 832]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -4656,19 +4656,19 @@ struct_:
 	pop  rbp
 	ret
 	.global print_board
-// Line 316 FDECL print_board func ( * [8] int  board ) void 
-//    (LVAR 8) 
-//    (BLOCK(++ (= (GVAR q8_count) (++ (GVAR q8_count)  1 ))  1 ):(RETURN NULL ):(FOR init: (= (LVAR 12)  0 )cond: (<  8  (LVAR 12)) post: (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ) body (BLOCK(FOR init: (= (LVAR 16)  0 )cond: (<  8  (LVAR 16)) post: (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16))) (CALL printf_ ((ADDR  "Q " ):) ) NULL ):(CALL printf_ ((ADDR  ". " ):) ):)):(CALL printf_ ((ADDR  "\n" ):) ):)):(CALL printf_ ((ADDR  "\n\n" ):) ):))
+// Line 316 FDECL print_board func ( * [8] int  board ) void  max_offset:48
+//    (LVAR 40) 
+//    (BLOCK(++ (= (GVAR q8_count) (++ (GVAR q8_count)  1 ))  1 ):(RETURN NULL ):(FOR init: (= (LVAR 44)  0 )cond: (<  8  (LVAR 44)) post: (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ) body (BLOCK(FOR init: (= (LVAR 48)  0 )cond: (<  8  (LVAR 48)) post: (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48))) (CALL printf_ ((ADDR  "Q " ):) ) NULL ):(CALL printf_ ((ADDR  ". " ):) ):)):(CALL printf_ ((ADDR  "\n" ):) ):)):(CALL printf_ ((ADDR  "\n\n" ):) ):))
 	.loc 1 316
 print_board:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 32
+	sub  rsp, 48
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-	mov  [rbp - 8], rdi
+	mov  [rbp - 40], rdi
 // Line 317 (++ (= (GVAR q8_count) (++ (GVAR q8_count)  1 ))  1 )
 	.loc 1 317
 // Line 317 (= (GVAR q8_count) (++ (GVAR q8_count)  1 ))
@@ -4704,11 +4704,11 @@ print_board:
 // Line 318 (RETURN NULL )
 	.loc 1 318
 	jmp  .L.return.print_board
-// Line 319 (FOR init: (= (LVAR 12)  0 )cond: (<  8  (LVAR 12)) post: (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ) body (BLOCK(FOR init: (= (LVAR 16)  0 )cond: (<  8  (LVAR 16)) post: (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16))) (CALL printf_ ((ADDR  "Q " ):) ) NULL ):(CALL printf_ ((ADDR  ". " ):) ):)):(CALL printf_ ((ADDR  "\n" ):) ):))
+// Line 319 (FOR init: (= (LVAR 44)  0 )cond: (<  8  (LVAR 44)) post: (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ) body (BLOCK(FOR init: (= (LVAR 48)  0 )cond: (<  8  (LVAR 48)) post: (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48))) (CALL printf_ ((ADDR  "Q " ):) ) NULL ):(CALL printf_ ((ADDR  ". " ):) ):)):(CALL printf_ ((ADDR  "\n" ):) ):))
 	.loc 1 319
-// Line 319 (= (LVAR 12)  0 )
+// Line 319 (= (LVAR 44)  0 )
 	.loc 1 319
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
 // Line 319  0 
 	.loc 1 319
@@ -4718,14 +4718,14 @@ print_board:
 	mov  [rax], edi
 	push rdi
 .L000156:
-// Line 319 (<  8  (LVAR 12))
+// Line 319 (<  8  (LVAR 44))
 	.loc 1 319
 // Line 319  8 
 	.loc 1 319
 	push 8
-// Line 319 (LVAR 12)
+// Line 319 (LVAR 44)
 	.loc 1 319
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -4737,13 +4737,13 @@ print_board:
 	pop  rax
 	cmp  rax, 0
 	je   .L000155
-// Line 326 (BLOCK(FOR init: (= (LVAR 16)  0 )cond: (<  8  (LVAR 16)) post: (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16))) (CALL printf_ ((ADDR  "Q " ):) ) NULL ):(CALL printf_ ((ADDR  ". " ):) ):)):(CALL printf_ ((ADDR  "\n" ):) ):)
+// Line 326 (BLOCK(FOR init: (= (LVAR 48)  0 )cond: (<  8  (LVAR 48)) post: (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48))) (CALL printf_ ((ADDR  "Q " ):) ) NULL ):(CALL printf_ ((ADDR  ". " ):) ):)):(CALL printf_ ((ADDR  "\n" ):) ):)
 	.loc 1 326
-// Line 320 (FOR init: (= (LVAR 16)  0 )cond: (<  8  (LVAR 16)) post: (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16))) (CALL printf_ ((ADDR  "Q " ):) ) NULL ):(CALL printf_ ((ADDR  ". " ):) ):))
+// Line 320 (FOR init: (= (LVAR 48)  0 )cond: (<  8  (LVAR 48)) post: (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48))) (CALL printf_ ((ADDR  "Q " ):) ) NULL ):(CALL printf_ ((ADDR  ". " ):) ):))
 	.loc 1 320
-// Line 320 (= (LVAR 16)  0 )
+// Line 320 (= (LVAR 48)  0 )
 	.loc 1 320
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
 // Line 320  0 
 	.loc 1 320
@@ -4753,14 +4753,14 @@ print_board:
 	mov  [rax], edi
 	push rdi
 .L000159:
-// Line 320 (<  8  (LVAR 16))
+// Line 320 (<  8  (LVAR 48))
 	.loc 1 320
 // Line 320  8 
 	.loc 1 320
 	push 8
-// Line 320 (LVAR 16)
+// Line 320 (LVAR 48)
 	.loc 1 320
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -4772,26 +4772,26 @@ print_board:
 	pop  rax
 	cmp  rax, 0
 	je   .L000158
-// Line 324 (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16))) (CALL printf_ ((ADDR  "Q " ):) ) NULL ):(CALL printf_ ((ADDR  ". " ):) ):)
+// Line 324 (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48))) (CALL printf_ ((ADDR  "Q " ):) ) NULL ):(CALL printf_ ((ADDR  ". " ):) ):)
 	.loc 1 324
-// Line 322 (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16))) (CALL printf_ ((ADDR  "Q " ):) ) NULL )
+// Line 322 (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48))) (CALL printf_ ((ADDR  "Q " ):) ) NULL )
 	.loc 1 322
-// Line 321 (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))
+// Line 321 (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))
 	.loc 1 321
-// Line 321 (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16))
+// Line 321 (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48))
 	.loc 1 321
-// Line 321 (ADDR (DEREF (] (LVAR 8) (LVAR 12))))
+// Line 321 (ADDR (DEREF (] (LVAR 40) (LVAR 44))))
 	.loc 1 321
-// Line 321 (] (LVAR 8) (LVAR 12))
+// Line 321 (] (LVAR 40) (LVAR 44))
 	.loc 1 321
-// Line 321 (LVAR 8)
+// Line 321 (LVAR 40)
 	.loc 1 321
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  rax, [rax]
 	push rax
-// Line 321 (LVAR 12)
+// Line 321 (LVAR 44)
 	.loc 1 321
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -4801,9 +4801,9 @@ print_board:
 	push rax
 	pop  rax
 	push rax
-// Line 321 (LVAR 16)
+// Line 321 (LVAR 48)
 	.loc 1 321
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -4863,17 +4863,17 @@ print_board:
 	push rax
 	pop  rax
 .L000157:
-// Line 320 (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 )
+// Line 320 (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 )
 	.loc 1 320
-// Line 320 (= (LVAR 16) (++ (LVAR 16)  1 ))
+// Line 320 (= (LVAR 48) (++ (LVAR 48)  1 ))
 	.loc 1 320
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
-// Line 320 (++ (LVAR 16)  1 )
+// Line 320 (++ (LVAR 48)  1 )
 	.loc 1 320
-// Line 320 (LVAR 16)
+// Line 320 (LVAR 48)
 	.loc 1 320
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 320  1 
@@ -4919,17 +4919,17 @@ print_board:
 	push rax
 	pop  rax
 .L000154:
-// Line 319 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 319 (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )
 	.loc 1 319
-// Line 319 (= (LVAR 12) (++ (LVAR 12)  1 ))
+// Line 319 (= (LVAR 44) (++ (LVAR 44)  1 ))
 	.loc 1 319
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 319 (++ (LVAR 12)  1 )
+// Line 319 (++ (LVAR 44)  1 )
 	.loc 1 319
-// Line 319 (LVAR 12)
+// Line 319 (LVAR 44)
 	.loc 1 319
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 319  1 
@@ -4983,25 +4983,25 @@ print_board:
 	pop  rbp
 	ret
 	.global conflict
-// Line 329 FDECL conflict func ( * [8] int  board , * struct <Pos>  p ) int 
-//    (LVAR 8) (LVAR 16) 
-//    (BLOCK(FOR init: (= (LVAR 20)  0 )cond: (< (MEMBER (DEREF (LVAR 16)) row 0) (LVAR 20)) post: (++ (= (LVAR 20) (++ (LVAR 20)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (MEMBER (DEREF (LVAR 16)) col 4))) (RETURN  1 ) NULL ):(= (LVAR 24) (- (MEMBER (DEREF (LVAR 16)) row 0) (LVAR 20))):(IF (< (+ (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))  1 )  0 ) (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))) (RETURN  1 ) NULL ) NULL ):(IF (<  8  (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))) (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))) (RETURN  1 ) NULL ) NULL ):)):(RETURN  0 ):))
+// Line 329 FDECL conflict func ( * [8] int  board , * struct <Pos>  p ) int  max_offset:56
+//    (LVAR 40) (LVAR 48) 
+//    (BLOCK(FOR init: (= (LVAR 52)  0 )cond: (< (MEMBER (DEREF (LVAR 48)) row 0) (LVAR 52)) post: (++ (= (LVAR 52) (++ (LVAR 52)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (MEMBER (DEREF (LVAR 48)) col 4))) (RETURN  1 ) NULL ):(= (LVAR 56) (- (MEMBER (DEREF (LVAR 48)) row 0) (LVAR 52))):(IF (< (+ (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))  1 )  0 ) (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))) (RETURN  1 ) NULL ) NULL ):(IF (<  8  (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))) (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))) (RETURN  1 ) NULL ) NULL ):)):(RETURN  0 ):))
 	.loc 1 329
 conflict:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 32
+	sub  rsp, 64
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-	mov  [rbp - 8], rdi
-	mov  [rbp - 16], rsi
-// Line 330 (FOR init: (= (LVAR 20)  0 )cond: (< (MEMBER (DEREF (LVAR 16)) row 0) (LVAR 20)) post: (++ (= (LVAR 20) (++ (LVAR 20)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (MEMBER (DEREF (LVAR 16)) col 4))) (RETURN  1 ) NULL ):(= (LVAR 24) (- (MEMBER (DEREF (LVAR 16)) row 0) (LVAR 20))):(IF (< (+ (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))  1 )  0 ) (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))) (RETURN  1 ) NULL ) NULL ):(IF (<  8  (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))) (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))) (RETURN  1 ) NULL ) NULL ):))
+	mov  [rbp - 40], rdi
+	mov  [rbp - 48], rsi
+// Line 330 (FOR init: (= (LVAR 52)  0 )cond: (< (MEMBER (DEREF (LVAR 48)) row 0) (LVAR 52)) post: (++ (= (LVAR 52) (++ (LVAR 52)  1 ))  1 ) body (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (MEMBER (DEREF (LVAR 48)) col 4))) (RETURN  1 ) NULL ):(= (LVAR 56) (- (MEMBER (DEREF (LVAR 48)) row 0) (LVAR 52))):(IF (< (+ (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))  1 )  0 ) (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))) (RETURN  1 ) NULL ) NULL ):(IF (<  8  (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))) (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))) (RETURN  1 ) NULL ) NULL ):))
 	.loc 1 330
-// Line 330 (= (LVAR 20)  0 )
+// Line 330 (= (LVAR 52)  0 )
 	.loc 1 330
-	lea  rax, [rbp - 20]
+	lea  rax, [rbp - 52]
 	push rax
 // Line 330  0 
 	.loc 1 330
@@ -5011,22 +5011,22 @@ conflict:
 	mov  [rax], edi
 	push rdi
 .L000172:
-// Line 330 (< (MEMBER (DEREF (LVAR 16)) row 0) (LVAR 20))
+// Line 330 (< (MEMBER (DEREF (LVAR 48)) row 0) (LVAR 52))
 	.loc 1 330
-// Line 330 (MEMBER (DEREF (LVAR 16)) row 0)
+// Line 330 (MEMBER (DEREF (LVAR 48)) row 0)
 	.loc 1 330
-// Line 330 (LVAR 16)
+// Line 330 (LVAR 48)
 	.loc 1 330
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  rax, [rax]
 	push rax
 	pop  rax
 	add  rax, 0
 	mov  eax, [rax]
 	push rax
-// Line 330 (LVAR 20)
+// Line 330 (LVAR 52)
 	.loc 1 330
-	lea  rax, [rbp - 20]
+	lea  rax, [rbp - 52]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5038,26 +5038,26 @@ conflict:
 	pop  rax
 	cmp  rax, 0
 	je   .L000171
-// Line 338 (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (MEMBER (DEREF (LVAR 16)) col 4))) (RETURN  1 ) NULL ):(= (LVAR 24) (- (MEMBER (DEREF (LVAR 16)) row 0) (LVAR 20))):(IF (< (+ (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))  1 )  0 ) (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))) (RETURN  1 ) NULL ) NULL ):(IF (<  8  (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))) (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))) (RETURN  1 ) NULL ) NULL ):)
+// Line 338 (BLOCK(IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (MEMBER (DEREF (LVAR 48)) col 4))) (RETURN  1 ) NULL ):(= (LVAR 56) (- (MEMBER (DEREF (LVAR 48)) row 0) (LVAR 52))):(IF (< (+ (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))  1 )  0 ) (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))) (RETURN  1 ) NULL ) NULL ):(IF (<  8  (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))) (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))) (RETURN  1 ) NULL ) NULL ):)
 	.loc 1 338
-// Line 332 (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (MEMBER (DEREF (LVAR 16)) col 4))) (RETURN  1 ) NULL )
+// Line 332 (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (MEMBER (DEREF (LVAR 48)) col 4))) (RETURN  1 ) NULL )
 	.loc 1 332
-// Line 331 (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (MEMBER (DEREF (LVAR 16)) col 4)))
+// Line 331 (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (MEMBER (DEREF (LVAR 48)) col 4)))
 	.loc 1 331
-// Line 331 (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (MEMBER (DEREF (LVAR 16)) col 4))
+// Line 331 (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (MEMBER (DEREF (LVAR 48)) col 4))
 	.loc 1 331
-// Line 331 (ADDR (DEREF (] (LVAR 8) (LVAR 20))))
+// Line 331 (ADDR (DEREF (] (LVAR 40) (LVAR 52))))
 	.loc 1 331
-// Line 331 (] (LVAR 8) (LVAR 20))
+// Line 331 (] (LVAR 40) (LVAR 52))
 	.loc 1 331
-// Line 331 (LVAR 8)
+// Line 331 (LVAR 40)
 	.loc 1 331
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  rax, [rax]
 	push rax
-// Line 331 (LVAR 20)
+// Line 331 (LVAR 52)
 	.loc 1 331
-	lea  rax, [rbp - 20]
+	lea  rax, [rbp - 52]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5067,11 +5067,11 @@ conflict:
 	push rax
 	pop  rax
 	push rax
-// Line 331 (MEMBER (DEREF (LVAR 16)) col 4)
+// Line 331 (MEMBER (DEREF (LVAR 48)) col 4)
 	.loc 1 331
-// Line 331 (LVAR 16)
+// Line 331 (LVAR 48)
 	.loc 1 331
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -5099,26 +5099,26 @@ conflict:
 	jmp  .L000174
 .L000173:
 .L000174:
-// Line 332 (= (LVAR 24) (- (MEMBER (DEREF (LVAR 16)) row 0) (LVAR 20)))
+// Line 332 (= (LVAR 56) (- (MEMBER (DEREF (LVAR 48)) row 0) (LVAR 52)))
 	.loc 1 332
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	push rax
-// Line 332 (- (MEMBER (DEREF (LVAR 16)) row 0) (LVAR 20))
+// Line 332 (- (MEMBER (DEREF (LVAR 48)) row 0) (LVAR 52))
 	.loc 1 332
-// Line 332 (MEMBER (DEREF (LVAR 16)) row 0)
+// Line 332 (MEMBER (DEREF (LVAR 48)) row 0)
 	.loc 1 332
-// Line 332 (LVAR 16)
+// Line 332 (LVAR 48)
 	.loc 1 332
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  rax, [rax]
 	push rax
 	pop  rax
 	add  rax, 0
 	mov  eax, [rax]
 	push rax
-// Line 332 (LVAR 20)
+// Line 332 (LVAR 52)
 	.loc 1 332
-	lea  rax, [rbp - 20]
+	lea  rax, [rbp - 52]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5130,28 +5130,28 @@ conflict:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 335 (IF (< (+ (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))  1 )  0 ) (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))) (RETURN  1 ) NULL ) NULL )
+// Line 335 (IF (< (+ (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))  1 )  0 ) (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))) (RETURN  1 ) NULL ) NULL )
 	.loc 1 335
-// Line 333 (< (+ (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))  1 )  0 )
+// Line 333 (< (+ (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))  1 )  0 )
 	.loc 1 333
-// Line 333 (+ (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))  1 )
+// Line 333 (+ (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))  1 )
 	.loc 1 333
-// Line 333 (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))
+// Line 333 (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))
 	.loc 1 333
-// Line 333 (MEMBER (DEREF (LVAR 16)) col 4)
+// Line 333 (MEMBER (DEREF (LVAR 48)) col 4)
 	.loc 1 333
-// Line 333 (LVAR 16)
+// Line 333 (LVAR 48)
 	.loc 1 333
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  rax, [rax]
 	push rax
 	pop  rax
 	add  rax, 4
 	mov  eax, [rax]
 	push rax
-// Line 333 (LVAR 24)
+// Line 333 (LVAR 56)
 	.loc 1 333
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5177,24 +5177,24 @@ conflict:
 	pop  rax
 	cmp  rax, 0
 	je   .L000175
-// Line 335 (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))) (RETURN  1 ) NULL )
+// Line 335 (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))) (RETURN  1 ) NULL )
 	.loc 1 335
-// Line 334 (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))))
+// Line 334 (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))))
 	.loc 1 334
-// Line 334 (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))
+// Line 334 (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))
 	.loc 1 334
-// Line 334 (ADDR (DEREF (] (LVAR 8) (LVAR 20))))
+// Line 334 (ADDR (DEREF (] (LVAR 40) (LVAR 52))))
 	.loc 1 334
-// Line 334 (] (LVAR 8) (LVAR 20))
+// Line 334 (] (LVAR 40) (LVAR 52))
 	.loc 1 334
-// Line 334 (LVAR 8)
+// Line 334 (LVAR 40)
 	.loc 1 334
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  rax, [rax]
 	push rax
-// Line 334 (LVAR 20)
+// Line 334 (LVAR 52)
 	.loc 1 334
-	lea  rax, [rbp - 20]
+	lea  rax, [rbp - 52]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5204,22 +5204,22 @@ conflict:
 	push rax
 	pop  rax
 	push rax
-// Line 334 (- (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))
+// Line 334 (- (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))
 	.loc 1 334
-// Line 334 (MEMBER (DEREF (LVAR 16)) col 4)
+// Line 334 (MEMBER (DEREF (LVAR 48)) col 4)
 	.loc 1 334
-// Line 334 (LVAR 16)
+// Line 334 (LVAR 48)
 	.loc 1 334
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  rax, [rax]
 	push rax
 	pop  rax
 	add  rax, 4
 	mov  eax, [rax]
 	push rax
-// Line 334 (LVAR 24)
+// Line 334 (LVAR 56)
 	.loc 1 334
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5250,29 +5250,29 @@ conflict:
 	jmp  .L000176
 .L000175:
 .L000176:
-// Line 337 (IF (<  8  (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))) (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))) (RETURN  1 ) NULL ) NULL )
+// Line 337 (IF (<  8  (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))) (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))) (RETURN  1 ) NULL ) NULL )
 	.loc 1 337
-// Line 335 (<  8  (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))
+// Line 335 (<  8  (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))
 	.loc 1 335
 // Line 335  8 
 	.loc 1 335
 	push 8
-// Line 335 (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))
+// Line 335 (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))
 	.loc 1 335
-// Line 335 (MEMBER (DEREF (LVAR 16)) col 4)
+// Line 335 (MEMBER (DEREF (LVAR 48)) col 4)
 	.loc 1 335
-// Line 335 (LVAR 16)
+// Line 335 (LVAR 48)
 	.loc 1 335
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  rax, [rax]
 	push rax
 	pop  rax
 	add  rax, 4
 	mov  eax, [rax]
 	push rax
-// Line 335 (LVAR 24)
+// Line 335 (LVAR 56)
 	.loc 1 335
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5288,24 +5288,24 @@ conflict:
 	pop  rax
 	cmp  rax, 0
 	je   .L000179
-// Line 337 (IF (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))) (RETURN  1 ) NULL )
+// Line 337 (IF (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))) (RETURN  1 ) NULL )
 	.loc 1 337
-// Line 336 (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))))
+// Line 336 (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))))
 	.loc 1 336
-// Line 336 (] (ADDR (DEREF (] (LVAR 8) (LVAR 20)))) (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24)))
+// Line 336 (] (ADDR (DEREF (] (LVAR 40) (LVAR 52)))) (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56)))
 	.loc 1 336
-// Line 336 (ADDR (DEREF (] (LVAR 8) (LVAR 20))))
+// Line 336 (ADDR (DEREF (] (LVAR 40) (LVAR 52))))
 	.loc 1 336
-// Line 336 (] (LVAR 8) (LVAR 20))
+// Line 336 (] (LVAR 40) (LVAR 52))
 	.loc 1 336
-// Line 336 (LVAR 8)
+// Line 336 (LVAR 40)
 	.loc 1 336
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  rax, [rax]
 	push rax
-// Line 336 (LVAR 20)
+// Line 336 (LVAR 52)
 	.loc 1 336
-	lea  rax, [rbp - 20]
+	lea  rax, [rbp - 52]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5315,22 +5315,22 @@ conflict:
 	push rax
 	pop  rax
 	push rax
-// Line 336 (+ (MEMBER (DEREF (LVAR 16)) col 4) (LVAR 24))
+// Line 336 (+ (MEMBER (DEREF (LVAR 48)) col 4) (LVAR 56))
 	.loc 1 336
-// Line 336 (MEMBER (DEREF (LVAR 16)) col 4)
+// Line 336 (MEMBER (DEREF (LVAR 48)) col 4)
 	.loc 1 336
-// Line 336 (LVAR 16)
+// Line 336 (LVAR 48)
 	.loc 1 336
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  rax, [rax]
 	push rax
 	pop  rax
 	add  rax, 4
 	mov  eax, [rax]
 	push rax
-// Line 336 (LVAR 24)
+// Line 336 (LVAR 56)
 	.loc 1 336
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5362,17 +5362,17 @@ conflict:
 .L000179:
 .L000180:
 .L000170:
-// Line 330 (++ (= (LVAR 20) (++ (LVAR 20)  1 ))  1 )
+// Line 330 (++ (= (LVAR 52) (++ (LVAR 52)  1 ))  1 )
 	.loc 1 330
-// Line 330 (= (LVAR 20) (++ (LVAR 20)  1 ))
+// Line 330 (= (LVAR 52) (++ (LVAR 52)  1 ))
 	.loc 1 330
-	lea  rax, [rbp - 20]
+	lea  rax, [rbp - 52]
 	push rax
-// Line 330 (++ (LVAR 20)  1 )
+// Line 330 (++ (LVAR 52)  1 )
 	.loc 1 330
-// Line 330 (LVAR 20)
+// Line 330 (LVAR 52)
 	.loc 1 330
-	lea  rax, [rbp - 20]
+	lea  rax, [rbp - 52]
 	mov  eax, [rax]
 	push rax
 // Line 330  1 
@@ -5412,27 +5412,27 @@ conflict:
 	pop  rbp
 	ret
 	.global solve
-// Line 341 FDECL solve func ( * [8] int  board , int  row ) void 
-//    (LVAR 8) (LVAR 12) 
-//    (BLOCK(IF (== (LVAR 12)  8 ) (BLOCK(CALL print_board ((LVAR 8):) ):(RETURN NULL ):) NULL ):(FOR init: (= (LVAR 16)  0 )cond: (<  8  (LVAR 16)) post: (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ) body (BLOCK(= (MEMBER (LVAR 24) row 0) (LVAR 12)):(= (MEMBER (LVAR 24) col 4) (LVAR 16)):(IF (== (CALL conflict ((LVAR 8):(ADDR (LVAR 24)):) )  0 ) (BLOCK(= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  1 ):(CALL solve ((LVAR 8):(+ (LVAR 12)  1 ):) ):(= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  0 ):) NULL ):)):))
+// Line 341 FDECL solve func ( * [8] int  board , int  row ) void  max_offset:56
+//    (LVAR 40) (LVAR 44) 
+//    (BLOCK(IF (== (LVAR 44)  8 ) (BLOCK(CALL print_board ((LVAR 40):) ):(RETURN NULL ):) NULL ):(FOR init: (= (LVAR 48)  0 )cond: (<  8  (LVAR 48)) post: (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ) body (BLOCK(= (MEMBER (LVAR 56) row 0) (LVAR 44)):(= (MEMBER (LVAR 56) col 4) (LVAR 48)):(IF (== (CALL conflict ((LVAR 40):(ADDR (LVAR 56)):) )  0 ) (BLOCK(= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  1 ):(CALL solve ((LVAR 40):(+ (LVAR 44)  1 ):) ):(= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  0 ):) NULL ):)):))
 	.loc 1 341
 solve:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 32
+	sub  rsp, 64
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-	mov  [rbp - 8], rdi
-	mov  [rbp - 12], esi
-// Line 346 (IF (== (LVAR 12)  8 ) (BLOCK(CALL print_board ((LVAR 8):) ):(RETURN NULL ):) NULL )
+	mov  [rbp - 40], rdi
+	mov  [rbp - 44], esi
+// Line 346 (IF (== (LVAR 44)  8 ) (BLOCK(CALL print_board ((LVAR 40):) ):(RETURN NULL ):) NULL )
 	.loc 1 346
-// Line 342 (== (LVAR 12)  8 )
+// Line 342 (== (LVAR 44)  8 )
 	.loc 1 342
-// Line 342 (LVAR 12)
+// Line 342 (LVAR 44)
 	.loc 1 342
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 342  8 
@@ -5447,13 +5447,13 @@ solve:
 	pop  rax
 	cmp  rax, 0
 	je   .L000183
-// Line 346 (BLOCK(CALL print_board ((LVAR 8):) ):(RETURN NULL ):)
+// Line 346 (BLOCK(CALL print_board ((LVAR 40):) ):(RETURN NULL ):)
 	.loc 1 346
-// Line 343 (CALL print_board ((LVAR 8):) )
+// Line 343 (CALL print_board ((LVAR 40):) )
 	.loc 1 343
-// Line 343 (LVAR 8)
+// Line 343 (LVAR 40)
 	.loc 1 343
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  rax, [rax]
 	push rax
 	pop  rdi
@@ -5477,11 +5477,11 @@ solve:
 	jmp  .L000184
 .L000183:
 .L000184:
-// Line 346 (FOR init: (= (LVAR 16)  0 )cond: (<  8  (LVAR 16)) post: (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ) body (BLOCK(= (MEMBER (LVAR 24) row 0) (LVAR 12)):(= (MEMBER (LVAR 24) col 4) (LVAR 16)):(IF (== (CALL conflict ((LVAR 8):(ADDR (LVAR 24)):) )  0 ) (BLOCK(= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  1 ):(CALL solve ((LVAR 8):(+ (LVAR 12)  1 ):) ):(= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  0 ):) NULL ):))
+// Line 346 (FOR init: (= (LVAR 48)  0 )cond: (<  8  (LVAR 48)) post: (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ) body (BLOCK(= (MEMBER (LVAR 56) row 0) (LVAR 44)):(= (MEMBER (LVAR 56) col 4) (LVAR 48)):(IF (== (CALL conflict ((LVAR 40):(ADDR (LVAR 56)):) )  0 ) (BLOCK(= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  1 ):(CALL solve ((LVAR 40):(+ (LVAR 44)  1 ):) ):(= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  0 ):) NULL ):))
 	.loc 1 346
-// Line 346 (= (LVAR 16)  0 )
+// Line 346 (= (LVAR 48)  0 )
 	.loc 1 346
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
 // Line 346  0 
 	.loc 1 346
@@ -5491,14 +5491,14 @@ solve:
 	mov  [rax], edi
 	push rdi
 .L000189:
-// Line 346 (<  8  (LVAR 16))
+// Line 346 (<  8  (LVAR 48))
 	.loc 1 346
 // Line 346  8 
 	.loc 1 346
 	push 8
-// Line 346 (LVAR 16)
+// Line 346 (LVAR 48)
 	.loc 1 346
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5510,16 +5510,16 @@ solve:
 	pop  rax
 	cmp  rax, 0
 	je   .L000188
-// Line 357 (BLOCK(= (MEMBER (LVAR 24) row 0) (LVAR 12)):(= (MEMBER (LVAR 24) col 4) (LVAR 16)):(IF (== (CALL conflict ((LVAR 8):(ADDR (LVAR 24)):) )  0 ) (BLOCK(= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  1 ):(CALL solve ((LVAR 8):(+ (LVAR 12)  1 ):) ):(= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  0 ):) NULL ):)
+// Line 357 (BLOCK(= (MEMBER (LVAR 56) row 0) (LVAR 44)):(= (MEMBER (LVAR 56) col 4) (LVAR 48)):(IF (== (CALL conflict ((LVAR 40):(ADDR (LVAR 56)):) )  0 ) (BLOCK(= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  1 ):(CALL solve ((LVAR 40):(+ (LVAR 44)  1 ):) ):(= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  0 ):) NULL ):)
 	.loc 1 357
-// Line 348 (= (MEMBER (LVAR 24) row 0) (LVAR 12))
+// Line 348 (= (MEMBER (LVAR 56) row 0) (LVAR 44))
 	.loc 1 348
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	add  rax, 0
 	push rax
-// Line 348 (LVAR 12)
+// Line 348 (LVAR 44)
 	.loc 1 348
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5527,14 +5527,14 @@ solve:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 349 (= (MEMBER (LVAR 24) col 4) (LVAR 16))
+// Line 349 (= (MEMBER (LVAR 56) col 4) (LVAR 48))
 	.loc 1 349
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	add  rax, 4
 	push rax
-// Line 349 (LVAR 16)
+// Line 349 (LVAR 48)
 	.loc 1 349
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5542,19 +5542,19 @@ solve:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 356 (IF (== (CALL conflict ((LVAR 8):(ADDR (LVAR 24)):) )  0 ) (BLOCK(= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  1 ):(CALL solve ((LVAR 8):(+ (LVAR 12)  1 ):) ):(= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  0 ):) NULL )
+// Line 356 (IF (== (CALL conflict ((LVAR 40):(ADDR (LVAR 56)):) )  0 ) (BLOCK(= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  1 ):(CALL solve ((LVAR 40):(+ (LVAR 44)  1 ):) ):(= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  0 ):) NULL )
 	.loc 1 356
-// Line 350 (== (CALL conflict ((LVAR 8):(ADDR (LVAR 24)):) )  0 )
+// Line 350 (== (CALL conflict ((LVAR 40):(ADDR (LVAR 56)):) )  0 )
 	.loc 1 350
-// Line 350 (CALL conflict ((LVAR 8):(ADDR (LVAR 24)):) )
+// Line 350 (CALL conflict ((LVAR 40):(ADDR (LVAR 56)):) )
 	.loc 1 350
-// Line 350 (ADDR (LVAR 24))
+// Line 350 (ADDR (LVAR 56))
 	.loc 1 350
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	push rax
-// Line 350 (LVAR 8)
+// Line 350 (LVAR 40)
 	.loc 1 350
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  rax, [rax]
 	push rax
 	pop  rdi
@@ -5584,24 +5584,24 @@ solve:
 	pop  rax
 	cmp  rax, 0
 	je   .L000190
-// Line 356 (BLOCK(= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  1 ):(CALL solve ((LVAR 8):(+ (LVAR 12)  1 ):) ):(= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  0 ):)
+// Line 356 (BLOCK(= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  1 ):(CALL solve ((LVAR 40):(+ (LVAR 44)  1 ):) ):(= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  0 ):)
 	.loc 1 356
-// Line 352 (= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  1 )
+// Line 352 (= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  1 )
 	.loc 1 352
-// Line 352 (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16))
+// Line 352 (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48))
 	.loc 1 352
-// Line 352 (ADDR (DEREF (] (LVAR 8) (LVAR 12))))
+// Line 352 (ADDR (DEREF (] (LVAR 40) (LVAR 44))))
 	.loc 1 352
-// Line 352 (] (LVAR 8) (LVAR 12))
+// Line 352 (] (LVAR 40) (LVAR 44))
 	.loc 1 352
-// Line 352 (LVAR 8)
+// Line 352 (LVAR 40)
 	.loc 1 352
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  rax, [rax]
 	push rax
-// Line 352 (LVAR 12)
+// Line 352 (LVAR 44)
 	.loc 1 352
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5611,9 +5611,9 @@ solve:
 	push rax
 	pop  rax
 	push rax
-// Line 352 (LVAR 16)
+// Line 352 (LVAR 48)
 	.loc 1 352
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5631,13 +5631,13 @@ solve:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 353 (CALL solve ((LVAR 8):(+ (LVAR 12)  1 ):) )
+// Line 353 (CALL solve ((LVAR 40):(+ (LVAR 44)  1 ):) )
 	.loc 1 353
-// Line 353 (+ (LVAR 12)  1 )
+// Line 353 (+ (LVAR 44)  1 )
 	.loc 1 353
-// Line 353 (LVAR 12)
+// Line 353 (LVAR 44)
 	.loc 1 353
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 353  1 
@@ -5647,9 +5647,9 @@ solve:
 	pop  rax
 	add  rax, rdi
 	push rax
-// Line 353 (LVAR 8)
+// Line 353 (LVAR 40)
 	.loc 1 353
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  rax, [rax]
 	push rax
 	pop  rdi
@@ -5668,22 +5668,22 @@ solve:
 .L000195:
 	push rax
 	pop  rax
-// Line 354 (= (DEREF (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16)))  0 )
+// Line 354 (= (DEREF (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48)))  0 )
 	.loc 1 354
-// Line 354 (] (ADDR (DEREF (] (LVAR 8) (LVAR 12)))) (LVAR 16))
+// Line 354 (] (ADDR (DEREF (] (LVAR 40) (LVAR 44)))) (LVAR 48))
 	.loc 1 354
-// Line 354 (ADDR (DEREF (] (LVAR 8) (LVAR 12))))
+// Line 354 (ADDR (DEREF (] (LVAR 40) (LVAR 44))))
 	.loc 1 354
-// Line 354 (] (LVAR 8) (LVAR 12))
+// Line 354 (] (LVAR 40) (LVAR 44))
 	.loc 1 354
-// Line 354 (LVAR 8)
+// Line 354 (LVAR 40)
 	.loc 1 354
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  rax, [rax]
 	push rax
-// Line 354 (LVAR 12)
+// Line 354 (LVAR 44)
 	.loc 1 354
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5693,9 +5693,9 @@ solve:
 	push rax
 	pop  rax
 	push rax
-// Line 354 (LVAR 16)
+// Line 354 (LVAR 48)
 	.loc 1 354
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5717,17 +5717,17 @@ solve:
 .L000190:
 .L000191:
 .L000187:
-// Line 346 (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 )
+// Line 346 (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 )
 	.loc 1 346
-// Line 346 (= (LVAR 16) (++ (LVAR 16)  1 ))
+// Line 346 (= (LVAR 48) (++ (LVAR 48)  1 ))
 	.loc 1 346
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
-// Line 346 (++ (LVAR 16)  1 )
+// Line 346 (++ (LVAR 48)  1 )
 	.loc 1 346
-// Line 346 (LVAR 16)
+// Line 346 (LVAR 48)
 	.loc 1 346
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 346  1 
@@ -5760,14 +5760,14 @@ solve:
 	pop  rbp
 	ret
 	.global q8
-// Line 359 FDECL q8 func ( ) int 
+// Line 359 FDECL q8 func ( ) int  max_offset:296
 //    
-//    (BLOCK(= (GVAR q8_count)  0 ):(FOR init: (= (LVAR 260)  0 )cond: (<  8  (LVAR 260)) post: (++ (= (LVAR 260) (++ (LVAR 260)  1 ))  1 ) body (FOR init: (= (LVAR 264)  0 )cond: (<  8  (LVAR 264)) post: (++ (= (LVAR 264) (++ (LVAR 264)  1 ))  1 ) body (= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 256)) (LVAR 260)))) (LVAR 264)))  0 ))):(CALL solve ((ADDR (LVAR 256)): 0 :) ):(RETURN (GVAR q8_count)):))
+//    (BLOCK(= (GVAR q8_count)  0 ):(FOR init: (= (LVAR 292)  0 )cond: (<  8  (LVAR 292)) post: (++ (= (LVAR 292) (++ (LVAR 292)  1 ))  1 ) body (FOR init: (= (LVAR 296)  0 )cond: (<  8  (LVAR 296)) post: (++ (= (LVAR 296) (++ (LVAR 296)  1 ))  1 ) body (= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 288)) (LVAR 292)))) (LVAR 296)))  0 ))):(CALL solve ((ADDR (LVAR 288)): 0 :) ):(RETURN (GVAR q8_count)):))
 	.loc 1 359
 q8:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 272
+	sub  rsp, 304
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
@@ -5784,11 +5784,11 @@ q8:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 362 (FOR init: (= (LVAR 260)  0 )cond: (<  8  (LVAR 260)) post: (++ (= (LVAR 260) (++ (LVAR 260)  1 ))  1 ) body (FOR init: (= (LVAR 264)  0 )cond: (<  8  (LVAR 264)) post: (++ (= (LVAR 264) (++ (LVAR 264)  1 ))  1 ) body (= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 256)) (LVAR 260)))) (LVAR 264)))  0 )))
+// Line 362 (FOR init: (= (LVAR 292)  0 )cond: (<  8  (LVAR 292)) post: (++ (= (LVAR 292) (++ (LVAR 292)  1 ))  1 ) body (FOR init: (= (LVAR 296)  0 )cond: (<  8  (LVAR 296)) post: (++ (= (LVAR 296) (++ (LVAR 296)  1 ))  1 ) body (= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 288)) (LVAR 292)))) (LVAR 296)))  0 )))
 	.loc 1 362
-// Line 362 (= (LVAR 260)  0 )
+// Line 362 (= (LVAR 292)  0 )
 	.loc 1 362
-	lea  rax, [rbp - 260]
+	lea  rax, [rbp - 292]
 	push rax
 // Line 362  0 
 	.loc 1 362
@@ -5798,14 +5798,14 @@ q8:
 	mov  [rax], edi
 	push rdi
 .L000198:
-// Line 362 (<  8  (LVAR 260))
+// Line 362 (<  8  (LVAR 292))
 	.loc 1 362
 // Line 362  8 
 	.loc 1 362
 	push 8
-// Line 362 (LVAR 260)
+// Line 362 (LVAR 292)
 	.loc 1 362
-	lea  rax, [rbp - 260]
+	lea  rax, [rbp - 292]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5817,11 +5817,11 @@ q8:
 	pop  rax
 	cmp  rax, 0
 	je   .L000197
-// Line 363 (FOR init: (= (LVAR 264)  0 )cond: (<  8  (LVAR 264)) post: (++ (= (LVAR 264) (++ (LVAR 264)  1 ))  1 ) body (= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 256)) (LVAR 260)))) (LVAR 264)))  0 ))
+// Line 363 (FOR init: (= (LVAR 296)  0 )cond: (<  8  (LVAR 296)) post: (++ (= (LVAR 296) (++ (LVAR 296)  1 ))  1 ) body (= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 288)) (LVAR 292)))) (LVAR 296)))  0 ))
 	.loc 1 363
-// Line 363 (= (LVAR 264)  0 )
+// Line 363 (= (LVAR 296)  0 )
 	.loc 1 363
-	lea  rax, [rbp - 264]
+	lea  rax, [rbp - 296]
 	push rax
 // Line 363  0 
 	.loc 1 363
@@ -5831,14 +5831,14 @@ q8:
 	mov  [rax], edi
 	push rdi
 .L000201:
-// Line 363 (<  8  (LVAR 264))
+// Line 363 (<  8  (LVAR 296))
 	.loc 1 363
 // Line 363  8 
 	.loc 1 363
 	push 8
-// Line 363 (LVAR 264)
+// Line 363 (LVAR 296)
 	.loc 1 363
-	lea  rax, [rbp - 264]
+	lea  rax, [rbp - 296]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5850,21 +5850,21 @@ q8:
 	pop  rax
 	cmp  rax, 0
 	je   .L000200
-// Line 363 (= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 256)) (LVAR 260)))) (LVAR 264)))  0 )
+// Line 363 (= (DEREF (] (ADDR (DEREF (] (ADDR (LVAR 288)) (LVAR 292)))) (LVAR 296)))  0 )
 	.loc 1 363
-// Line 363 (] (ADDR (DEREF (] (ADDR (LVAR 256)) (LVAR 260)))) (LVAR 264))
+// Line 363 (] (ADDR (DEREF (] (ADDR (LVAR 288)) (LVAR 292)))) (LVAR 296))
 	.loc 1 363
-// Line 363 (ADDR (DEREF (] (ADDR (LVAR 256)) (LVAR 260))))
+// Line 363 (ADDR (DEREF (] (ADDR (LVAR 288)) (LVAR 292))))
 	.loc 1 363
-// Line 363 (] (ADDR (LVAR 256)) (LVAR 260))
+// Line 363 (] (ADDR (LVAR 288)) (LVAR 292))
 	.loc 1 363
-// Line 363 (ADDR (LVAR 256))
+// Line 363 (ADDR (LVAR 288))
 	.loc 1 363
-	lea  rax, [rbp - 256]
+	lea  rax, [rbp - 288]
 	push rax
-// Line 363 (LVAR 260)
+// Line 363 (LVAR 292)
 	.loc 1 363
-	lea  rax, [rbp - 260]
+	lea  rax, [rbp - 292]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5874,9 +5874,9 @@ q8:
 	push rax
 	pop  rax
 	push rax
-// Line 363 (LVAR 264)
+// Line 363 (LVAR 296)
 	.loc 1 363
-	lea  rax, [rbp - 264]
+	lea  rax, [rbp - 296]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -5895,17 +5895,17 @@ q8:
 	push rdi
 	pop  rax
 .L000199:
-// Line 363 (++ (= (LVAR 264) (++ (LVAR 264)  1 ))  1 )
+// Line 363 (++ (= (LVAR 296) (++ (LVAR 296)  1 ))  1 )
 	.loc 1 363
-// Line 363 (= (LVAR 264) (++ (LVAR 264)  1 ))
+// Line 363 (= (LVAR 296) (++ (LVAR 296)  1 ))
 	.loc 1 363
-	lea  rax, [rbp - 264]
+	lea  rax, [rbp - 296]
 	push rax
-// Line 363 (++ (LVAR 264)  1 )
+// Line 363 (++ (LVAR 296)  1 )
 	.loc 1 363
-// Line 363 (LVAR 264)
+// Line 363 (LVAR 296)
 	.loc 1 363
-	lea  rax, [rbp - 264]
+	lea  rax, [rbp - 296]
 	mov  eax, [rax]
 	push rax
 // Line 363  1 
@@ -5930,17 +5930,17 @@ q8:
 	jmp  .L000201
 .L000200:
 .L000196:
-// Line 362 (++ (= (LVAR 260) (++ (LVAR 260)  1 ))  1 )
+// Line 362 (++ (= (LVAR 292) (++ (LVAR 292)  1 ))  1 )
 	.loc 1 362
-// Line 362 (= (LVAR 260) (++ (LVAR 260)  1 ))
+// Line 362 (= (LVAR 292) (++ (LVAR 292)  1 ))
 	.loc 1 362
-	lea  rax, [rbp - 260]
+	lea  rax, [rbp - 292]
 	push rax
-// Line 362 (++ (LVAR 260)  1 )
+// Line 362 (++ (LVAR 292)  1 )
 	.loc 1 362
-// Line 362 (LVAR 260)
+// Line 362 (LVAR 292)
 	.loc 1 362
-	lea  rax, [rbp - 260]
+	lea  rax, [rbp - 292]
 	mov  eax, [rax]
 	push rax
 // Line 362  1 
@@ -5964,14 +5964,14 @@ q8:
 	pop  rax
 	jmp  .L000198
 .L000197:
-// Line 364 (CALL solve ((ADDR (LVAR 256)): 0 :) )
+// Line 364 (CALL solve ((ADDR (LVAR 288)): 0 :) )
 	.loc 1 364
 // Line 364  0 
 	.loc 1 364
 	push 0
-// Line 364 (ADDR (LVAR 256))
+// Line 364 (ADDR (LVAR 288))
 	.loc 1 364
-	lea  rax, [rbp - 256]
+	lea  rax, [rbp - 288]
 	push rax
 	pop  rdi
 	pop  rsi
@@ -6007,26 +6007,26 @@ q8:
 	pop  rbp
 	ret
 	.global fun
-// Line 368 FDECL fun func ( * int  p ) int 
-//    (LVAR 8) 
-//    (BLOCK(RETURN (DEREF (LVAR 8))):))
+// Line 368 FDECL fun func ( * int  p ) int  max_offset:40
+//    (LVAR 40) 
+//    (BLOCK(RETURN (DEREF (LVAR 40))):))
 	.loc 1 368
 fun:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 16
+	sub  rsp, 48
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-	mov  [rbp - 8], rdi
-// Line 368 (RETURN (DEREF (LVAR 8)))
+	mov  [rbp - 40], rdi
+// Line 368 (RETURN (DEREF (LVAR 40)))
 	.loc 1 368
-// Line 368 (DEREF (LVAR 8))
+// Line 368 (DEREF (LVAR 40))
 	.loc 1 368
-// Line 368 (LVAR 8)
+// Line 368 (LVAR 40)
 	.loc 1 368
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	mov  rax, [rax]
 	push rax
 	pop  rax
@@ -6043,21 +6043,21 @@ fun:
 	pop  rbp
 	ret
 	.global main
-// Line 370 FDECL main func ( ) int 
+// Line 370 FDECL main func ( ) int  max_offset:56
 //    
-//    (BLOCK(= (LVAR 8) (CAST * void   0 )):(CALL assert_expect ( 375 : 1 : 1 :) ):(CALL assert_expect ( 376 : 0 : 0 :) ):(CALL assert_expect ( 377 : 0 :(CAST int  (CAST * void   0 )):) ):(CALL assert_expect ( 379 : 70 :(*  10  (+  2   5 )):) ):(CALL printf_ ((ADDR (GVAR str_ary)):) ):(CALL assert_expect ( 382 : 1979 :(GVAR i):) ):(CALL assert_expect ( 383 : 2015 :(GVAR j):) ):(CALL assert_expect ( 384 : 24 :(GVAR s):) ):(CALL assert_expect ( 386 : 9 : 9 :) ):(CALL assert_expect ( 387 : 4 :(+ (-  0   3 )  7 ):) ):(CALL assert_expect ( 388 : 21 :(- (+  5   20 )  4 ):) ):(CALL assert_expect ( 389 : 21 :(+  5  (*  4   4 )):) ):(CALL assert_expect ( 390 : 24 :(* (*  4  (-  5   2 )) (-  4   2 )):) ):(CALL assert_expect ( 391 : 13 :(- (+  6  (*  3   4 )) (/  15   3 )):) ):(CALL assert_expect ( 392 : 33 :(/ (* (+  6   3 ) (-  15   4 ))  3 ):) ):(CALL assert_expect ( 393 : 0 :(==  3  (+  3   1 )):) ):(CALL assert_expect ( 394 : 1 :(!=  4  (*  4   2 )):) ):(CALL assert_expect ( 395 : 0 :(!=  3  (*  1   3 )):) ):(CALL assert_expect ( 396 : 1 :(>=  5  (-  8   4 )):) ):(CALL assert_expect ( 397 : 1 :(>=  5  (-  7   2 )):) ):(CALL assert_expect ( 398 : 0 :(>= (-  11   8 )  5 ):) ):(CALL assert_expect ( 399 : 1 :(<= (*  2   30 )  3 ):) ):(CALL assert_expect ( 400 : 1 :(<= (/  9   3 )  3 ):) ):(CALL assert_expect ( 401 : 0 :(<= (-  20   18 )  3 ):) ):(CALL assert_expect ( 402 : 1 :(== (+ (* (-  0   5 )  2 )  10 )  0 ):) ):(CALL assert_expect ( 403 : 1 :(== (/  6   2 ) (/  9   3 )):) ):(CALL assert_expect ( 404 : 1 :(< (+  4   1 )  4 ):) ):(CALL assert_expect ( 405 : 1 :(> (+  1   4 )  4 ):) ):(CALL assert_expect ( 406 : 0 :(< (-  4   1 )  4 ):) ):(CALL assert_expect ( 407 : 0 :(> (-  1   4 )  4 ):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 409 : 0 :(&&  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 410 : 0 :(LVAR 12):) ):(CALL assert_expect ( 411 : 0 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 412 : 1 :(LVAR 12):) ):(CALL assert_expect ( 413 : 1 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 414 : 2 :(LVAR 12):) ):(CALL assert_expect ( 415 : 1 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 416 : 3 :(LVAR 12):) ):(CALL assert_expect ( 417 : 1 :(||  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 418 : 3 :(LVAR 12):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 420 : 0 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 421 : 1 :(LVAR 12):) ):(= (LVAR 12)  0 ):(CALL assert_expect ( 423 : 0 :(||  0  (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))):) ):(CALL assert_expect ( 424 : 1 :(LVAR 12):) ):(CALL assert_expect ( 425 : 1 :(|| (&&  1   1 ) (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) ):(CALL assert_expect ( 426 : 1 :(LVAR 12):) ):(CALL assert_expect ( 427 : 1 :(!  0 ):) ):(CALL assert_expect ( 428 : 0 :(!  1 ):) ):(CALL assert_expect ( 429 : 0 :(! (! (!  1 ))):) ):(CALL assert_expect ( 431 : 256 :(<<  1   8 ):) ):(CALL assert_expect ( 432 : 32 :(>>  512   4 ):) ):(= (LVAR 16)  10 ):(CALL assert_expect ( 437 : 15 :(= (LVAR 16) (+= (LVAR 16)  5 )):) ):(CALL assert_expect ( 438 : 15 :(LVAR 16):) ):(CALL assert_expect ( 439 : 8 :(= (LVAR 16) (-= (LVAR 16)  7 )):) ):(CALL assert_expect ( 440 : 8 :(LVAR 16):) ):(CALL assert_expect ( 441 : 40 :(= (LVAR 16) (*= (LVAR 16)  5 )):) ):(CALL assert_expect ( 442 : 40 :(LVAR 16):) ):(CALL assert_expect ( 443 : 4 :(= (LVAR 16) (/= (LVAR 16)  10 )):) ):(CALL assert_expect ( 444 : 4 :(LVAR 16):) ):(CALL assert_expect ( 447 : 4 :(++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ):) ):(CALL assert_expect ( 448 : 5 :(LVAR 16):) ):(CALL assert_expect ( 449 : 5 :(-- (= (LVAR 16) (-- (LVAR 16)  1 ))  1 ):) ):(CALL assert_expect ( 450 : 4 :(LVAR 16):) ):(= (LVAR 20) (/  100  (LVAR 16))):(CALL assert_expect ( 455 : 25 :(LVAR 20):) ):(= (LVAR 24)  77 ):(IF (== (LVAR 24)  77 ) (= (LVAR 24)  55 ) (= (LVAR 24)  66 )):(CALL assert_expect ( 463 : 55 :(LVAR 24):) ):(CALL assert_expect ( 464 : 1346269 :(CALL fibo ( 30 :) ):) ):(CALL array_global () ):(CALL array_local () ):(CALL string () ):(CALL block_scope () ):(CALL for_ () ):(CALL list_ () ):(CALL struct_ () ):(CALL assert_expect ( 477 : 11 :(CALL switch_ ( 1 :) ):) ):(CALL assert_expect ( 478 : 13 :(CALL switch_ ( 2 :) ):) ):(CALL assert_expect ( 479 : 13 :(CALL switch_ ( 3 :) ):) ):(CALL assert_expect ( 480 : 13 :(CALL switch_ ( 4 :) ):) ):(CALL assert_expect ( 481 : 15 :(CALL switch_ ( 5 :) ):) ):(CALL assert_expect ( 482 : 15 :(CALL switch_ ( 6 :) ):) ):(CALL assert_expect ( 485 : 11 :(CALL switch2_ ( 97 :) ):) ):(CALL assert_expect ( 486 : 12 :(CALL switch2_ ( 98 :) ):) ):(CALL assert_expect ( 487 : 12 :(CALL switch2_ ( 99 :) ):) ):(CALL assert_expect ( 488 : 15 :(CALL switch2_ ( 122 :) ):) ):(CALL assert_expect ( 491 : 92 :(CALL q8 () ):) ):(CALL assert_expect ( 494 : 0 : 0 :) ):(CALL assert_expect ( 495 : 1 : 1 :) ):(CALL assert_expect ( 496 : 2 : 2 :) ):(CALL assert_expect ( 497 : 3 : 3 :) ):(CALL assert_expect ( 499 : 15 :(|  13   7 ):) ):(CALL assert_expect ( 500 : 5115 :(|  938   5073 ):) ):(CALL assert_expect ( 501 : 5 :(&  13   7 ):) ):(CALL assert_expect ( 502 : 896 :(&  938   5073 ):) ):(CALL assert_expect ( 503 : 10 :(^  13   7 ):) ):(CALL assert_expect ( 504 : 4219 :(^  938   5073 ):) ):(CALL assert_expect ( 506 : 29 :(>>  938   5 ):) ):(CALL assert_expect ( 507 : 1664 :(<<  13   7 ):) ):(CALL printf_ ((ADDR  "passed tests.\n" ):) ):(RETURN  0 ):))
+//    (BLOCK(= (LVAR 40) (CAST * void   0 )):(CALL assert_expect ( 375 : 1 : 1 :) ):(CALL assert_expect ( 376 : 0 : 0 :) ):(CALL assert_expect ( 377 : 0 :(CAST int  (CAST * void   0 )):) ):(CALL assert_expect ( 379 : 70 :(*  10  (+  2   5 )):) ):(CALL printf_ ((ADDR (GVAR str_ary)):) ):(CALL assert_expect ( 382 : 1979 :(GVAR i):) ):(CALL assert_expect ( 383 : 2015 :(GVAR j):) ):(CALL assert_expect ( 384 : 24 :(GVAR s):) ):(CALL assert_expect ( 386 : 9 : 9 :) ):(CALL assert_expect ( 387 : 4 :(+ (-  0   3 )  7 ):) ):(CALL assert_expect ( 388 : 21 :(- (+  5   20 )  4 ):) ):(CALL assert_expect ( 389 : 21 :(+  5  (*  4   4 )):) ):(CALL assert_expect ( 390 : 24 :(* (*  4  (-  5   2 )) (-  4   2 )):) ):(CALL assert_expect ( 391 : 13 :(- (+  6  (*  3   4 )) (/  15   3 )):) ):(CALL assert_expect ( 392 : 33 :(/ (* (+  6   3 ) (-  15   4 ))  3 ):) ):(CALL assert_expect ( 393 : 0 :(==  3  (+  3   1 )):) ):(CALL assert_expect ( 394 : 1 :(!=  4  (*  4   2 )):) ):(CALL assert_expect ( 395 : 0 :(!=  3  (*  1   3 )):) ):(CALL assert_expect ( 396 : 1 :(>=  5  (-  8   4 )):) ):(CALL assert_expect ( 397 : 1 :(>=  5  (-  7   2 )):) ):(CALL assert_expect ( 398 : 0 :(>= (-  11   8 )  5 ):) ):(CALL assert_expect ( 399 : 1 :(<= (*  2   30 )  3 ):) ):(CALL assert_expect ( 400 : 1 :(<= (/  9   3 )  3 ):) ):(CALL assert_expect ( 401 : 0 :(<= (-  20   18 )  3 ):) ):(CALL assert_expect ( 402 : 1 :(== (+ (* (-  0   5 )  2 )  10 )  0 ):) ):(CALL assert_expect ( 403 : 1 :(== (/  6   2 ) (/  9   3 )):) ):(CALL assert_expect ( 404 : 1 :(< (+  4   1 )  4 ):) ):(CALL assert_expect ( 405 : 1 :(> (+  1   4 )  4 ):) ):(CALL assert_expect ( 406 : 0 :(< (-  4   1 )  4 ):) ):(CALL assert_expect ( 407 : 0 :(> (-  1   4 )  4 ):) ):(= (LVAR 44)  0 ):(CALL assert_expect ( 409 : 0 :(&&  0  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 410 : 0 :(LVAR 44):) ):(CALL assert_expect ( 411 : 0 :(&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 412 : 1 :(LVAR 44):) ):(CALL assert_expect ( 413 : 1 :(&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 414 : 2 :(LVAR 44):) ):(CALL assert_expect ( 415 : 1 :(||  0  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 416 : 3 :(LVAR 44):) ):(CALL assert_expect ( 417 : 1 :(||  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 418 : 3 :(LVAR 44):) ):(= (LVAR 44)  0 ):(CALL assert_expect ( 420 : 0 :(||  0  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 421 : 1 :(LVAR 44):) ):(= (LVAR 44)  0 ):(CALL assert_expect ( 423 : 0 :(||  0  (&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ))):) ):(CALL assert_expect ( 424 : 1 :(LVAR 44):) ):(CALL assert_expect ( 425 : 1 :(|| (&&  1   1 ) (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) ):(CALL assert_expect ( 426 : 1 :(LVAR 44):) ):(CALL assert_expect ( 427 : 1 :(!  0 ):) ):(CALL assert_expect ( 428 : 0 :(!  1 ):) ):(CALL assert_expect ( 429 : 0 :(! (! (!  1 ))):) ):(CALL assert_expect ( 431 : 256 :(<<  1   8 ):) ):(CALL assert_expect ( 432 : 32 :(>>  512   4 ):) ):(= (LVAR 48)  10 ):(CALL assert_expect ( 437 : 15 :(= (LVAR 48) (+= (LVAR 48)  5 )):) ):(CALL assert_expect ( 438 : 15 :(LVAR 48):) ):(CALL assert_expect ( 439 : 8 :(= (LVAR 48) (-= (LVAR 48)  7 )):) ):(CALL assert_expect ( 440 : 8 :(LVAR 48):) ):(CALL assert_expect ( 441 : 40 :(= (LVAR 48) (*= (LVAR 48)  5 )):) ):(CALL assert_expect ( 442 : 40 :(LVAR 48):) ):(CALL assert_expect ( 443 : 4 :(= (LVAR 48) (/= (LVAR 48)  10 )):) ):(CALL assert_expect ( 444 : 4 :(LVAR 48):) ):(CALL assert_expect ( 447 : 4 :(++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ):) ):(CALL assert_expect ( 448 : 5 :(LVAR 48):) ):(CALL assert_expect ( 449 : 5 :(-- (= (LVAR 48) (-- (LVAR 48)  1 ))  1 ):) ):(CALL assert_expect ( 450 : 4 :(LVAR 48):) ):(= (LVAR 52) (/  100  (LVAR 48))):(CALL assert_expect ( 455 : 25 :(LVAR 52):) ):(= (LVAR 56)  77 ):(IF (== (LVAR 56)  77 ) (= (LVAR 56)  55 ) (= (LVAR 56)  66 )):(CALL assert_expect ( 463 : 55 :(LVAR 56):) ):(CALL assert_expect ( 464 : 1346269 :(CALL fibo ( 30 :) ):) ):(CALL array_global () ):(CALL array_local () ):(CALL string () ):(CALL block_scope () ):(CALL for_ () ):(CALL list_ () ):(CALL struct_ () ):(CALL assert_expect ( 477 : 11 :(CALL switch_ ( 1 :) ):) ):(CALL assert_expect ( 478 : 13 :(CALL switch_ ( 2 :) ):) ):(CALL assert_expect ( 479 : 13 :(CALL switch_ ( 3 :) ):) ):(CALL assert_expect ( 480 : 13 :(CALL switch_ ( 4 :) ):) ):(CALL assert_expect ( 481 : 15 :(CALL switch_ ( 5 :) ):) ):(CALL assert_expect ( 482 : 15 :(CALL switch_ ( 6 :) ):) ):(CALL assert_expect ( 485 : 11 :(CALL switch2_ ( 97 :) ):) ):(CALL assert_expect ( 486 : 12 :(CALL switch2_ ( 98 :) ):) ):(CALL assert_expect ( 487 : 12 :(CALL switch2_ ( 99 :) ):) ):(CALL assert_expect ( 488 : 15 :(CALL switch2_ ( 122 :) ):) ):(CALL assert_expect ( 491 : 92 :(CALL q8 () ):) ):(CALL assert_expect ( 494 : 0 : 0 :) ):(CALL assert_expect ( 495 : 1 : 1 :) ):(CALL assert_expect ( 496 : 2 : 2 :) ):(CALL assert_expect ( 497 : 3 : 3 :) ):(CALL assert_expect ( 499 : 15 :(|  13   7 ):) ):(CALL assert_expect ( 500 : 5115 :(|  938   5073 ):) ):(CALL assert_expect ( 501 : 5 :(&  13   7 ):) ):(CALL assert_expect ( 502 : 896 :(&  938   5073 ):) ):(CALL assert_expect ( 503 : 10 :(^  13   7 ):) ):(CALL assert_expect ( 504 : 4219 :(^  938   5073 ):) ):(CALL assert_expect ( 506 : 29 :(>>  938   5 ):) ):(CALL assert_expect ( 507 : 1664 :(<<  13   7 ):) ):(CALL printf_ ((ADDR  "passed tests.\n" ):) ):(RETURN  0 ):))
 	.loc 1 370
 main:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 32
+	sub  rsp, 64
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
 	mov  [rbp - 32], r15
-// Line 374 (= (LVAR 8) (CAST * void   0 ))
+// Line 374 (= (LVAR 40) (CAST * void   0 ))
 	.loc 1 374
-	lea  rax, [rbp - 8]
+	lea  rax, [rbp - 40]
 	push rax
 // Line 373 (CAST * void   0 )
 	.loc 1 373
@@ -7424,9 +7424,9 @@ main:
 .L000263:
 	push rax
 	pop  rax
-// Line 408 (= (LVAR 12)  0 )
+// Line 408 (= (LVAR 44)  0 )
 	.loc 1 408
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
 // Line 408  0 
 	.loc 1 408
@@ -7436,9 +7436,9 @@ main:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 409 (CALL assert_expect ( 409 : 0 :(&&  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 409 (CALL assert_expect ( 409 : 0 :(&&  0  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) )
 	.loc 1 409
-// Line 409 (&&  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 409 (&&  0  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ))
 	.loc 1 409
 // Line 409  0 
 	.loc 1 409
@@ -7446,17 +7446,17 @@ main:
 	pop  rax
 	cmp  eax, 0
 	je   .L000264
-// Line 409 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 409 (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )
 	.loc 1 409
-// Line 409 (= (LVAR 12) (++ (LVAR 12)  1 ))
+// Line 409 (= (LVAR 44) (++ (LVAR 44)  1 ))
 	.loc 1 409
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 409 (++ (LVAR 12)  1 )
+// Line 409 (++ (LVAR 44)  1 )
 	.loc 1 409
-// Line 409 (LVAR 12)
+// Line 409 (LVAR 44)
 	.loc 1 409
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 409  1 
@@ -7509,11 +7509,11 @@ main:
 .L000267:
 	push rax
 	pop  rax
-// Line 410 (CALL assert_expect ( 410 : 0 :(LVAR 12):) )
+// Line 410 (CALL assert_expect ( 410 : 0 :(LVAR 44):) )
 	.loc 1 410
-// Line 410 (LVAR 12)
+// Line 410 (LVAR 44)
 	.loc 1 410
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 410  0 
@@ -7539,9 +7539,9 @@ main:
 .L000269:
 	push rax
 	pop  rax
-// Line 411 (CALL assert_expect ( 411 : 0 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 411 (CALL assert_expect ( 411 : 0 :(&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) )
 	.loc 1 411
-// Line 411 (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 411 (&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ))
 	.loc 1 411
 // Line 411  1 
 	.loc 1 411
@@ -7549,17 +7549,17 @@ main:
 	pop  rax
 	cmp  eax, 0
 	je   .L000270
-// Line 411 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 411 (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )
 	.loc 1 411
-// Line 411 (= (LVAR 12) (++ (LVAR 12)  1 ))
+// Line 411 (= (LVAR 44) (++ (LVAR 44)  1 ))
 	.loc 1 411
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 411 (++ (LVAR 12)  1 )
+// Line 411 (++ (LVAR 44)  1 )
 	.loc 1 411
-// Line 411 (LVAR 12)
+// Line 411 (LVAR 44)
 	.loc 1 411
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 411  1 
@@ -7612,11 +7612,11 @@ main:
 .L000273:
 	push rax
 	pop  rax
-// Line 412 (CALL assert_expect ( 412 : 1 :(LVAR 12):) )
+// Line 412 (CALL assert_expect ( 412 : 1 :(LVAR 44):) )
 	.loc 1 412
-// Line 412 (LVAR 12)
+// Line 412 (LVAR 44)
 	.loc 1 412
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 412  1 
@@ -7642,9 +7642,9 @@ main:
 .L000275:
 	push rax
 	pop  rax
-// Line 413 (CALL assert_expect ( 413 : 1 :(&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 413 (CALL assert_expect ( 413 : 1 :(&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) )
 	.loc 1 413
-// Line 413 (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 413 (&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ))
 	.loc 1 413
 // Line 413  1 
 	.loc 1 413
@@ -7652,17 +7652,17 @@ main:
 	pop  rax
 	cmp  eax, 0
 	je   .L000276
-// Line 413 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 413 (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )
 	.loc 1 413
-// Line 413 (= (LVAR 12) (++ (LVAR 12)  1 ))
+// Line 413 (= (LVAR 44) (++ (LVAR 44)  1 ))
 	.loc 1 413
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 413 (++ (LVAR 12)  1 )
+// Line 413 (++ (LVAR 44)  1 )
 	.loc 1 413
-// Line 413 (LVAR 12)
+// Line 413 (LVAR 44)
 	.loc 1 413
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 413  1 
@@ -7715,11 +7715,11 @@ main:
 .L000279:
 	push rax
 	pop  rax
-// Line 414 (CALL assert_expect ( 414 : 2 :(LVAR 12):) )
+// Line 414 (CALL assert_expect ( 414 : 2 :(LVAR 44):) )
 	.loc 1 414
-// Line 414 (LVAR 12)
+// Line 414 (LVAR 44)
 	.loc 1 414
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 414  2 
@@ -7745,9 +7745,9 @@ main:
 .L000281:
 	push rax
 	pop  rax
-// Line 415 (CALL assert_expect ( 415 : 1 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 415 (CALL assert_expect ( 415 : 1 :(||  0  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) )
 	.loc 1 415
-// Line 415 (||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 415 (||  0  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ))
 	.loc 1 415
 // Line 415  0 
 	.loc 1 415
@@ -7755,17 +7755,17 @@ main:
 	pop  rax
 	cmp  eax, 0
 	jne  .L000282
-// Line 415 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 415 (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )
 	.loc 1 415
-// Line 415 (= (LVAR 12) (++ (LVAR 12)  1 ))
+// Line 415 (= (LVAR 44) (++ (LVAR 44)  1 ))
 	.loc 1 415
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 415 (++ (LVAR 12)  1 )
+// Line 415 (++ (LVAR 44)  1 )
 	.loc 1 415
-// Line 415 (LVAR 12)
+// Line 415 (LVAR 44)
 	.loc 1 415
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 415  1 
@@ -7818,11 +7818,11 @@ main:
 .L000285:
 	push rax
 	pop  rax
-// Line 416 (CALL assert_expect ( 416 : 3 :(LVAR 12):) )
+// Line 416 (CALL assert_expect ( 416 : 3 :(LVAR 44):) )
 	.loc 1 416
-// Line 416 (LVAR 12)
+// Line 416 (LVAR 44)
 	.loc 1 416
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 416  3 
@@ -7848,9 +7848,9 @@ main:
 .L000287:
 	push rax
 	pop  rax
-// Line 417 (CALL assert_expect ( 417 : 1 :(||  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 417 (CALL assert_expect ( 417 : 1 :(||  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) )
 	.loc 1 417
-// Line 417 (||  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 417 (||  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ))
 	.loc 1 417
 // Line 417  1 
 	.loc 1 417
@@ -7858,17 +7858,17 @@ main:
 	pop  rax
 	cmp  eax, 0
 	jne  .L000288
-// Line 417 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 417 (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )
 	.loc 1 417
-// Line 417 (= (LVAR 12) (++ (LVAR 12)  1 ))
+// Line 417 (= (LVAR 44) (++ (LVAR 44)  1 ))
 	.loc 1 417
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 417 (++ (LVAR 12)  1 )
+// Line 417 (++ (LVAR 44)  1 )
 	.loc 1 417
-// Line 417 (LVAR 12)
+// Line 417 (LVAR 44)
 	.loc 1 417
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 417  1 
@@ -7921,11 +7921,11 @@ main:
 .L000291:
 	push rax
 	pop  rax
-// Line 418 (CALL assert_expect ( 418 : 3 :(LVAR 12):) )
+// Line 418 (CALL assert_expect ( 418 : 3 :(LVAR 44):) )
 	.loc 1 418
-// Line 418 (LVAR 12)
+// Line 418 (LVAR 44)
 	.loc 1 418
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 418  3 
@@ -7951,9 +7951,9 @@ main:
 .L000293:
 	push rax
 	pop  rax
-// Line 419 (= (LVAR 12)  0 )
+// Line 419 (= (LVAR 44)  0 )
 	.loc 1 419
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
 // Line 419  0 
 	.loc 1 419
@@ -7963,9 +7963,9 @@ main:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 420 (CALL assert_expect ( 420 : 0 :(||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 420 (CALL assert_expect ( 420 : 0 :(||  0  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) )
 	.loc 1 420
-// Line 420 (||  0  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 420 (||  0  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ))
 	.loc 1 420
 // Line 420  0 
 	.loc 1 420
@@ -7973,17 +7973,17 @@ main:
 	pop  rax
 	cmp  eax, 0
 	jne  .L000294
-// Line 420 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 420 (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )
 	.loc 1 420
-// Line 420 (= (LVAR 12) (++ (LVAR 12)  1 ))
+// Line 420 (= (LVAR 44) (++ (LVAR 44)  1 ))
 	.loc 1 420
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 420 (++ (LVAR 12)  1 )
+// Line 420 (++ (LVAR 44)  1 )
 	.loc 1 420
-// Line 420 (LVAR 12)
+// Line 420 (LVAR 44)
 	.loc 1 420
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 420  1 
@@ -8036,11 +8036,11 @@ main:
 .L000297:
 	push rax
 	pop  rax
-// Line 421 (CALL assert_expect ( 421 : 1 :(LVAR 12):) )
+// Line 421 (CALL assert_expect ( 421 : 1 :(LVAR 44):) )
 	.loc 1 421
-// Line 421 (LVAR 12)
+// Line 421 (LVAR 44)
 	.loc 1 421
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 421  1 
@@ -8066,9 +8066,9 @@ main:
 .L000299:
 	push rax
 	pop  rax
-// Line 422 (= (LVAR 12)  0 )
+// Line 422 (= (LVAR 44)  0 )
 	.loc 1 422
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
 // Line 422  0 
 	.loc 1 422
@@ -8078,9 +8078,9 @@ main:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 423 (CALL assert_expect ( 423 : 0 :(||  0  (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))):) )
+// Line 423 (CALL assert_expect ( 423 : 0 :(||  0  (&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ))):) )
 	.loc 1 423
-// Line 423 (||  0  (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )))
+// Line 423 (||  0  (&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )))
 	.loc 1 423
 // Line 423  0 
 	.loc 1 423
@@ -8088,7 +8088,7 @@ main:
 	pop  rax
 	cmp  eax, 0
 	jne  .L000300
-// Line 423 (&&  1  (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 423 (&&  1  (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ))
 	.loc 1 423
 // Line 423  1 
 	.loc 1 423
@@ -8096,17 +8096,17 @@ main:
 	pop  rax
 	cmp  eax, 0
 	je   .L000302
-// Line 423 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 423 (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )
 	.loc 1 423
-// Line 423 (= (LVAR 12) (++ (LVAR 12)  1 ))
+// Line 423 (= (LVAR 44) (++ (LVAR 44)  1 ))
 	.loc 1 423
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 423 (++ (LVAR 12)  1 )
+// Line 423 (++ (LVAR 44)  1 )
 	.loc 1 423
-// Line 423 (LVAR 12)
+// Line 423 (LVAR 44)
 	.loc 1 423
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 423  1 
@@ -8168,11 +8168,11 @@ main:
 .L000305:
 	push rax
 	pop  rax
-// Line 424 (CALL assert_expect ( 424 : 1 :(LVAR 12):) )
+// Line 424 (CALL assert_expect ( 424 : 1 :(LVAR 44):) )
 	.loc 1 424
-// Line 424 (LVAR 12)
+// Line 424 (LVAR 44)
 	.loc 1 424
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 424  1 
@@ -8198,9 +8198,9 @@ main:
 .L000307:
 	push rax
 	pop  rax
-// Line 425 (CALL assert_expect ( 425 : 1 :(|| (&&  1   1 ) (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )):) )
+// Line 425 (CALL assert_expect ( 425 : 1 :(|| (&&  1   1 ) (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )):) )
 	.loc 1 425
-// Line 425 (|| (&&  1   1 ) (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 ))
+// Line 425 (|| (&&  1   1 ) (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 ))
 	.loc 1 425
 // Line 425 (&&  1   1 )
 	.loc 1 425
@@ -8225,17 +8225,17 @@ main:
 	pop  rax
 	cmp  eax, 0
 	jne  .L000308
-// Line 425 (++ (= (LVAR 12) (++ (LVAR 12)  1 ))  1 )
+// Line 425 (++ (= (LVAR 44) (++ (LVAR 44)  1 ))  1 )
 	.loc 1 425
-// Line 425 (= (LVAR 12) (++ (LVAR 12)  1 ))
+// Line 425 (= (LVAR 44) (++ (LVAR 44)  1 ))
 	.loc 1 425
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	push rax
-// Line 425 (++ (LVAR 12)  1 )
+// Line 425 (++ (LVAR 44)  1 )
 	.loc 1 425
-// Line 425 (LVAR 12)
+// Line 425 (LVAR 44)
 	.loc 1 425
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 425  1 
@@ -8288,11 +8288,11 @@ main:
 .L000313:
 	push rax
 	pop  rax
-// Line 426 (CALL assert_expect ( 426 : 1 :(LVAR 12):) )
+// Line 426 (CALL assert_expect ( 426 : 1 :(LVAR 44):) )
 	.loc 1 426
-// Line 426 (LVAR 12)
+// Line 426 (LVAR 44)
 	.loc 1 426
-	lea  rax, [rbp - 12]
+	lea  rax, [rbp - 44]
 	mov  eax, [rax]
 	push rax
 // Line 426  1 
@@ -8533,9 +8533,9 @@ main:
 .L000335:
 	push rax
 	pop  rax
-// Line 436 (= (LVAR 16)  10 )
+// Line 436 (= (LVAR 48)  10 )
 	.loc 1 436
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
 // Line 436  10 
 	.loc 1 436
@@ -8545,17 +8545,17 @@ main:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 437 (CALL assert_expect ( 437 : 15 :(= (LVAR 16) (+= (LVAR 16)  5 )):) )
+// Line 437 (CALL assert_expect ( 437 : 15 :(= (LVAR 48) (+= (LVAR 48)  5 )):) )
 	.loc 1 437
-// Line 437 (= (LVAR 16) (+= (LVAR 16)  5 ))
+// Line 437 (= (LVAR 48) (+= (LVAR 48)  5 ))
 	.loc 1 437
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
-// Line 437 (+= (LVAR 16)  5 )
+// Line 437 (+= (LVAR 48)  5 )
 	.loc 1 437
-// Line 437 (LVAR 16)
+// Line 437 (LVAR 48)
 	.loc 1 437
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 437  5 
@@ -8592,11 +8592,11 @@ main:
 .L000337:
 	push rax
 	pop  rax
-// Line 438 (CALL assert_expect ( 438 : 15 :(LVAR 16):) )
+// Line 438 (CALL assert_expect ( 438 : 15 :(LVAR 48):) )
 	.loc 1 438
-// Line 438 (LVAR 16)
+// Line 438 (LVAR 48)
 	.loc 1 438
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 438  15 
@@ -8622,17 +8622,17 @@ main:
 .L000339:
 	push rax
 	pop  rax
-// Line 439 (CALL assert_expect ( 439 : 8 :(= (LVAR 16) (-= (LVAR 16)  7 )):) )
+// Line 439 (CALL assert_expect ( 439 : 8 :(= (LVAR 48) (-= (LVAR 48)  7 )):) )
 	.loc 1 439
-// Line 439 (= (LVAR 16) (-= (LVAR 16)  7 ))
+// Line 439 (= (LVAR 48) (-= (LVAR 48)  7 ))
 	.loc 1 439
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
-// Line 439 (-= (LVAR 16)  7 )
+// Line 439 (-= (LVAR 48)  7 )
 	.loc 1 439
-// Line 439 (LVAR 16)
+// Line 439 (LVAR 48)
 	.loc 1 439
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 439  7 
@@ -8669,11 +8669,11 @@ main:
 .L000341:
 	push rax
 	pop  rax
-// Line 440 (CALL assert_expect ( 440 : 8 :(LVAR 16):) )
+// Line 440 (CALL assert_expect ( 440 : 8 :(LVAR 48):) )
 	.loc 1 440
-// Line 440 (LVAR 16)
+// Line 440 (LVAR 48)
 	.loc 1 440
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 440  8 
@@ -8699,17 +8699,17 @@ main:
 .L000343:
 	push rax
 	pop  rax
-// Line 441 (CALL assert_expect ( 441 : 40 :(= (LVAR 16) (*= (LVAR 16)  5 )):) )
+// Line 441 (CALL assert_expect ( 441 : 40 :(= (LVAR 48) (*= (LVAR 48)  5 )):) )
 	.loc 1 441
-// Line 441 (= (LVAR 16) (*= (LVAR 16)  5 ))
+// Line 441 (= (LVAR 48) (*= (LVAR 48)  5 ))
 	.loc 1 441
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
-// Line 441 (*= (LVAR 16)  5 )
+// Line 441 (*= (LVAR 48)  5 )
 	.loc 1 441
-// Line 441 (LVAR 16)
+// Line 441 (LVAR 48)
 	.loc 1 441
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 441  5 
@@ -8746,11 +8746,11 @@ main:
 .L000345:
 	push rax
 	pop  rax
-// Line 442 (CALL assert_expect ( 442 : 40 :(LVAR 16):) )
+// Line 442 (CALL assert_expect ( 442 : 40 :(LVAR 48):) )
 	.loc 1 442
-// Line 442 (LVAR 16)
+// Line 442 (LVAR 48)
 	.loc 1 442
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 442  40 
@@ -8776,17 +8776,17 @@ main:
 .L000347:
 	push rax
 	pop  rax
-// Line 443 (CALL assert_expect ( 443 : 4 :(= (LVAR 16) (/= (LVAR 16)  10 )):) )
+// Line 443 (CALL assert_expect ( 443 : 4 :(= (LVAR 48) (/= (LVAR 48)  10 )):) )
 	.loc 1 443
-// Line 443 (= (LVAR 16) (/= (LVAR 16)  10 ))
+// Line 443 (= (LVAR 48) (/= (LVAR 48)  10 ))
 	.loc 1 443
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
-// Line 443 (/= (LVAR 16)  10 )
+// Line 443 (/= (LVAR 48)  10 )
 	.loc 1 443
-// Line 443 (LVAR 16)
+// Line 443 (LVAR 48)
 	.loc 1 443
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 443  10 
@@ -8824,11 +8824,11 @@ main:
 .L000349:
 	push rax
 	pop  rax
-// Line 444 (CALL assert_expect ( 444 : 4 :(LVAR 16):) )
+// Line 444 (CALL assert_expect ( 444 : 4 :(LVAR 48):) )
 	.loc 1 444
-// Line 444 (LVAR 16)
+// Line 444 (LVAR 48)
 	.loc 1 444
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 444  4 
@@ -8854,19 +8854,19 @@ main:
 .L000351:
 	push rax
 	pop  rax
-// Line 447 (CALL assert_expect ( 447 : 4 :(++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 ):) )
+// Line 447 (CALL assert_expect ( 447 : 4 :(++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 ):) )
 	.loc 1 447
-// Line 447 (++ (= (LVAR 16) (++ (LVAR 16)  1 ))  1 )
+// Line 447 (++ (= (LVAR 48) (++ (LVAR 48)  1 ))  1 )
 	.loc 1 447
-// Line 447 (= (LVAR 16) (++ (LVAR 16)  1 ))
+// Line 447 (= (LVAR 48) (++ (LVAR 48)  1 ))
 	.loc 1 447
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
-// Line 447 (++ (LVAR 16)  1 )
+// Line 447 (++ (LVAR 48)  1 )
 	.loc 1 447
-// Line 447 (LVAR 16)
+// Line 447 (LVAR 48)
 	.loc 1 447
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 447  1 
@@ -8910,11 +8910,11 @@ main:
 .L000353:
 	push rax
 	pop  rax
-// Line 448 (CALL assert_expect ( 448 : 5 :(LVAR 16):) )
+// Line 448 (CALL assert_expect ( 448 : 5 :(LVAR 48):) )
 	.loc 1 448
-// Line 448 (LVAR 16)
+// Line 448 (LVAR 48)
 	.loc 1 448
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 448  5 
@@ -8940,19 +8940,19 @@ main:
 .L000355:
 	push rax
 	pop  rax
-// Line 449 (CALL assert_expect ( 449 : 5 :(-- (= (LVAR 16) (-- (LVAR 16)  1 ))  1 ):) )
+// Line 449 (CALL assert_expect ( 449 : 5 :(-- (= (LVAR 48) (-- (LVAR 48)  1 ))  1 ):) )
 	.loc 1 449
-// Line 449 (-- (= (LVAR 16) (-- (LVAR 16)  1 ))  1 )
+// Line 449 (-- (= (LVAR 48) (-- (LVAR 48)  1 ))  1 )
 	.loc 1 449
-// Line 449 (= (LVAR 16) (-- (LVAR 16)  1 ))
+// Line 449 (= (LVAR 48) (-- (LVAR 48)  1 ))
 	.loc 1 449
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	push rax
-// Line 449 (-- (LVAR 16)  1 )
+// Line 449 (-- (LVAR 48)  1 )
 	.loc 1 449
-// Line 449 (LVAR 16)
+// Line 449 (LVAR 48)
 	.loc 1 449
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 449  1 
@@ -8996,11 +8996,11 @@ main:
 .L000357:
 	push rax
 	pop  rax
-// Line 450 (CALL assert_expect ( 450 : 4 :(LVAR 16):) )
+// Line 450 (CALL assert_expect ( 450 : 4 :(LVAR 48):) )
 	.loc 1 450
-// Line 450 (LVAR 16)
+// Line 450 (LVAR 48)
 	.loc 1 450
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 // Line 450  4 
@@ -9026,18 +9026,18 @@ main:
 .L000359:
 	push rax
 	pop  rax
-// Line 454 (= (LVAR 20) (/  100  (LVAR 16)))
+// Line 454 (= (LVAR 52) (/  100  (LVAR 48)))
 	.loc 1 454
-	lea  rax, [rbp - 20]
+	lea  rax, [rbp - 52]
 	push rax
-// Line 454 (/  100  (LVAR 16))
+// Line 454 (/  100  (LVAR 48))
 	.loc 1 454
 // Line 454  100 
 	.loc 1 454
 	push 100
-// Line 454 (LVAR 16)
+// Line 454 (LVAR 48)
 	.loc 1 454
-	lea  rax, [rbp - 16]
+	lea  rax, [rbp - 48]
 	mov  eax, [rax]
 	push rax
 	pop  rdi
@@ -9050,11 +9050,11 @@ main:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 455 (CALL assert_expect ( 455 : 25 :(LVAR 20):) )
+// Line 455 (CALL assert_expect ( 455 : 25 :(LVAR 52):) )
 	.loc 1 455
-// Line 455 (LVAR 20)
+// Line 455 (LVAR 52)
 	.loc 1 455
-	lea  rax, [rbp - 20]
+	lea  rax, [rbp - 52]
 	mov  eax, [rax]
 	push rax
 // Line 455  25 
@@ -9080,9 +9080,9 @@ main:
 .L000361:
 	push rax
 	pop  rax
-// Line 458 (= (LVAR 24)  77 )
+// Line 458 (= (LVAR 56)  77 )
 	.loc 1 458
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	push rax
 // Line 458  77 
 	.loc 1 458
@@ -9092,13 +9092,13 @@ main:
 	mov  [rax], edi
 	push rdi
 	pop  rax
-// Line 463 (IF (== (LVAR 24)  77 ) (= (LVAR 24)  55 ) (= (LVAR 24)  66 ))
+// Line 463 (IF (== (LVAR 56)  77 ) (= (LVAR 56)  55 ) (= (LVAR 56)  66 ))
 	.loc 1 463
-// Line 459 (== (LVAR 24)  77 )
+// Line 459 (== (LVAR 56)  77 )
 	.loc 1 459
-// Line 459 (LVAR 24)
+// Line 459 (LVAR 56)
 	.loc 1 459
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	mov  eax, [rax]
 	push rax
 // Line 459  77 
@@ -9113,9 +9113,9 @@ main:
 	pop  rax
 	cmp  rax, 0
 	je   .L000362
-// Line 460 (= (LVAR 24)  55 )
+// Line 460 (= (LVAR 56)  55 )
 	.loc 1 460
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	push rax
 // Line 460  55 
 	.loc 1 460
@@ -9127,9 +9127,9 @@ main:
 	pop  rax
 	jmp  .L000363
 .L000362:
-// Line 462 (= (LVAR 24)  66 )
+// Line 462 (= (LVAR 56)  66 )
 	.loc 1 462
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	push rax
 // Line 462  66 
 	.loc 1 462
@@ -9140,11 +9140,11 @@ main:
 	push rdi
 	pop  rax
 .L000363:
-// Line 463 (CALL assert_expect ( 463 : 55 :(LVAR 24):) )
+// Line 463 (CALL assert_expect ( 463 : 55 :(LVAR 56):) )
 	.loc 1 463
-// Line 463 (LVAR 24)
+// Line 463 (LVAR 56)
 	.loc 1 463
-	lea  rax, [rbp - 24]
+	lea  rax, [rbp - 56]
 	mov  eax, [rax]
 	push rax
 // Line 463  55 

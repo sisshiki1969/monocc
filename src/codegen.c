@@ -250,6 +250,29 @@ void gen_block(Node *node) {
   for (int i = 0; i < len; i++) gen_stmt(vec->data[i]);
 }
 
+void builtin_va_start(Node *node) {
+  // void va_start(va_list ap, parmN);
+  // typedef struct {
+  //  int gp_offset;
+  //  int fp_offset;
+  //  void *overflow_arg_area;
+  //  void *reg_save_area;
+  //} va_list[1];
+  int gp = vec_len(node->nodes);
+  int fp = 0;
+  // rdi = ap
+  // ap->gp_offset = gp * 8
+  fprintf(output, "\tmov  DWORD PTR [rdi], %d\n", gp * 8);
+  // ap->fp_offset = 48 + fp * 8
+  fprintf(output, "\tmov  DWORD PTR [rdi + 4], %d\n", 48 + fp * 8);
+  // ap->reg_save_area = rbp - 128 (address for first arg(rdi))
+  fprintf(output, "\tmov  [rdi + 16], rbp\n");
+  fprintf(output, "\tsub  QWORD PTR [rdi + 16], 128\n");
+  // this is dummy.
+  fprintf(output, "\tpush rax\n");
+  return;
+}
+
 void gen_call(Node *node) {
   // TODO: Currently, only TK_IDENT is allowed as a callee.
   int len = vec_len(node->nodes);
@@ -262,23 +285,9 @@ void gen_call(Node *node) {
   }
   Token *name = node->lhs->token;  // node->lhs: callee
   if (cmp_token_str(name, "__builtin_va_start")) {
-    int gp = len;
-    int fp = 0;
-    /*
-        for (Var *var = current_fn->params; var; var = var->next) {
-          if (is_flonum(var->ty))
-           fp++;
-           else
-          gp++;
-        }
-    */
-
-    printf("\tmov  rax, [rbp - %d]\n", node->nodes->data[0]->offset);
-    printf("\tmov  DWORD PTR [rax], %d\n", gp * 8);
-    printf("\tmov  DWORD PTR [rax + 4], %d\n", 48 + fp * 8);
-    printf("\tmov  [rax + 16], rbp\n");
-    printf("\tsub  QWORD PTR [rax + 16], 128\n");
-    error_at_token(name, "woo!");
+    // va_start(ap, last)
+    builtin_va_start(node);
+    return;
   }
 
   char *label1 = new_label();
@@ -308,7 +317,7 @@ void gen_fdecl(Node *node) {
   // Prologue
   fprintf(output, "\tpush rbp\n");
   fprintf(output, "\tmov  rbp, rsp\n");
-  int offset = (node->offset & (-16)) + 16;
+  int offset = ((node->offset - 1) & (-16)) + 16;
   fprintf(output, "\tsub  rsp, %d\n", offset);
   fprintf(output, "\tmov  [rbp -  8], r12\n");
   fprintf(output, "\tmov  [rbp - 16], r13\n");
