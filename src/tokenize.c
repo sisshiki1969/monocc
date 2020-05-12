@@ -15,10 +15,7 @@ Token *new_token(TokenKind kind, Token *cur, char *str, int len) {
 /// Create a new token and copy source token to the new token..
 Token *dup_token(Token *src) {
   Token *new = calloc(1, sizeof(Token));
-  new->kind = src->kind;
-  new->str = src->str;
-  new->len = src->len;
-  new->int_val = src->int_val;
+  *new = *src;
   new->next = NULL;
   return new;
 }
@@ -100,6 +97,10 @@ bool read_if(TokContext *ctx, int c) {
   return false;
 }
 
+void skip_whitespace(char **p) {
+  while (**p == ' ' || **p == '\t') *p++;
+}
+
 void skip_space(TokContext *ctx) {
   while (*ctx->p == ' ' || *ctx->p == '\t') ctx->p++;
 }
@@ -126,12 +127,14 @@ void tokenize(char *file, char *p, bool is_main) {
 
     if (*p == '#') {
       char *line_end = strchr(p++, '\n');
+      // skip_whitespace(&p);
       while (*p == ' ' || *p == '\t') p++;
       int len = 0;
       while (is_ident_char(*(p + len))) len++;
 
       if (is_reserved(p, len, "include")) {
         p += len;
+        // skip_whitespace(&p);
         while (*p == ' ' || *p == '\t') p++;
         if (*p == '"') {
           // get directory name of the current file.
@@ -179,13 +182,13 @@ void tokenize(char *file, char *p, bool is_main) {
           // fprintf(stderr, " ( ");
           skip_space(ctx);
           // function macro
-          while (*(ctx->p) != ')') {
+          while (*ctx->p != ')') {
             Token *param_token = read_token(ctx);
             param_token->int_val = i++;
             // print_token(stderr, param_token);
 
             skip_space(ctx);
-            if (*(ctx->p) != ',') break;
+            if (*ctx->p != ',') break;
             ctx->p++;
           }
           if (!read_if(ctx, ')')) error_at_char(fi, ctx->p, "Expected ')'");
@@ -199,7 +202,7 @@ void tokenize(char *file, char *p, bool is_main) {
 
         skip_space(ctx);
         int i = 0;
-        while (*(ctx->p) != '\n' && i < 50) {
+        while (*ctx->p != '\n' && i < 50) {
           read_token(ctx);
           // print_token(stderr, read_token(ctx));
           skip_space(ctx);
@@ -218,11 +221,11 @@ void tokenize(char *file, char *p, bool is_main) {
     // TokContext *ctx = new_tok_context(fi, cur, p);
     ctx->p = p;
     ctx->cur = cur;
-    while (*(ctx->p) != '\n' && *(ctx->p) != 0) {
+    while (*ctx->p != '\n' && *ctx->p != 0) {
       read_token(ctx);
     }
 
-    while (*(ctx->p) == '\n') ctx->p++;
+    while (*ctx->p == '\n') ctx->p++;
     cur = ctx->cur;
     p = ctx->p;
   }
