@@ -10,7 +10,7 @@ LVar *scope;
 TagName *tagnames;
 Typedef *tdef_names;
 Global *globals;
-Global *functions;
+Function *functions;
 char *output_file_name;
 FILE *output;
 
@@ -134,7 +134,7 @@ Token *create_token(TokenKind kind, char *str, int len) {
 void compile(char *file) {
   char *s = "__builtin_va_start";
   Token *t = create_token(TK_IDENT, s, strlen(s));
-  Global *f = new_func(t, new_type_func(new_type_void()), NULL);
+  Function *f = new_func(t, new_type_func(new_type_void()), NULL);
   f->type->variadic = true;
 
   tokenize(file, source_text, true);

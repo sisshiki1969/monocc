@@ -480,8 +480,8 @@ Global *find_gvar(Token *token) {
 
 // functions.
 
-Global *new_func(Token *ident, Type *type, Node *body) {
-  Global *func = calloc(1, sizeof(Global));
+Function *new_func(Token *ident, Type *type, Node *body) {
+  Function *func = calloc(1, sizeof(Function));
   func->next = functions;
   func->token = ident;
   func->type = type;
@@ -490,8 +490,8 @@ Global *new_func(Token *ident, Type *type, Node *body) {
   return func;
 }
 
-Global *find_func(Token *token) {
-  for (Global *func = functions; func; func = func->next) {
+Function *find_func(Token *token) {
+  for (Function *func = functions; func; func = func->next) {
     if (cmp_token(func->token, token)) {
       return func;
     }
@@ -637,7 +637,7 @@ Node *parse_postfix_expr() {
       /*
       if (node->kind != ND_IDENT)
         error_at_node(node, "Currently, callee must be an identifier.");*/
-      Global *fn_global = find_func(node->token);
+      Function *fn_global = find_func(node->token);
       if (!fn_global) error_at_node(node, "Undefined identifier.");
       node->type = fn_global->type->ptr_to;
       Vector *vec = vec_new();
@@ -1282,7 +1282,7 @@ Node *parse_func_definition(MemberInfo *ty_ident) {
   Node *decl;
   Token *ident = ty_ident->ident;
   Type *type = ty_ident->type;
-  Global *func = new_func(ident, type, NULL);
+  Function *func = new_func(ident, type, NULL);
   // function definition
   Vector *params = vec_new();
   MemberInfo *cursor = type->params;
@@ -1386,7 +1386,7 @@ void parse_program() {
       continue;
     } else if (consume_if(TK_SEMI)) {
       // function declaration
-      Global *func = new_func(ident, type, NULL);
+      Function *func = new_func(ident, type, NULL);
       continue;
     } else if (peek(TK_OP_BRACE)) {
       // function definition

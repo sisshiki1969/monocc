@@ -447,7 +447,7 @@ void print_globals() {
 }
 
 void print_funcs() {
-  Global *func = functions;
+  Function *func = functions;
   fprintf(output, "// Functions\n");
   while (func) {
     fprintf(output, "// %.*s ", func->token->len, func->token->str);

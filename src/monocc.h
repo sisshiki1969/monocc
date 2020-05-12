@@ -299,6 +299,16 @@ struct Global {
   bool is_extern;
 };
 
+typedef struct Function Function;
+
+struct Function {
+  Function *next;
+  Token *token;
+  Type *type;
+  Node *body;
+  bool is_extern;
+};
+
 // Tag name
 
 typedef struct TagName TagName;
@@ -448,7 +458,7 @@ Macro *find_macro(Token *token);
 // Globals
 
 Global *new_gvar(Token *ident, Type *type);
-Global *new_func(Token *ident, Type *type, Node *body);
+Function *new_func(Token *ident, Type *type, Node *body);
 
 extern char *source_text;
 extern char *registers[4][6];
@@ -463,7 +473,7 @@ extern LVar *scope;
 extern TagName *tagnames;
 extern Typedef *tdef_names;
 extern Global *globals;
-extern Global *functions;
+extern Function *functions;
 
 extern char *output_file_name;
 extern FILE *output;
