@@ -98,11 +98,7 @@ bool read_if(TokContext *ctx, int c) {
 }
 
 void skip_whitespace(char **p) {
-  while (**p == ' ' || **p == '\t') *p++;
-}
-
-void skip_space(TokContext *ctx) {
-  while (*ctx->p == ' ' || *ctx->p == '\t') ctx->p++;
+  while (**p == ' ' || **p == '\t') (*p)++;
 }
 
 Token *read_token(TokContext *ctx);
@@ -119,23 +115,17 @@ void tokenize(char *file, char *p, bool is_main) {
   TokContext *ctx = new_tok_context(fi, cur, p);
 
   while (*p) {
-    // fprintf(stderr, "%c", *p);
-    if (*p == ' ' || *p == '\t') {
-      p++;
-      continue;
-    }
+    skip_whitespace(&p);
 
     if (*p == '#') {
       char *line_end = strchr(p++, '\n');
-      // skip_whitespace(&p);
-      while (*p == ' ' || *p == '\t') p++;
+      skip_whitespace(&p);
       int len = 0;
       while (is_ident_char(*(p + len))) len++;
 
       if (is_reserved(p, len, "include")) {
         p += len;
-        // skip_whitespace(&p);
-        while (*p == ' ' || *p == '\t') p++;
+        skip_whitespace(&p);
         if (*p == '"') {
           // get directory name of the current file.
           char *cur_dir;
@@ -161,7 +151,7 @@ void tokenize(char *file, char *p, bool is_main) {
       } else if (is_reserved(p, len, "define")) {
         // fprintf(stderr, "macro define: ");
         p += len;
-        while (*p == ' ' || *p == '\t') p++;
+        skip_whitespace(&p);
         if (!isalpha(*p) && !(*p == '_'))
           error_at_char(fi, p, "Expected identifier.");
         int len = 0;
@@ -180,14 +170,14 @@ void tokenize(char *file, char *p, bool is_main) {
           int i = 0;
           // read params of function-like macro
           // fprintf(stderr, " ( ");
-          skip_space(ctx);
+          skip_whitespace(&ctx->p);
           // function macro
           while (*ctx->p != ')') {
             Token *param_token = read_token(ctx);
             param_token->int_val = i++;
             // print_token(stderr, param_token);
 
-            skip_space(ctx);
+            skip_whitespace(&ctx->p);
             if (*ctx->p != ',') break;
             ctx->p++;
           }
@@ -200,12 +190,12 @@ void tokenize(char *file, char *p, bool is_main) {
         head->next = NULL;
         ctx->cur = head;
 
-        skip_space(ctx);
+        skip_whitespace(&ctx->p);
         int i = 0;
         while (*ctx->p != '\n' && i < 50) {
           read_token(ctx);
           // print_token(stderr, read_token(ctx));
-          skip_space(ctx);
+          skip_whitespace(&ctx->p);
           i++;
         }
         new_macro(tok, params, head->next);
@@ -245,9 +235,7 @@ Token *read_token(TokContext *ctx) {
   char *p = ctx->p;
   FileInfo *fi = ctx->file_info;
   Token *cur = ctx->cur;
-  while (*p == ' ' || *p == '\t') {
-    p++;
-  }
+  skip_whitespace(&p);
   if (strncmp(p, "//", 2) == 0) {
     p += 2;
     char *next = strchr(p, '\n');
@@ -514,9 +502,7 @@ Token *read_token(TokContext *ctx) {
 
   if (ctx->p == p) error_at_char(fi, p, "Illegal character.");
 
-  while (*p == ' ' || *p == '\t') {
-    p++;
-  }
+  skip_whitespace(&p);
 
   ctx->p = p;
   ctx->cur = cur;

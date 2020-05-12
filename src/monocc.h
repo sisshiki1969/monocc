@@ -355,7 +355,6 @@ void tokenize(char *file, char *source, bool is_main);
 bool cmp_token(Token *t1, Token *t2);
 bool cmp_token_str(Token *t, char *c);
 bool read_if(TokContext *ctx, int c);
-void skip_space(TokContext *ctx);
 Token *read_token(TokContext *ctx);
 
 // Methods for Node
