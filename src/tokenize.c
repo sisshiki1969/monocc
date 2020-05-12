@@ -227,8 +227,8 @@ void tokenize(char *file, char *p, bool is_main) {
     while (cursor->next) cursor = cursor->next;
     cursor->next = head.next;
   }
-  if (is_main) new_token(TK_EOF, ctx->cur, p, 1);
-  fi->end = p;
+  if (is_main) new_token(TK_EOF, ctx->cur, ctx->p, 1);
+  fi->end = ctx->p;
 }
 
 Token *read_token(TokContext *ctx) {
