@@ -274,7 +274,13 @@ void builtin_va_start(Node *node) {
 }
 
 void gen_call(Node *node) {
-  // TODO: Currently, only TK_IDENT is allowed as a callee.
+  // function call
+  // kind: ND_CALL
+  // lhs: callee (ND_IDENT)
+  // nodes: vector of arguments
+  // token: Token *token
+  // type: return type of callee
+  // TODO: Currently, only ND_IDENT is allowed as a callee.
   int len = vec_len(node->nodes);
   Node **args = node->nodes->data;
   for (int i = len - 1; i >= 0; i--) {
@@ -283,11 +289,15 @@ void gen_call(Node *node) {
   for (int i = 0; i < len; i++) {
     fprintf(output, "\tpop  %s\n", registers[0][i]);
   }
-  Token *name = node->lhs->token;  // node->lhs: callee
-  if (cmp_token_str(name, "__builtin_va_start")) {
-    // va_start(ap, last)
-    builtin_va_start(node);
-    return;
+  Token *name;
+  if (node->lhs->kind == ND_IDENT) {
+    name = node->lhs->token;
+    if (cmp_token_str(name, "__builtin_va_start")) {
+      builtin_va_start(node);
+      return;
+    }
+  } else {
+    error_at_node(node->lhs, "Currently, callee must be function designator.");
   }
 
   char *label1 = new_label();

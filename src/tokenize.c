@@ -152,10 +152,10 @@ void tokenize(char *file, char *p, bool is_main) {
         // fprintf(stderr, "macro define: ");
         p += len;
         skip_whitespace(&p);
-        if (!isalpha(*p) && !(*p == '_'))
+        if (!isalpha(*p) && *p != '_')
           error_at_char(fi, p, "Expected identifier.");
         int len = 0;
-        while (is_ident_char(*(p + len))) len++;
+        while (is_ident_char(p[len])) len++;
 
         Token *head = cur;
         Token *tok = new_token(TK_IDENT, cur, p, len);
@@ -227,7 +227,7 @@ void tokenize(char *file, char *p, bool is_main) {
     while (cursor->next) cursor = cursor->next;
     cursor->next = head.next;
   }
-  if (is_main) cur = new_token(TK_EOF, ctx->cur, p, 1);
+  if (is_main) new_token(TK_EOF, ctx->cur, p, 1);
   fi->end = p;
 }
 
