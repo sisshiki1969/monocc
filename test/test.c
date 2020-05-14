@@ -393,7 +393,7 @@ int main() {
   int *jum = NULL;
   assert_expect(__LINE__, 1, true);
   assert_expect(__LINE__, 0, false);
-  assert_expect(__LINE__, 0, (int)NULL);
+  assert_expect(__LINE__, 0, (long)NULL);
 #define mul(argx, argy, argz) (argx * (argy + argz))
   assert_expect(__LINE__, 70, mul(10, 2, 5));
   printf("%s", str_ary);
@@ -452,8 +452,27 @@ int main() {
 
   // arythmetic types
 
-  unsigned int _uint;
-  signed int _int;
+  assert_expect(__LINE__, 1, sizeof(char));
+  assert_expect(__LINE__, 2, sizeof(short));
+  assert_expect(__LINE__, 2, sizeof(short unsigned));
+  assert_expect(__LINE__, 4, sizeof(signed int));
+  assert_expect(__LINE__, 4, sizeof(int unsigned));
+  assert_expect(__LINE__, 8, sizeof(unsigned long));
+  assert_expect(__LINE__, 8, sizeof(long));
+  assert_expect(__LINE__, 8, sizeof(signed long));
+  char _char = 254;
+  assert_expect(__LINE__, -2, _char);
+  unsigned int _uint = -100;
+  assert_expect(__LINE__, -100, _uint);
+  signed int _int = -100;
+  assert_expect(__LINE__, -100, _int);
+  long signed _long;
+  int long unsigned _ulong;
+
+  assert_expect(__LINE__, 131585, (int)8590066177);
+  assert_expect(__LINE__, 513, (short)8590066177);
+  assert_expect(__LINE__, 1, (char)8590066177);
+  assert_expect(__LINE__, 1, (long)1);
 
   // assignment operators
   int z;
@@ -497,7 +516,6 @@ int main() {
   comment
   these are comments.
   */
-
   enum {
     INVALID,
     January,

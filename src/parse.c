@@ -186,6 +186,13 @@ Node *new_node(NodeKind kind, Token *op_token) {
   return node;
 }
 
+Node *new_node_cast(Node *lhs, Type *type, Token *op_token) {
+  Node *node = new_node(ND_CAST, op_token);
+  node->type = type;
+  node->lhs = lhs;
+  return node;
+}
+
 /// function call
 /// kind: ND_CALL
 /// lhs: callee (ND_IDENT)
@@ -665,6 +672,12 @@ Node *parse_postfix_expr() {
           error_at_node(arg, "The type of an argument is mismatch %s",
                         "with func parameter.");
         }
+        if (param) {
+          Type *ty_from = type(arg);
+          Type *ty_to = param->type;
+          arg = new_node_cast(arg, ty_to, arg->token);
+        }
+
         vec_push(vec, arg);
         if (param) param = param->next;
         if (!consume_if(TK_COMMA)) break;
@@ -750,9 +763,7 @@ Node *parse_cast_expr() {
     Token *op_token = token;
     MemberInfo *info = parse_decl(false);
     expect(TK_CL_PAREN);
-    Node *node = new_node(ND_CAST, op_token);
-    node->type = info->type;
-    node->lhs = parse_cast_expr();
+    Node *node = new_node_cast(parse_cast_expr(), info->type, op_token);
     return node;
   }
   return parse_unary_expr();
@@ -1315,12 +1326,32 @@ Type *parse_type_specifier(bool allow_undefined_tag) {
       case CHAR:
         ty = new_type_char();
         break;
+      case SHORT:
+      case SHORT + INT:
+      case SIGNED + SHORT:
+      case SIGNED + SHORT + INT:
+        ty = new_type_short();
+        break;
+      case UNSIGNED + SHORT:
+      case UNSIGNED + SHORT + INT:
+        ty = new_type_ushort();
+        break;
       case INT:
       case SIGNED + INT:
         ty = new_type_int();
         break;
       case UNSIGNED + INT:
         ty = new_type_uint();
+        break;
+      case LONG:
+      case LONG + INT:
+      case SIGNED + LONG:
+      case SIGNED + LONG + INT:
+        ty = new_type_long();
+        break;
+      case UNSIGNED + LONG:
+      case UNSIGNED + LONG + INT:
+        ty = new_type_ulong();
         break;
       case SIGNED:
       case UNSIGNED:

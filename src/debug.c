@@ -341,66 +341,93 @@ void print_struct_member(FILE *stream, MemberInfo *member);
 
 /// Print Type to stream.
 void print_type(FILE *stream, Type *type) {
-  if (type->ty == INT) {
-    fprintf(stream, "int ");
-  } else if (type->ty == UINT) {
-    fprintf(stream, "unsigned int ");
-  } else if (type->ty == CHAR) {
-    fprintf(stream, "char ");
-  } else if (type->ty == BOOL) {
-    fprintf(stream, "bool ");
-  } else if (type->ty == VOID) {
-    fprintf(stream, "void ");
-  } else if (type->ty == PTR) {
-    fprintf(stream, "* ");
-    print_type(stream, type->ptr_to);
-  } else if (type->ty == ARRAY) {
-    fprintf(stream, "[%d] ", type->array_size);
-    print_type(stream, type->ptr_to);
-  } else if (type->ty == FUNC) {
-    fprintf(stream, "func ");
-    if (type->variadic) fprintf(stream, "VARIADIC ");
-    MemberInfo *param = type->params;
-    fprintf(stream, "( ");
-    bool first = true;
-    while (param) {
-      if (!first) fprintf(stream, ", ");
-      first = false;
-      if (param->type)
-        print_type(stream, param->type);
-      else
-        fprintf(stream, "NULL_TYPE");
-      if (param->ident)
-        fprintf(stream, " %.*s ", param->ident->len, param->ident->str);
-      else
-        fprintf(stream, "- ");
-      param = param->next;
-    }
-    fprintf(stream, ") ");
-    print_type(stream, type->ptr_to);
-  } else if (type->ty == STRUCT) {
-    fprintf(stream, "struct ");
-    if (type->tag_name) {
-      fprintf(stream, "<%.*s> ", type->tag_name->len, type->tag_name->str);
-    } else {
-      fprintf(stream, "<> { ");
-      print_struct_member(stream, type->member);
-      fprintf(stream, "}");
-    }
-    // Type *member = type->member;
-  } else if (type->ty == ENUM) {
-    fprintf(stream, "enum ");
-    if (type->tag_name) {
-      fprintf(stream, "<%.*s> ", type->tag_name->len, type->tag_name->str);
-    }
-  } else if (type->ty == ENUM_EL) {
-    fprintf(stream, "enum_el ");
-    if (type->tag_name) {
-      fprintf(stream, "<%.*s:%d> ", type->tag_name->len, type->tag_name->str,
-              type->offset);
-    }
-  } else
-    error("print_type(): Unknown Type.");
+  MemberInfo *param;
+  bool first;
+  switch (type->ty) {
+    case CHAR:
+      fprintf(stream, "char ");
+      break;
+    case SHORT:
+      fprintf(stream, "short ");
+      break;
+    case USHORT:
+      fprintf(stream, "unsigned short ");
+      break;
+    case INT:
+      fprintf(stream, "int ");
+      break;
+    case UINT:
+      fprintf(stream, "unsigned int ");
+      break;
+    case LONG:
+      fprintf(stream, "long ");
+      break;
+    case ULONG:
+      fprintf(stream, "unsigned long ");
+      break;
+    case BOOL:
+      fprintf(stream, "bool ");
+      break;
+    case VOID:
+      fprintf(stream, "void ");
+      break;
+    case PTR:
+      fprintf(stream, "* ");
+      print_type(stream, type->ptr_to);
+      break;
+    case ARRAY:
+      fprintf(stream, "[%d] ", type->array_size);
+      print_type(stream, type->ptr_to);
+      break;
+    case FUNC:
+      fprintf(stream, "func ");
+      if (type->variadic) fprintf(stream, "VARIADIC ");
+      param = type->params;
+      fprintf(stream, "( ");
+      first = true;
+      while (param) {
+        if (!first) fprintf(stream, ", ");
+        first = false;
+        if (param->type)
+          print_type(stream, param->type);
+        else
+          fprintf(stream, "NULL_TYPE");
+        if (param->ident)
+          fprintf(stream, " %.*s ", param->ident->len, param->ident->str);
+        else
+          fprintf(stream, "- ");
+        param = param->next;
+      }
+      fprintf(stream, ") ");
+      print_type(stream, type->ptr_to);
+      break;
+    case STRUCT:
+      fprintf(stream, "struct ");
+      if (type->tag_name) {
+        fprintf(stream, "<%.*s> ", type->tag_name->len, type->tag_name->str);
+      } else {
+        fprintf(stream, "<> { ");
+        print_struct_member(stream, type->member);
+        fprintf(stream, "}");
+      }
+      break;
+      // Type *member = type->member;
+    case ENUM:
+      fprintf(stream, "enum ");
+      if (type->tag_name) {
+        fprintf(stream, "<%.*s> ", type->tag_name->len, type->tag_name->str);
+      }
+      break;
+    case ENUM_EL:
+      fprintf(stream, "enum_el ");
+      if (type->tag_name) {
+        fprintf(stream, "<%.*s:%d> ", type->tag_name->len, type->tag_name->str,
+                type->offset);
+      }
+      break;
+    default:
+      error("print_type(): Unknown Type.");
+  }
 }
 
 void print_struct_member(FILE *stream, MemberInfo *member) {

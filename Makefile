@@ -8,6 +8,8 @@ monocc: $(OBJS)
 $(OBJS): ./src/monocc.h
 
 test: monocc
+	gcc -o tmp test/test.c
+	./tmp
 	./src/monocc -test
 	./src/monocc ./test/test.c
 	gcc -static -o tmp ./test/test.s -L /usr/lib -L /usr/local/lib -L /usr/include/

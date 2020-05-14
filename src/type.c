@@ -133,6 +133,7 @@ bool is_aryth(Type *type) {
 
 bool is_signed(Type *type) {
   switch (type->ty) {
+    case CHAR:
     case INT:
     case SHORT:
     case LONG:

@@ -141,7 +141,7 @@ int reg_size(Type *type) {
           data_size);
 }
 
-/// Push [RAX].(size sensitive)
+/// rax <- [rax]
 void deref_rax(Node *node) {
   Type *ty = type(node);
   switch (reg_size(ty)) {
@@ -169,6 +169,47 @@ void deref_rax(Node *node) {
       error_at_node(node, "Size of the variable is unknown.");
   }
   fprintf(output, "\tpush rax\n");
+}
+
+void cast(Type *ty_from, Type *ty_to) {
+  // if (!is_aryth(ty_from) || !is_aryth(ty_to)) return;
+  int sz_from = reg_size(ty_from);
+  int sz_to = reg_size(ty_to);
+  if (sz_from <= sz_to) {
+    return;
+  }
+  switch (reg_size(ty_from)) {
+    case 0:
+      return;
+    case 1:
+      fprintf(output, "\tpop  rax\n");
+      if (is_signed(ty_to)) {
+        fprintf(output, "\tmovsx rax, eax\n");
+      } else {
+        fprintf(output, "\tmov  eax, eax\n");
+      }
+      fprintf(output, "\tpush rax\n");
+      return;
+    case 2:
+      fprintf(output, "\tpop  rax\n");
+      if (is_signed(ty_to)) {
+        fprintf(output, "\tmovsx rax, ax\n");
+      } else {
+        fprintf(output, "\tmovzx rax, ax\n");
+      }
+      fprintf(output, "\tpush rax\n");
+      return;
+    case 3:
+      if (is_signed(ty_to)) {
+        fprintf(output, "\tmovsx rax, al\n");
+      } else {
+        fprintf(output, "\tmovzx rax, al\n");
+      }
+      fprintf(output, "\tpush rax\n");
+      return;
+    default:
+      return;
+  }
 }
 
 /// Push address of local var.
@@ -558,6 +599,7 @@ void gen_assign(Node *node) {
 
   gen_addr(lhs);
   gen(rhs);
+  // cast(r_ty, l_ty);
   store(l_ty);
 }
 
@@ -797,6 +839,7 @@ void gen(Node *node) {
       return;
     case ND_CAST:
       gen(node->lhs);
+      cast(type(node->lhs), type(node));
       return;
     case ND_ASSIGN:
       gen_assign(node);
