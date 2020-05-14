@@ -1280,29 +1280,27 @@ Type *parse_type_specifier(bool allow_undefined_tag) {
         error_at_token(t, "Internal error: Must be typedef name.");
   }
   int flag = 0;
-  int CHAR = 1 << 0;
-  int SHORT = 1 << 2;
-  int INT = 1 << 4;
-  int LONG = 1 << 6;
-  int SIGNED = 1 << 10;
-  int UNSIGNED = 1 << 12;
+  enum {
+    CHAR = 1,
+    SHORT = 4,
+    INT = 16,
+    LONG = 64,
+    SIGNED = 256,
+    UNSIGNED = 1024
+  } size;
   while (is_type_specifier(t)) {
     switch (t->kind) {
       case TK_CHAR:
         flag += CHAR;
-        return new_type_char();
         break;
       case TK_SHORT:
         flag += SHORT;
-        return new_type_short();
         break;
       case TK_INT:
         flag += INT;
-        return new_type_int();
         break;
       case TK_LONG:
         flag += LONG;
-        return new_type_long();
         break;
       case TK_SIGNED:
         flag += SIGNED;
@@ -1313,7 +1311,30 @@ Type *parse_type_specifier(bool allow_undefined_tag) {
       default:
         error_at_token(t, "Illegal type specifier.");
     }
+    switch (flag) {
+      case CHAR:
+        ty = new_type_char();
+        break;
+      case INT:
+      case SIGNED + INT:
+        ty = new_type_int();
+        break;
+      case UNSIGNED + INT:
+        ty = new_type_uint();
+        break;
+      case SIGNED:
+      case UNSIGNED:
+        ty = NULL;
+        break;
+      default:
+        error_at_token(t, "Illegal type specifier.");
+    }
+    if (!is_type_specifier(token)) {
+      break;
+    }
+    t = consume();
   }
+  if (!ty) error_at_token(t, "Illegal type specifier.");
   return ty;
 }
 

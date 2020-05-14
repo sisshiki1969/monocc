@@ -68,13 +68,17 @@ void print_token(FILE *stream, Token *token) {
     case TK_RETURN:
     case TK_SIZEOF:
 
-    case TK_INT:
     case TK_CHAR:
+    case TK_INT:
+    case TK_SHORT:
+    case TK_LONG:
     case TK_BOOL:
     case TK_VOID:
     case TK_STRUCT:
     case TK_ENUM:
     case TK_UNION:
+    case TK_SIGNED:
+    case TK_UNSIGNED:
 
     case TK_TYPEDEF:
     case TK_EXTERN:
@@ -339,6 +343,8 @@ void print_struct_member(FILE *stream, MemberInfo *member);
 void print_type(FILE *stream, Type *type) {
   if (type->ty == INT) {
     fprintf(stream, "int ");
+  } else if (type->ty == UINT) {
+    fprintf(stream, "unsigned int ");
   } else if (type->ty == CHAR) {
     fprintf(stream, "char ");
   } else if (type->ty == BOOL) {

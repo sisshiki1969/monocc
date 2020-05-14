@@ -450,6 +450,11 @@ int main() {
   assert_expect(__LINE__, 256, 1 << 8);
   assert_expect(__LINE__, 32, 512 >> 4);
 
+  // arythmetic types
+
+  unsigned int _uint;
+  signed int _int;
+
   // assignment operators
   int z;
   z = 10;

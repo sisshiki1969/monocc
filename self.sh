@@ -3,17 +3,18 @@ set -e
 
 DIR=$1
 CC=$2
+CFLAGS=-v
 
 mkdir -p $DIR
 cp -f ./src/* $DIR
-$CC/monocc -v $DIR/monocc.c
-$CC/monocc -v $DIR/tokenize.c
-$CC/monocc -v $DIR/parse.c
-$CC/monocc -v $DIR/container.c
-$CC/monocc -v $DIR/debug.c
-$CC/monocc -v $DIR/codegen.c
-$CC/monocc -v $DIR/type.c
-$CC/monocc -v $DIR/test.c
-$CC/monocc -v $DIR/pp.c
-$CC/monocc -v $DIR/error.c
+$CC/monocc $CFLAGS $DIR/monocc.c
+$CC/monocc $CFLAGS $DIR/tokenize.c
+$CC/monocc $CFLAGS $DIR/parse.c
+$CC/monocc $CFLAGS $DIR/container.c
+$CC/monocc $CFLAGS $DIR/debug.c
+$CC/monocc $CFLAGS $DIR/codegen.c
+$CC/monocc $CFLAGS $DIR/type.c
+$CC/monocc $CFLAGS $DIR/test.c
+$CC/monocc $CFLAGS $DIR/pp.c
+$CC/monocc $CFLAGS $DIR/error.c
 gcc -static -o $DIR/monocc $DIR/*.s -L /usr/lib -L /usr/local/lib -L /usr/include/
