@@ -155,9 +155,13 @@ enum TokenKind {
   TK_CHAR,
   TK_BOOL,
   TK_VOID,
+  TK_SHORT,
+  TK_LONG,
   TK_STRUCT,
   TK_ENUM,
   TK_UNION,
+  TK_SIGNED,
+  TK_UNSIGNED,
 
   TK_EXTERN,
   TK_TYPEDEF,
@@ -189,7 +193,23 @@ struct MemberInfo {
 };
 
 struct Type {
-  enum { VOID, INT, CHAR, BOOL, PTR, ARRAY, FUNC, STRUCT, ENUM, ENUM_EL } ty;
+  enum {
+    VOID,
+    CHAR,
+    BOOL,
+    SHORT,
+    USHORT,
+    INT,
+    UINT,
+    LONG,
+    ULONG,
+    PTR,
+    ARRAY,
+    FUNC,
+    STRUCT,
+    ENUM,
+    ENUM_EL
+  } ty;
   Type *ptr_to;
   /// array size for ARRAY
   int array_size;
@@ -197,6 +217,7 @@ struct Type {
   MemberInfo *params;
   /// member list for STRUCT
   MemberInfo *member;
+  /// memory offset
   int offset;
   // Type *next;
   Token *tag_name;
@@ -396,6 +417,11 @@ void test_expression();
 // Methods for Type
 
 Type *new_type_int();
+Type *new_type_uint();
+Type *new_type_short();
+Type *new_type_ushort();
+Type *new_type_long();
+Type *new_type_ulong();
 Type *new_type_bool();
 Type *new_type_void();
 Type *new_type_char();
@@ -404,7 +430,7 @@ Type *new_type_array(Type *ptr_to, int size);
 Type *new_type_func(Type *return_type);
 Type *new_type_struct();
 Type *new_type_enum();
-Type *new_type_enum_el(int i);
+Type *new_type_enum_el(Token *ident, int i);
 int sizeof_type(Type *type);
 Type *type(Node *node);
 Node *get_ptr_if_array(Node *node);
@@ -420,6 +446,7 @@ bool is_enum_el(Type *type);
 bool is_ptr_to_char(Type *type);
 bool is_array_of_char(Type *type);
 bool is_aryth(Type *type);
+bool is_signed(Type *type);
 bool is_identical_type(Type *l_type, Type *r_type);
 bool is_compatible_type(Type *l_type, Type *r_type);
 bool is_assignable_type(Type *l_type, Type *r_type);

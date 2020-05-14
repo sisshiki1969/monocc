@@ -8,6 +8,36 @@ Type *new_type_int() {
   return type;
 }
 
+Type *new_type_uint() {
+  Type *type = calloc(1, sizeof(Type));
+  type->ty = UINT;
+  return type;
+}
+
+Type *new_type_short() {
+  Type *type = calloc(1, sizeof(Type));
+  type->ty = SHORT;
+  return type;
+}
+
+Type *new_type_ushort() {
+  Type *type = calloc(1, sizeof(Type));
+  type->ty = USHORT;
+  return type;
+}
+
+Type *new_type_long() {
+  Type *type = calloc(1, sizeof(Type));
+  type->ty = LONG;
+  return type;
+}
+
+Type *new_type_ulong() {
+  Type *type = calloc(1, sizeof(Type));
+  type->ty = ULONG;
+  return type;
+}
+
 Type *new_type_char() {
   Type *type = calloc(1, sizeof(Type));
   type->ty = CHAR;
@@ -61,9 +91,10 @@ Type *new_type_enum() {
   return type;
 }
 
-Type *new_type_enum_el(int i) {
+Type *new_type_enum_el(Token *ident, int i) {
   Type *type = calloc(1, sizeof(Type));
   type->ty = ENUM_EL;
+  type->tag_name = ident;
   type->offset = i;
   return type;
 }
@@ -87,9 +118,24 @@ bool is_array_of_char(Type *type) {
 bool is_aryth(Type *type) {
   switch (type->ty) {
     case INT:
+    case UINT:
+    case SHORT:
+    case USHORT:
+    case LONG:
+    case ULONG:
     case CHAR:
     case BOOL:
     case ENUM:
+      return true;
+  }
+  return false;
+}
+
+bool is_signed(Type *type) {
+  switch (type->ty) {
+    case INT:
+    case SHORT:
+    case LONG:
       return true;
   }
   return false;
@@ -120,11 +166,17 @@ int alignof_type(Type *type) {
     case CHAR:
     case BOOL:
       return 1;
+    case SHORT:
+    case USHORT:
+      return 2;
     case INT:
+    case UINT:
     case ENUM_EL:
     case ENUM:
       return 4;
     case PTR:
+    case LONG:
+    case ULONG:
       return 8;
     case ARRAY:
       return alignof_type(type->ptr_to);
@@ -161,11 +213,17 @@ int sizeof_type(Type *type) {
     case CHAR:
     case BOOL:
       return 1;
+    case SHORT:
+    case USHORT:
+      return 2;
     case INT:
+    case UINT:
     case ENUM_EL:
     case ENUM:
       return 4;
     case PTR:
+    case LONG:
+    case ULONG:
       return 8;
     case ARRAY:
       return type->array_size * sizeof_type(type->ptr_to);

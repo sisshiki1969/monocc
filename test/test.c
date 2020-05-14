@@ -1,7 +1,26 @@
-void assert_expect(int line, int expected, int actual);
-void print(int a);
-void printf_(char *str);
-void *calloc_(int size);
+typedef struct {
+  char mode;
+  char *ptr;
+  int rcount;
+  int wcount;
+  char *base;
+  int bufsiz;
+  int fd;
+  char smallbuf[1];
+} FILE;
+
+void exit(int status);
+extern FILE *stderr;
+extern FILE *stdout;
+int printf(char *fmt, ...);
+void *calloc(int n, int size);
+int fprintf(FILE *stream, char *fmt, ...);
+
+void assert_expect(int line, int expected, int actual) {
+  if (expected == actual) return;
+  fprintf(stderr, "%d: %d expected, but got %d\n", line, expected, actual);
+  exit(1);
+}
 
 #include <stdbool.h>
 
@@ -98,11 +117,11 @@ int array_global() {
 
 int string() {
   char *str = "Hello world!\n";
-  printf_(str);
+  printf("%s", str);
   char str_ary9[] =
       "\tHello---"
       "world,\tagain\n";
-  printf_(str_ary9);
+  printf("%s", str_ary9);
   assert_expect(__LINE__, 9, str_ary9[15]);
 
   assert_expect(__LINE__, 119, 'w');
@@ -213,7 +232,7 @@ void list_() {
   int size = sizeof(List);
   List *cursor = 0;
   for (int i = 0; i < 6; i++) {
-    List *new = calloc_(size);
+    List *new = calloc(1, size);
     new->payloads = i;
     new->next = cursor;
     cursor = new;
@@ -318,12 +337,12 @@ void print_board(int board[][8]) {
   return;
   for (int i = 0; i < 8; i++) {
     for (int j = 0; j < 8; j++) {
-      if (board[i][j]) printf_("Q ");
-      printf_(". ");
+      if (board[i][j]) printf("Q ");
+      printf(". ");
     }
-    printf_("\n");
+    printf("\n");
   }
-  printf_("\n\n");
+  printf("\n\n");
 }
 
 int conflict(int board[][8], struct Pos *p) {
@@ -377,7 +396,7 @@ int main() {
   assert_expect(__LINE__, 0, (int)NULL);
 #define mul(argx, argy, argz) (argx * (argy + argz))
   assert_expect(__LINE__, 70, mul(10, 2, 5));
-  printf_(str_ary);
+  printf("%s", str_ary);
 
   assert_expect(__LINE__, 1979, i);
   assert_expect(__LINE__, 2015, j);
@@ -473,6 +492,21 @@ int main() {
   comment
   these are comments.
   */
+
+  enum {
+    INVALID,
+    January,
+    February,
+    March,
+    April,
+    October = 10,
+    November,
+    December
+  } MONTH;
+  assert_expect(__LINE__, 2, February);
+  assert_expect(__LINE__, 4, April);
+  assert_expect(__LINE__, 10, October);
+  assert_expect(__LINE__, 12, December);
   // switch
   assert_expect(__LINE__, 11, switch_(1));
   assert_expect(__LINE__, 13, switch_(2));
@@ -506,7 +540,7 @@ int main() {
   assert_expect(__LINE__, 29, 938 >> 5);
   assert_expect(__LINE__, 1664, 13 << 7);
 
-  printf_("passed tests.\n");
+  printf("passed tests.\n");
   return 0;
 }
 #define DEFINE(a, b)

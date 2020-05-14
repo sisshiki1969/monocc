@@ -1,9 +1,8 @@
-CFLAGS=-std=c11 -g -static -pie
+CFLAGS=-std=c11 -g -static -pie -L /usr/lib -L /usr/local/lib -L /usr/include/
 SRCS=$(wildcard ./src/*.c)
 OBJS=$(SRCS:.c=.o)
 
 monocc: $(OBJS)
-	$(CC) -c lib.c
 	$(CC) -o ./src/monocc $(OBJS) $(CFLAGS)
 
 $(OBJS): ./src/monocc.h
@@ -11,7 +10,7 @@ $(OBJS): ./src/monocc.h
 test: monocc
 	./src/monocc -test
 	./src/monocc ./test/test.c
-	gcc -o tmp ./test/test.s lib.o
+	gcc -static -o tmp ./test/test.s -L /usr/lib -L /usr/local/lib -L /usr/include/
 	./tmp
 
 self: clean monocc test

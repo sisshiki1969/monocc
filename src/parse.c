@@ -402,8 +402,12 @@ bool cmp_token_str(Token *t, char *c) {
 /// Examine whether the Token is type-specifier.
 bool is_type_specifier(Token *token) {
   switch (token->kind) {
-    case TK_INT:
+    case TK_UNSIGNED:
+    case TK_SIGNED:
     case TK_CHAR:
+    case TK_INT:
+    case TK_SHORT:
+    case TK_LONG:
     case TK_BOOL:
     case TK_VOID:
     case TK_STRUCT:
@@ -1179,8 +1183,12 @@ Type *parse_enum_specifier() {
   if (consume_if(TK_OP_BRACE)) {
     int i = 0;
     while (!peek(TK_CL_BRACE)) {
-      Type *new = new_type_enum_el(i++);
-      new->tag_name = consume_ident();
+      Token *ident = consume_ident();
+      // initializer
+      if (consume_if(TK_ASSIGN)) {
+        i = consume_number();
+      }
+      Type *new = new_type_enum_el(ident, i++);
       cursor->next = new_member_info(new->tag_name, new);
       cursor = cursor->next;
       new_tag(new->tag_name, new);
@@ -1252,13 +1260,9 @@ Type *parse_struct_specifier(bool allow_undefined_tag) {
 }
 
 Type *parse_type_specifier(bool allow_undefined_tag) {
-  Token *token = consume();
+  Token *t = consume();
   Type *ty;
-  switch (token->kind) {
-    case TK_INT:
-      return new_type_int();
-    case TK_CHAR:
-      return new_type_char();
+  switch (t->kind) {
     case TK_BOOL:
       return new_type_bool();
     case TK_VOID:
@@ -1269,11 +1273,48 @@ Type *parse_type_specifier(bool allow_undefined_tag) {
       return parse_enum_specifier();
     case TK_IDENT:
       // typedef-name
-      ty = find_typedef(token);
-      if (ty) return ty;
+      ty = find_typedef(t);
+      if (ty)
+        return ty;
+      else
+        error_at_token(t, "Internal error: Must be typedef name.");
   }
-
-  error_at_token(token, "Expected type specifier or typedef name.");
+  int flag = 0;
+  int CHAR = 1 << 0;
+  int SHORT = 1 << 2;
+  int INT = 1 << 4;
+  int LONG = 1 << 6;
+  int SIGNED = 1 << 10;
+  int UNSIGNED = 1 << 12;
+  while (is_type_specifier(t)) {
+    switch (t->kind) {
+      case TK_CHAR:
+        flag += CHAR;
+        return new_type_char();
+        break;
+      case TK_SHORT:
+        flag += SHORT;
+        return new_type_short();
+        break;
+      case TK_INT:
+        flag += INT;
+        return new_type_int();
+        break;
+      case TK_LONG:
+        flag += LONG;
+        return new_type_long();
+        break;
+      case TK_SIGNED:
+        flag += SIGNED;
+        break;
+      case TK_UNSIGNED:
+        flag += UNSIGNED;
+        break;
+      default:
+        error_at_token(t, "Illegal type specifier.");
+    }
+  }
+  return ty;
 }
 
 MemberInfo *parse_decl(bool allow_undefined_tag) {

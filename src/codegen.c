@@ -132,6 +132,8 @@ int reg_size(Type *type) {
     return 0;
   else if (data_size == 4)
     return 1;
+  else if (data_size == 2)
+    return 2;
   else if (data_size == 1)
     return 3;
   else
@@ -141,15 +143,27 @@ int reg_size(Type *type) {
 
 /// Push [RAX].(size sensitive)
 void deref_rax(Node *node) {
-  switch (reg_size(type(node))) {
+  Type *ty = type(node);
+  switch (reg_size(ty)) {
     case 0:
       fprintf(output, "\tmov  rax, [rax]\n");
       break;
     case 1:
       fprintf(output, "\tmov  eax, [rax]\n");
       break;
+    case 2:
+      if (is_signed(ty)) {
+        fprintf(output, "\tmovsx  eax, WORD PTR [rax]\n");
+      } else {
+        fprintf(output, "\tmovzx  eax, WORD PTR [rax]\n");
+      }
+      break;
     case 3:
-      fprintf(output, "\tmovsx eax, BYTE PTR [rax]\n");
+      if (is_signed(ty)) {
+        fprintf(output, "\tmovsx eax, BYTE PTR [rax]\n");
+      } else {
+        fprintf(output, "\tmovzx eax, BYTE PTR [rax]\n");
+      }
       break;
     default:
       error_at_node(node, "Size of the variable is unknown.");

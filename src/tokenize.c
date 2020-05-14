@@ -253,7 +253,7 @@ Token *read_token(TokContext *ctx) {
   } else if (isdigit(*p)) {
     int num = *p - '0';
     int len = 1;
-    while (isdigit(*(p + len))) {
+    while (isdigit(p[len])) {
       num *= 10;
       num += *(p + len) - '0';
       len++;
@@ -263,7 +263,7 @@ Token *read_token(TokContext *ctx) {
     cur->int_val = num;
   } else if (isalpha(*p) || *p == '_') {
     int len = 1;
-    while (is_ident_char(*(p + len))) len++;
+    while (is_ident_char(p[len])) len++;
 
     if (is_reserved(p, len, "return")) {
       cur = new_token(TK_RETURN, cur, p, len);
@@ -293,6 +293,14 @@ Token *read_token(TokContext *ctx) {
       cur = new_token(TK_BOOL, cur, p, len);
     } else if (is_reserved(p, len, "void")) {
       cur = new_token(TK_VOID, cur, p, len);
+    } else if (is_reserved(p, len, "short")) {
+      cur = new_token(TK_SHORT, cur, p, len);
+    } else if (is_reserved(p, len, "long")) {
+      cur = new_token(TK_LONG, cur, p, len);
+    } else if (is_reserved(p, len, "signed")) {
+      cur = new_token(TK_SIGNED, cur, p, len);
+    } else if (is_reserved(p, len, "unsigned")) {
+      cur = new_token(TK_UNSIGNED, cur, p, len);
     } else if (is_reserved(p, len, "sizeof")) {
       cur = new_token(TK_SIZEOF, cur, p, len);
     } else if (is_reserved(p, len, "struct")) {
