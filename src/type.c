@@ -1,7 +1,8 @@
 #include "monocc.h"
 
-// Methods for Type;
+// Type *ty_int = &(Type){INT, NULL, 0, NULL, NULL, 0, NULL, false};
 
+// Methods for Type;
 Type *new_type_int() {
   Type *type = calloc(1, sizeof(Type));
   type->ty = INT;
@@ -115,7 +116,7 @@ bool is_ptr_to_char(Type *type) {
 bool is_array_of_char(Type *type) {
   return is_array(type) && is_char(type->ptr_to);
 }
-bool is_aryth(Type *type) {
+bool is_arith(Type *type) {
   switch (type->ty) {
     case INT:
     case UINT:
@@ -140,6 +141,33 @@ bool is_signed(Type *type) {
       return true;
   }
   return false;
+}
+
+Type *get_common_type(Type *ty1, Type *ty2) {
+  if (sizeof_type(ty1) < 4) ty1 = new_type_int();
+  if (sizeof_type(ty2) < 4) ty2 = new_type_int();
+
+  if (is_signed(ty1) == is_signed(ty2)) {
+    if (sizeof_type(ty1) < sizeof_type(ty2)) {
+      return ty2;
+    } else {
+      return ty1;
+    }
+  }
+
+  if (is_signed(ty1)) {
+    if (sizeof_type(ty2) >= sizeof_type(ty1)) {
+      return ty2;
+    } else {
+      return ty1;
+    };
+  } else {
+    if (sizeof_type(ty1) >= sizeof_type(ty2)) {
+      return ty1;
+    } else {
+      return ty2;
+    };
+  }
 }
 
 int align_to(int n, int align) { return (n + align - 1) & ~(align - 1); }
@@ -239,7 +267,7 @@ int sizeof_type(Type *type) {
 bool is_identical_type(Type *l_type, Type *r_type) {
   if (l_type->ty != r_type->ty) return false;
   if (is_void(l_type) && is_void(r_type)) return true;
-  if (is_aryth(l_type)) return true;
+  if (is_arith(l_type)) return true;
   if (is_array(l_type))
     return is_identical_type(l_type->ptr_to, r_type->ptr_to);
   if (is_struct(l_type)) {
@@ -262,9 +290,9 @@ bool is_identical_type(Type *l_type, Type *r_type) {
 }
 
 bool is_compatible_type(Type *l_type, Type *r_type) {
-  if (is_aryth(l_type) && is_aryth(r_type)) return true;
-  if (is_aryth(l_type) && !is_aryth(r_type)) return false;
-  if (!is_aryth(l_type) && is_aryth(r_type)) return false;
+  if (is_arith(l_type) && is_arith(r_type)) return true;
+  if (is_arith(l_type) && !is_arith(r_type)) return false;
+  if (!is_arith(l_type) && is_arith(r_type)) return false;
   if (is_ptr(l_type) && is_ptr(r_type)) {
     if (is_void(l_type->ptr_to) || is_void(r_type->ptr_to)) return true;
     return is_identical_type(l_type->ptr_to, r_type->ptr_to);
@@ -279,8 +307,8 @@ bool is_assignable_type(Type *l_type, Type *r_type) {
     l_type = l_type->ptr_to;
   }
   if (is_void(l_type) || is_void(r_type)) return false;
-  if (is_aryth(l_type) && is_aryth(r_type)) return true;
-  if (is_ptr(l_type) && is_aryth(r_type)) return true;
+  if (is_arith(l_type) && is_arith(r_type)) return true;
+  if (is_ptr(l_type) && is_arith(r_type)) return true;
   if (is_ptr(l_type) && is_ptr(r_type) && is_void(r_type->ptr_to)) return true;
   while (l_type) {
     if (l_type->ty != r_type->ty) return false;
@@ -292,8 +320,8 @@ bool is_assignable_type(Type *l_type, Type *r_type) {
 }
 
 bool is_comparable_type(Type *l_type, Type *r_type) {
-  if ((is_aryth(l_type) || is_ptr(l_type)) &&
-      (is_aryth(r_type) || is_ptr(r_type)))
+  if ((is_arith(l_type) || is_ptr(l_type)) &&
+      (is_arith(r_type) || is_ptr(r_type)))
     return true;
 
   return false;
@@ -333,7 +361,8 @@ Type *type(Node *node) {
       // return node->lvar->type;
       error_at_node(node, "Internal error: type of node is missing.");
     case ND_ASSIGN:
-      return type(node->lhs);
+      node->type = type(node->lhs);
+      return node->type;
     case ND_CALL:
       return node->type;
     case ND_CAST:
@@ -363,25 +392,25 @@ Type *type(Node *node) {
     case ND_XOR:
     case ND_SHR:
     case ND_SHL:
-      if (is_aryth(l_ty) && is_aryth(r_ty)) {
-        node->type = l_ty;
+      if (is_arith(l_ty) && is_arith(r_ty)) {
+        node->type = get_common_type(l_ty, r_ty);
       } else
         error_at_node(node, "Illegal operation. (Type mismatch)");
       return node->type;
     case ND_ADD:
-      if (is_aryth(l_ty) && is_aryth(r_ty)) {
+      if (is_arith(l_ty) && is_arith(r_ty)) {
+        node->type = get_common_type(l_ty, r_ty);
+      } else if (is_ptr(l_ty) && is_arith(r_ty)) {
         node->type = l_ty;
-      } else if (is_ptr(l_ty) && is_aryth(r_ty)) {
-        node->type = l_ty;
-      } else if (is_aryth(l_ty) && is_ptr(r_ty)) {
+      } else if (is_arith(l_ty) && is_ptr(r_ty)) {
         node->type = r_ty;
       } else
         error_at_node(node, "Illegal operation. (Type mismatch)");
       return node->type;
     case ND_SUB:
-      if (is_aryth(l_ty) && is_aryth(r_ty))
-        node->type = l_ty;
-      else if (is_ptr(l_ty) && is_aryth(r_ty))
+      if (is_arith(l_ty) && is_arith(r_ty))
+        node->type = get_common_type(l_ty, r_ty);
+      else if (is_ptr(l_ty) && is_arith(r_ty))
         node->type = l_ty;
       else if (is_ptr(l_ty) && is_ptr(r_ty))
         node->type = new_type_int();
@@ -392,8 +421,8 @@ Type *type(Node *node) {
       return node->type;
     case ND_MUL:
     case ND_DIV:
-      if (is_aryth(l_ty) && is_aryth(r_ty))
-        node->type = l_ty;
+      if (is_arith(l_ty) && is_arith(r_ty))
+        node->type = get_common_type(l_ty, r_ty);
       else
         error_at_node(node, "Illegal operation. (Type mismatch)");
       return node->type;

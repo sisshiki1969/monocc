@@ -46,7 +46,7 @@
 // is_assignable_type func ( * struct <Type>  l_type , * struct <Type>  r_type ) bool 
 // is_compatible_type func ( * struct <Type>  l_type , * struct <Type>  r_type ) bool 
 // is_identical_type func ( * struct <Type>  l_type , * struct <Type>  r_type ) bool 
-// is_aryth func ( * struct <Type>  type ) bool 
+// is_arith func ( * struct <Type>  type ) bool 
 // is_array_of_char func ( * struct <Type>  type ) bool 
 // is_ptr_to_char func ( * struct <Type>  type ) bool 
 // is_enum_el func ( * struct <Type>  type ) bool 

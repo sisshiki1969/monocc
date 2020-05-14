@@ -474,6 +474,40 @@ int main() {
   assert_expect(__LINE__, 1, (char)8590066177);
   assert_expect(__LINE__, 1, (long)1);
 
+  assert_expect(__LINE__, 4, sizeof(-10 + 5));
+  assert_expect(__LINE__, 4, sizeof(-10 - 5));
+  assert_expect(__LINE__, 4, sizeof(-10 * 5));
+  assert_expect(__LINE__, 4, sizeof(-10 / 5));
+
+  assert_expect(__LINE__, 8, sizeof(-10 + (long)5));
+  assert_expect(__LINE__, 8, sizeof(-10 - (long)5));
+  assert_expect(__LINE__, 8, sizeof(-10 * (long)5));
+  assert_expect(__LINE__, 8, sizeof(-10 / (long)5));
+  assert_expect(__LINE__, 8, sizeof((long)-10 + 5));
+  assert_expect(__LINE__, 8, sizeof((long)-10 - 5));
+  assert_expect(__LINE__, 8, sizeof((long)-10 * 5));
+  assert_expect(__LINE__, 8, sizeof((long)-10 / 5));
+
+  assert_expect(__LINE__, (long)-5, -10 + (long)5);
+  assert_expect(__LINE__, (long)-15, -10 - (long)5);
+  assert_expect(__LINE__, (long)-50, -10 * (long)5);
+  assert_expect(__LINE__, (long)-2, -10 / (long)5);
+
+  assert_expect(__LINE__, 1, -2 < (long)-1);
+  assert_expect(__LINE__, 1, -2 <= (long)-1);
+  assert_expect(__LINE__, 0, -2 > (long)-1);
+  assert_expect(__LINE__, 0, -2 >= (long)-1);
+
+  assert_expect(__LINE__, 1, (long)-2 < -1);
+  assert_expect(__LINE__, 1, (long)-2 <= -1);
+  assert_expect(__LINE__, 0, (long)-2 > -1);
+  assert_expect(__LINE__, 0, (long)-2 >= -1);
+
+  assert_expect(__LINE__, 0, 2147483647 + 2147483647 + 2);
+  long x;
+  x = -1;
+  assert_expect(__LINE__, (long)-1, x);
+
   // assignment operators
   int z;
   z = 10;

@@ -5,6 +5,9 @@
 int label_count = 0;
 bool verbose;
 
+char reg_rax[4][4] = {"rax", "eax", "ax", "al"};
+char reg_rdi[4][4] = {"rdi", "edi", "di", "dil"};
+
 // Loop
 
 typedef struct Loop Loop;
@@ -172,15 +175,21 @@ void deref_rax(Node *node) {
 }
 
 void cast(Type *ty_from, Type *ty_to) {
-  // if (!is_aryth(ty_from) || !is_aryth(ty_to)) return;
+  // if (!is_arith(ty_from) || !is_arith(ty_to)) return;
   int sz_from = reg_size(ty_from);
   int sz_to = reg_size(ty_to);
   if (sz_from <= sz_to) {
     return;
   }
+  char *mnemonic;
+  if (is_signed(ty_to)) {
+    mnemonic = "movsx";
+  } else {
+    mnemonic = "movzx";
+  };
   switch (reg_size(ty_from)) {
     case 0:
-      return;
+      break;
     case 1:
       fprintf(output, "\tpop  rax\n");
       if (is_signed(ty_to)) {
@@ -189,26 +198,15 @@ void cast(Type *ty_from, Type *ty_to) {
         fprintf(output, "\tmov  eax, eax\n");
       }
       fprintf(output, "\tpush rax\n");
-      return;
+      break;
     case 2:
-      fprintf(output, "\tpop  rax\n");
-      if (is_signed(ty_to)) {
-        fprintf(output, "\tmovsx rax, ax\n");
-      } else {
-        fprintf(output, "\tmovzx rax, ax\n");
-      }
-      fprintf(output, "\tpush rax\n");
-      return;
     case 3:
-      if (is_signed(ty_to)) {
-        fprintf(output, "\tmovsx rax, al\n");
-      } else {
-        fprintf(output, "\tmovzx rax, al\n");
-      }
+      fprintf(output, "\tpop  rax\n");
+      fprintf(output, "\t%s rax, %s\n", mnemonic, reg_rax[reg_size(ty_from)]);
       fprintf(output, "\tpush rax\n");
-      return;
+      break;
     default:
-      return;
+      break;
   }
 }
 
@@ -245,6 +243,36 @@ void gen_addr_to_rax(Node *node) {
 void gen_addr(Node *node) {
   gen_addr_to_rax(node);
   fprintf(output, "\tpush rax\n");
+}
+
+/// Pop 2 operands (val, addr) from stack,
+/// and store val to [addr].
+/// If operands are structs, do memcpy.
+/// Type *ty: Type of [addr].
+void store(Type *ty) {
+  if (is_struct(ty)) {
+    fprintf(output, "\tpop  rax\n");
+    fprintf(output, "\tpop  rsi\n");
+
+    int size = sizeof_type(ty);
+    int i = 0;
+    while (i <= size - 8) {
+      fprintf(output, "\tmov  rdi, QWORD PTR [rax + %d]\n", i);
+      fprintf(output, "\tmov  QWORD PTR [rsi + %d], rdi\n", i);
+      i += 8;
+    }
+    while (i < size) {
+      fprintf(output, "\tmov  dil, BYTE PTR [rax + %d]\n", i);
+      fprintf(output, "\tmov  BYTE PTR [rsi + %d], dil\n", i);
+      i++;
+    }
+    fprintf(output, "\tpush rsi\n");
+  } else {
+    fprintf(output, "\tpop  rdi\n");
+    fprintf(output, "\tpop  rax\n");
+    fprintf(output, "\tmov  [rax], %s\n", reg_rdi[reg_size(ty)]);
+    fprintf(output, "\tpush rdi\n");
+  }
 }
 
 // Codegen
@@ -425,9 +453,6 @@ void gen_stmt(Node *node) {
   }
 }
 
-char reg_l[4][4] = {"rax", "eax", "ax", "al"};
-char reg_r[4][4] = {"rdi", "edi", "di", "dil"};
-
 void gen_land(Node *node) {
   Type *l_ty = type(node->lhs);
   Type *r_ty = type(node->rhs);
@@ -436,7 +461,7 @@ void gen_land(Node *node) {
   char *exit_label = new_label();
   gen(node->lhs);
 
-  if (is_aryth(l_ty)) {
+  if (is_arith(l_ty)) {
     reg_mode = 1;
   } else if (is_ptr(l_ty)) {
     reg_mode = 0;
@@ -444,12 +469,12 @@ void gen_land(Node *node) {
     error_at_node(node, "Illegal operation. (Type mismatch)");
 
   fprintf(output, "\tpop  rax\n");
-  fprintf(output, "\tcmp  %s, 0\n", reg_l[reg_mode]);
+  fprintf(output, "\tcmp  %s, 0\n", reg_rax[reg_mode]);
   fprintf(output, "\tje   %s\n", false_label);
 
   gen(node->rhs);
 
-  if (is_aryth(r_ty)) {
+  if (is_arith(r_ty)) {
     reg_mode = 1;
   } else if (is_ptr(r_ty)) {
     reg_mode = 0;
@@ -457,7 +482,7 @@ void gen_land(Node *node) {
     error_at_node(node, "Illegal operation. (Type mismatch)");
 
   fprintf(output, "\tpop  rax\n");
-  fprintf(output, "\tcmp  %s, 0\n", reg_l[reg_mode]);
+  fprintf(output, "\tcmp  %s, 0\n", reg_rax[reg_mode]);
   fprintf(output, "\tje   %s\n", false_label);
 
   fprintf(output, "\tmov  rax, 1\n");
@@ -476,7 +501,7 @@ void gen_lor(Node *node) {
   char *exit_label = new_label();
   gen(node->lhs);
 
-  if (is_aryth(l_ty)) {
+  if (is_arith(l_ty)) {
     reg_mode = 1;
   } else if (is_ptr(l_ty)) {
     reg_mode = 0;
@@ -484,12 +509,12 @@ void gen_lor(Node *node) {
     error_at_node(node, "Illegal operation. (Type mismatch)");
 
   fprintf(output, "\tpop  rax\n");
-  fprintf(output, "\tcmp  %s, 0\n", reg_l[reg_mode]);
+  fprintf(output, "\tcmp  %s, 0\n", reg_rax[reg_mode]);
   fprintf(output, "\tjne  %s\n", true_label);
 
   gen(node->rhs);
 
-  if (is_aryth(r_ty)) {
+  if (is_arith(r_ty)) {
     reg_mode = 1;
   } else if (is_ptr(r_ty)) {
     reg_mode = 0;
@@ -497,7 +522,7 @@ void gen_lor(Node *node) {
     error_at_node(node, "Illegal operation. (Type mismatch)");
 
   fprintf(output, "\tpop  rax\n");
-  fprintf(output, "\tcmp  %s, 0\n", reg_l[reg_mode]);
+  fprintf(output, "\tcmp  %s, 0\n", reg_rax[reg_mode]);
   fprintf(output, "\tjne  %s\n", true_label);
 
   fprintf(output, "\tmov  rax, 0\n");
@@ -515,7 +540,7 @@ void gen_lnot(Node *node) {
   char *exit_label = new_label();
   gen(node->lhs);
 
-  if (is_aryth(l_ty)) {
+  if (is_arith(l_ty)) {
     reg_mode = 1;
   } else if (is_ptr(l_ty)) {
     reg_mode = 0;
@@ -523,7 +548,7 @@ void gen_lnot(Node *node) {
     error_at_node(node, "Illegal operation. (Type mismatch)");
 
   fprintf(output, "\tpop  rax\n");
-  fprintf(output, "\tcmp  %s, 0\n", reg_l[reg_mode]);
+  fprintf(output, "\tcmp  %s, 0\n", reg_rax[reg_mode]);
   fprintf(output, "\tjne  %s\n", false_label);
 
   fprintf(output, "\tmov  rax, 1\n");
@@ -532,32 +557,6 @@ void gen_lnot(Node *node) {
   emit_label(false_label);
   fprintf(output, "\tmov  rax, 0\n");
   emit_label(exit_label);
-}
-
-void store(Type *ty) {
-  if (is_struct(ty)) {
-    fprintf(output, "\tpop  rax\n");
-    fprintf(output, "\tpop  rsi\n");
-
-    int size = sizeof_type(ty);
-    int i = 0;
-    while (i <= size - 8) {
-      fprintf(output, "\tmov  rdi, QWORD PTR [rax + %d]\n", i);
-      fprintf(output, "\tmov  QWORD PTR [rsi + %d], rdi\n", i);
-      i += 8;
-    }
-    while (i < size) {
-      fprintf(output, "\tmov  dil, BYTE PTR [rax + %d]\n", i);
-      fprintf(output, "\tmov  BYTE PTR [rsi + %d], dil\n", i);
-      i++;
-    }
-    fprintf(output, "\tpush rsi\n");
-  } else {
-    fprintf(output, "\tpop  rdi\n");
-    fprintf(output, "\tpop  rax\n");
-    fprintf(output, "\tmov  [rax], %s\n", reg_r[reg_size(ty)]);
-    fprintf(output, "\tpush rdi\n");
-  }
 }
 
 void gen_assign(Node *node) {
@@ -599,7 +598,6 @@ void gen_assign(Node *node) {
 
   gen_addr(lhs);
   gen(rhs);
-  // cast(r_ty, l_ty);
   store(l_ty);
 }
 
@@ -637,71 +635,71 @@ void gen(Node *node) {
 
     switch (node->kind) {
       case ND_ADD:
-        if (is_aryth(l_ty) && is_aryth(r_ty)) {
+        if (is_arith(l_ty) && is_arith(r_ty)) {
           fprintf(output, "\tadd  rax, rdi\n");
-        } else if (is_ptr(l_ty) && is_aryth(r_ty)) {
+        } else if (is_ptr(l_ty) && is_arith(r_ty)) {
           fprintf(output, "\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
           fprintf(output, "\tadd  rax, rdi\n");
-        } else if (is_aryth(l_ty) && is_ptr(r_ty)) {
+        } else if (is_arith(l_ty) && is_ptr(r_ty)) {
           fprintf(output, "\timul rax, %d\n", sizeof_type(r_ty->ptr_to));
           fprintf(output, "\tadd  rax, rdi\n");
         } else
           error_at_node(node, "Illegal operation. (Type mismatch)");
         break;
       case ND_SUB:
-        if (is_aryth(l_ty) && is_aryth(r_ty)) {
+        if (is_arith(l_ty) && is_arith(r_ty)) {
           fprintf(output, "\tsub  rax, rdi\n");
         } else if (is_ptr(l_ty) && is_ptr(r_ty)) {
           fprintf(output, "\tsub  rax, rdi\n");
           fprintf(output, "\tcqo\n");
           fprintf(output, "\tmov  rdi, %d\n", sizeof_type(l_ty->ptr_to));
           fprintf(output, "\tidiv rdi\n");
-        } else if (is_ptr(l_ty) && is_aryth(r_ty)) {
+        } else if (is_ptr(l_ty) && is_arith(r_ty)) {
           fprintf(output, "\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
           fprintf(output, "\tsub  rax, rdi\n");
         } else
           error_at_node(node, "Illegal operation. (Type mismatch)");
         break;
       case ND_MUL:
-        if (is_aryth(l_ty) && is_aryth(r_ty)) {
+        if (is_arith(l_ty) && is_arith(r_ty)) {
           fprintf(output, "\timul rax, rdi\n");
         } else
           error_at_node(node, "Illegal operation. (Not an arythmetic type)");
         break;
       case ND_DIV:
-        if (is_aryth(l_ty) && is_aryth(r_ty)) {
+        if (is_arith(l_ty) && is_arith(r_ty)) {
           fprintf(output, "\tcqo\n");
           fprintf(output, "\tidiv rax, rdi\n");
         } else
           error_at_node(node, "Illegal operation. (Not an arythmetic type)");
         break;
       case ND_AND:
-        if (is_aryth(l_ty) && is_aryth(r_ty)) {
+        if (is_arith(l_ty) && is_arith(r_ty)) {
           fprintf(output, "\tand  rax, rdi\n");
         } else
           error_at_node(node, "Illegal operation. (Not an arythmetic type)");
         break;
       case ND_OR:
-        if (is_aryth(l_ty) && is_aryth(r_ty)) {
+        if (is_arith(l_ty) && is_arith(r_ty)) {
           fprintf(output, "\tor   rax, rdi\n");
         } else
           error_at_node(node, "Illegal operation. (Not an arythmetic type)");
         break;
       case ND_XOR:
-        if (is_aryth(l_ty) && is_aryth(r_ty)) {
+        if (is_arith(l_ty) && is_arith(r_ty)) {
           fprintf(output, "\txor  rax, rdi\n");
         } else
           error_at_node(node, "Illegal operation. (Not an arythmetic type)");
         break;
       case ND_SHR:
-        if (is_aryth(l_ty) && is_aryth(r_ty)) {
+        if (is_arith(l_ty) && is_arith(r_ty)) {
           fprintf(output, "\tmov  cl , dil\n");
           fprintf(output, "\tshr  rax, cl\n");
         } else
           error_at_node(node, "Illegal operation. (Not an arythmetic type)");
         break;
       case ND_SHL:
-        if (is_aryth(l_ty) && is_aryth(r_ty)) {
+        if (is_arith(l_ty) && is_arith(r_ty)) {
           fprintf(output, "\tmov  cl , dil\n");
           fprintf(output, "\tshl  rax, cl\n");
         } else
@@ -712,7 +710,7 @@ void gen(Node *node) {
       case ND_NEQ:
       case ND_GE:
       case ND_GT:
-        if (is_aryth(l_ty) && is_aryth(r_ty)) {
+        if (is_arith(l_ty) && is_arith(r_ty)) {
           reg_mode = 1;
         } else if (is_ptr(l_ty) && is_ptr(r_ty)) {
           reg_mode = 0;
@@ -732,9 +730,10 @@ void gen(Node *node) {
             cmp_op = "g";
             break;
         }
-        fprintf(output, "\tcmp  %s, %s\n", reg_l[reg_mode], reg_r[reg_mode]);
+        fprintf(output, "\tcmp  %s, %s\n", reg_rax[reg_mode],
+                reg_rdi[reg_mode]);
         fprintf(output, "\tset%s al\n", cmp_op);
-        fprintf(output, "\tmovzb %s, al\n", reg_l[reg_mode]);
+        fprintf(output, "\tmovzb %s, al\n", reg_rax[reg_mode]);
         break;
       default:
         error_at_token(node->token, "gen(): Unimplemented binary op.");

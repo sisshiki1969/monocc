@@ -445,12 +445,13 @@ bool is_enum(Type *type);
 bool is_enum_el(Type *type);
 bool is_ptr_to_char(Type *type);
 bool is_array_of_char(Type *type);
-bool is_aryth(Type *type);
+bool is_arith(Type *type);
 bool is_signed(Type *type);
 bool is_identical_type(Type *l_type, Type *r_type);
 bool is_compatible_type(Type *l_type, Type *r_type);
 bool is_assignable_type(Type *l_type, Type *r_type);
 
+Type *get_common_type(Type *ty1, Type *ty2);
 int alignof_type(Type *type);
 int align_to(int n, int align);
 
