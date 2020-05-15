@@ -1,61 +1,33 @@
 #include "monocc.h"
 
-// Type *ty_int = &(Type){INT, NULL, 0, NULL, NULL, 0, NULL, false};
+Type ty_int;
+Type ty_uint;
+Type ty_short;
+Type ty_ushort;
+Type ty_long;
+Type ty_ulong;
+Type ty_char;
+Type ty_bool;
+Type ty_void;
 
 // Methods for Type;
-Type *new_type_int() {
-  Type *type = calloc(1, sizeof(Type));
-  type->ty = INT;
-  return type;
-}
+Type *new_type_int() { return &ty_int; }
 
-Type *new_type_uint() {
-  Type *type = calloc(1, sizeof(Type));
-  type->ty = UINT;
-  return type;
-}
+Type *new_type_uint() { return &ty_uint; }
 
-Type *new_type_short() {
-  Type *type = calloc(1, sizeof(Type));
-  type->ty = SHORT;
-  return type;
-}
+Type *new_type_short() { return &ty_short; }
 
-Type *new_type_ushort() {
-  Type *type = calloc(1, sizeof(Type));
-  type->ty = USHORT;
-  return type;
-}
+Type *new_type_ushort() { return &ty_ushort; }
 
-Type *new_type_long() {
-  Type *type = calloc(1, sizeof(Type));
-  type->ty = LONG;
-  return type;
-}
+Type *new_type_long() { return &ty_long; }
 
-Type *new_type_ulong() {
-  Type *type = calloc(1, sizeof(Type));
-  type->ty = ULONG;
-  return type;
-}
+Type *new_type_ulong() { return &ty_ulong; }
 
-Type *new_type_char() {
-  Type *type = calloc(1, sizeof(Type));
-  type->ty = CHAR;
-  return type;
-}
+Type *new_type_char() { return &ty_char; }
 
-Type *new_type_bool() {
-  Type *type = calloc(1, sizeof(Type));
-  type->ty = BOOL;
-  return type;
-}
+Type *new_type_bool() { return &ty_bool; }
 
-Type *new_type_void() {
-  Type *type = calloc(1, sizeof(Type));
-  type->ty = VOID;
-  return type;
-}
+Type *new_type_void() { return &ty_void; }
 
 Type *new_type_ptr_to(Type *ptr_to) {
   Type *type = calloc(1, sizeof(Type));

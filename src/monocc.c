@@ -132,6 +132,16 @@ Token *create_token(TokenKind kind, char *str, int len) {
 }
 
 void compile(char *file) {
+  ty_int.ty = INT;
+  ty_uint.ty = UINT;
+  ty_short.ty = SHORT;
+  ty_ushort.ty = USHORT;
+  ty_long.ty = LONG;
+  ty_ulong.ty = ULONG;
+  ty_char.ty = CHAR;
+  ty_bool.ty = BOOL;
+  ty_void.ty = VOID;
+
   char *s = "__builtin_va_start";
   Token *t = create_token(TK_IDENT, s, strlen(s));
   Function *f = new_func(t, new_type_func(new_type_void()), NULL);
