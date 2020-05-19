@@ -595,6 +595,7 @@ Node *parse_assign_expr();
 Node *parse_block();
 Node *parse_stmt();
 Node *parse_block_item();
+Node *parse_initializer(Type *ty);
 Node *parse_array_initializer(Type *l_type);
 MemberInfo *parse_decl(bool);
 
@@ -1072,11 +1073,13 @@ Node *parse_local_declaration() {
     error_at_token(ident, "Functions can be declared only in the top level.");
   Token *op_token = token;
   if (consume_if(TK_ASSIGN)) {
+    node = parse_initializer(type);
+    /*
     if (peek(TK_OP_BRACE)) {
       node = parse_array_initializer(type);
     } else {
       node = parse_assign_expr();
-    }
+    }*/
     if (is_array_of_char(type) && node->kind == ND_STR) {
       type->array_size = node->offset;
     } else if (node->kind != ND_INIT) {
@@ -1412,7 +1415,9 @@ Node *parse_func_definition(MemberInfo *ty_ident) {
 
 Node *parse_initializer(Type *ty) {
   if (peek(TK_OP_BRACE)) {
-    return parse_array_initializer(ty);
+    Node *init = parse_array_initializer(ty);
+    if (ty->array_size == 0) ty->array_size = type(init)->array_size;
+    return init;
   } else
     return parse_assign_expr();
 }
@@ -1482,10 +1487,7 @@ void parse_program() {
         if (is_extern)
           error_at_token(op_token,
                          "Can not initialize variables with 'extern'.");
-        if (peek(TK_OP_BRACE)) {
-          gvar->body = parse_array_initializer(gvar->type);
-        } else
-          gvar->body = parse_assign_expr();
+        gvar->body = parse_initializer(gvar->type);
       }
       if (is_array_of_char(gvar->type)) {
         if (!gvar->body) {
@@ -1517,6 +1519,6 @@ void parse_program() {
       }
       vec_push(ext_declarations, decl);
     } else
-      error_at_token(token, "U6nexpected token.");
+      error_at_token(token, "Unexpected token.");
   }
 }

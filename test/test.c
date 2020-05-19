@@ -60,9 +60,9 @@ int array_local() {
   int a[10][8];
   int i = 0;
   int j = 0;
-  int k[4] = {0, 1, -2, -3};
-  long l[4] = {0, -1, -2, -3};
-  short m[4] = {-5, -6, 7, 8};
+  int k[] = {0, 1, -2, -3};
+  long l[] = {0, -1, -2, -3};
+  short m[] = {-5, -6, 7, 8};
   while (i <= 9) {
     j = 0;
     while (j <= 7) {
@@ -100,12 +100,12 @@ char *str = "Hi, guys.\tAre you hungry";
 char str_ary[] =
     "Hey, girls.\n"
     "Are you angry?";
-char quick[15] = "QuickBrownFox";
-int ary_int[5] = {1, 2, 3, 4, 5};
-char reg[4][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
-                     {"edi", "esi", "edx", "ecx", "r8d"},
-                     {"di", "si", "dx", "cx", "r8w"},
-                     {"dil", "sil", "dl", "cl", "r8b"}};
+char quick[] = "QuickBrownFox";
+int ary_int[] = {1, 2, 3, 4, 5};
+char reg[][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
+                    {"edi", "esi", "edx", "ecx", "r8d"},
+                    {"di", "si", "dx", "cx", "r8w"},
+                    {"dil", "sil", "dl", "cl", "r8b"}};
 
 typedef struct {
   int a;
