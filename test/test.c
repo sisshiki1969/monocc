@@ -60,6 +60,9 @@ int array_local() {
   int a[10][8];
   int i = 0;
   int j = 0;
+  int k[4] = {0, 1, -2, -3};
+  long l[4] = {0, -1, -2, -3};
+  short m[4] = {-5, -6, 7, 8};
   while (i <= 9) {
     j = 0;
     while (j <= 7) {
@@ -68,6 +71,21 @@ int array_local() {
     }
     i += 1;
   }
+  assert_expect(__LINE__, 0, k[0]);
+  assert_expect(__LINE__, 1, k[1]);
+  assert_expect(__LINE__, -2, k[2]);
+  assert_expect(__LINE__, -3, k[3]);
+
+  assert_expect(__LINE__, 0, l[0]);
+  assert_expect(__LINE__, -1, l[1]);
+  assert_expect(__LINE__, -2, l[2]);
+  assert_expect(__LINE__, -3, l[3]);
+
+  assert_expect(__LINE__, -5, m[0]);
+  assert_expect(__LINE__, -6, m[1]);
+  assert_expect(__LINE__, 7, m[2]);
+  assert_expect(__LINE__, 8, m[3]);
+
   assert_expect(__LINE__, 1, a[0][1]);
   assert_expect(__LINE__, 97, a[9][7]);
   assert_expect(__LINE__, 84, a[8][4]);
@@ -503,7 +521,7 @@ int main() {
   assert_expect(__LINE__, 0, (long)-2 > -1);
   assert_expect(__LINE__, 0, (long)-2 >= -1);
 
-  assert_expect(__LINE__, 0, 2147483647 + 2147483647 + 2);
+  assert_expect(__LINE__, 0, 2147483647UL + 2147483647UL + 2);
   long x;
   x = -1;
   assert_expect(__LINE__, (long)-1, x);

@@ -196,7 +196,7 @@ void print_node(Node *node) {
     return;
   }
   if (node->kind == ND_NUM) {
-    fprintf(output, " %d ", node->int_val);
+    fprintf(output, " %ld ", node->num_val);
     return;
   }
   if (node->kind == ND_STR) {

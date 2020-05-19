@@ -87,7 +87,7 @@ void pp() {
       if (t->kind == TK_IDENT) {
         for (Token *param = m->params; param; param = param->next) {
           if (cmp_token(t, param)) {
-            int i = param->int_val;
+            int i = param->num_val;
             // fprintf(stderr, "find: %d", i);
             // print_token(stderr, t);
             for (Macro *args = args_head.next; args; args = args->next) {

@@ -174,7 +174,7 @@ void tokenize(char *file, char *p, bool is_main) {
           // function macro
           while (*ctx->p != ')') {
             Token *param_token = read_token(ctx);
-            param_token->int_val = i++;
+            param_token->num_val = i++;
             // print_token(stderr, param_token);
 
             skip_whitespace(&ctx->p);
@@ -251,16 +251,42 @@ Token *read_token(TokContext *ctx) {
     cur = new_token(TK_MACRO, cur, p, 8);
     p += 8;
   } else if (isdigit(*p)) {
-    int num = *p - '0';
+    bool signed_int = true;
+    bool long_int = false;
+    unsigned long num = *p - '0';
     int len = 1;
     while (isdigit(p[len])) {
       num *= 10;
-      num += *(p + len) - '0';
+      num += p[len] - '0';
       len++;
+    }
+    if (p[len] == 'u' || p[len] == 'U') {
+      signed_int = false;
+      len++;
+    }
+    if (p[len] == 'l' || p[len] == 'L') {
+      len++;
+      long_int = true;
+      if (p[len] == 'l' || p[len] == 'L') len++;
     }
     cur = new_token(TK_NUM, cur, p, len);
     p += len;
-    cur->int_val = num;
+    Type *ty;
+    if (signed_int) {
+      if (long_int) {
+        ty = new_type_long();
+      } else {
+        ty = new_type_int();
+      }
+    } else {
+      if (long_int) {
+        ty = new_type_ulong();
+      } else {
+        ty = new_type_uint();
+      }
+    }
+    cur->num_ty = ty;
+    cur->num_val = num;
   } else if (isalpha(*p) || *p == '_') {
     int len = 1;
     while (is_ident_char(p[len])) len++;
@@ -505,7 +531,8 @@ Token *read_token(TokContext *ctx) {
     if (*p++ != '\'')
       error_at_char(fi, p - 1, "Unexpected token. Expected \"'\".");
     cur = new_token(TK_NUM, cur, org_p, p - org_p);
-    cur->int_val = ch;
+    cur->num_ty = new_type_char();
+    cur->num_val = ch;
   }
 
   if (ctx->p == p) error_at_char(fi, p, "Illegal character.");

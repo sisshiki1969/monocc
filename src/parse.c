@@ -11,13 +11,13 @@ Function *cur_fn;
 
 /// number(int)
 /// kind: ND_NUM
-/// int_val: int value
+/// num_val: int value
 /// token: Token *token
 /// type: int
 Node *new_node_num(int val, Token *token) {
   Node *node = calloc(1, sizeof(Node));
   node->kind = ND_NUM;
-  node->int_val = val;
+  node->num_val = val;
   node->token = token;
   node->type = new_type_int();
   return node;
@@ -25,7 +25,7 @@ Node *new_node_num(int val, Token *token) {
 
 /// string literal
 /// kind: ND_STR
-/// int_val: int StringID
+/// num_val: int StringID
 /// token: Token *token
 /// type: char *
 /// label: char *string
@@ -37,7 +37,7 @@ Node *new_node_str(Token *token) {
   int len = 0;
   for (Token *t = token; t; t = t->next) len += t->len;
   node->type = new_type_array(new_type_char(), len);
-  node->int_val = vec_len(strings);
+  node->str_id = vec_len(strings);
   vec_push(strings, node);
 
   node->label = (char *)calloc(1, len + 1);
@@ -359,13 +359,13 @@ bool consume_if(TokenKind kind) {
   return false;
 }
 
-/// If current token is a number, consume and return int_val.
+/// If current token is a number, consume and return num_val.
 /// Otherwise, raise error.
 int consume_number() {
   if (token->kind != TK_NUM) {
     error_at_token(token, "Unexpected token: Number is expected.");
   }
-  int num = token->int_val;
+  int num = token->num_val;
   token = token->next;
   return num;
 }
@@ -595,6 +595,7 @@ Node *parse_assign_expr();
 Node *parse_block();
 Node *parse_stmt();
 Node *parse_block_item();
+Node *parse_array_initializer(Type *l_type);
 MemberInfo *parse_decl(bool);
 
 Node *parse_prim_expr() {
@@ -1071,10 +1072,14 @@ Node *parse_local_declaration() {
     error_at_token(ident, "Functions can be declared only in the top level.");
   Token *op_token = token;
   if (consume_if(TK_ASSIGN)) {
-    node = parse_assign_expr();
+    if (peek(TK_OP_BRACE)) {
+      node = parse_array_initializer(type);
+    } else {
+      node = parse_assign_expr();
+    }
     if (is_array_of_char(type) && node->kind == ND_STR) {
       type->array_size = node->offset;
-    } else {
+    } else if (node->kind != ND_INIT) {
       node = get_ptr_if_array(node);
     }
     node =
@@ -1146,7 +1151,7 @@ MemberInfo *parse_declaretor(Type *type) {
     int size = 0;
     if (!peek(TK_CL_BRACKET))
       // this should be assignment-expression
-      size = expect(TK_NUM)->int_val;
+      size = expect(TK_NUM)->num_val;
     cursor->ptr_to = new_type_array(type, size);
     cursor = cursor->ptr_to;
     expect(TK_CL_BRACKET);
@@ -1405,22 +1410,28 @@ Node *parse_func_definition(MemberInfo *ty_ident) {
   return decl;
 }
 
-Node *parse_initializer_list() {
+Node *parse_initializer(Type *ty) {
+  if (peek(TK_OP_BRACE)) {
+    return parse_array_initializer(ty);
+  } else
+    return parse_assign_expr();
+}
+
+Node *parse_array_initializer(Type *l_type) {
   Token *op_token = token;
-  if (consume_if(TK_OP_BRACE)) {
-    Vector *vec = vec_new();
-    while (!peek(TK_CL_BRACE)) {
-      vec_push(vec, parse_initializer_list());
-      if (!consume_if(TK_COMMA)) break;
-    }
-    expect(TK_CL_BRACE);
-    Node *node = new_node(ND_INIT, op_token);
-    node->nodes = vec;
-    return node;
-  } else {
-    Node *node = parse_assign_expr();
-    return node;
+  expect(TK_OP_BRACE);
+  Vector *vec = vec_new();
+  Type *ary_of = l_type->ptr_to;
+  while (!peek(TK_CL_BRACE)) {
+    Node *init = parse_initializer(ary_of);
+    vec_push(vec, init);
+    if (!consume_if(TK_COMMA)) break;
   }
+  expect(TK_CL_BRACE);
+  Node *node = new_node(ND_INIT, op_token);
+  node->nodes = vec;
+  node->type = new_type_array(ary_of, vec_len(vec));
+  return node;
 }
 
 void parse_program() {
@@ -1472,7 +1483,7 @@ void parse_program() {
           error_at_token(op_token,
                          "Can not initialize variables with 'extern'.");
         if (peek(TK_OP_BRACE)) {
-          gvar->body = parse_initializer_list();
+          gvar->body = parse_array_initializer(gvar->type);
         } else
           gvar->body = parse_assign_expr();
       }

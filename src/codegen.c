@@ -145,7 +145,7 @@ int reg_size(Type *type) {
 }
 
 /// rax <- [rax]
-void deref_rax(Node *node) {
+void load(Node *node) {
   Type *ty = type(node);
   switch (reg_size(ty)) {
     case 0:
@@ -230,7 +230,7 @@ void gen_addr_to_rax(Node *node) {
     gen(node->lhs);
     fprintf(output, "\tpop  rax\n");
   } else if (node->kind == ND_STR) {
-    fprintf(output, "\tlea  rax, .LS%06d[rip]\n", node->int_val);
+    fprintf(output, "\tlea  rax, .LS%06d[rip]\n", node->str_id);
     return;
   } else if (node->kind == ND_MEMBER) {
     gen_addr_to_rax(node->lhs);
@@ -559,15 +559,36 @@ void gen_lnot(Node *node) {
   emit_label(exit_label);
 }
 
-void gen_assign(Node *node) {
-  Node *lhs = node->lhs;
-  Node *rhs = node->rhs;
+void gen_init(Type *l_ty, Node *node) { fprintf(output, "\tpush 0\n"); }
+
+void gen_assign(Node *lhs, Node *rhs) {
   Type *l_ty = type(lhs);
+
+  if (rhs->kind == ND_INIT) {
+    if (is_array(l_ty) && is_array(type(rhs)) && lhs->kind == ND_LVAR) {
+      Vector *vec = rhs->nodes;
+      Type *ty = l_ty->ptr_to;
+      int size = l_ty->array_size;
+      int offset = lhs->lvar->offset;
+      for (int i = 0; i < vec_len(vec); i++) {
+        if (size <= i) break;
+        fprintf(output, "\tlea  rax, [rbp - %d]\n", offset);
+        fprintf(output, "\tpush rax\n");
+        gen(vec->data[i]);
+        store(ty);
+        offset -= sizeof_type(ty);
+      }
+    } else {
+      error_at_node(rhs, "Unsupported initializer.");
+    }
+    return;
+  }
+
   Type *r_ty = type(rhs);
   if (is_array_of_char(l_ty) && is_array_of_char(r_ty)) {
     // initialization of char[] by string
     if (lhs->kind != ND_LVAR || rhs->kind != ND_STR)
-      error_at_node(node, "Invalid assignment.");
+      error_at_node(lhs, "Invalid assignment.");
     int offset = lhs->lvar->offset;
     char *p = rhs->label;
     int len = strlen(p);
@@ -811,7 +832,7 @@ void gen(Node *node) {
 
     // expression
     case ND_NUM:
-      fprintf(output, "\tpush %d\n", node->int_val);
+      fprintf(output, "\tpush %ld\n", node->num_val);
       return;
     case ND_LVAR:
     case ND_GVAR:
@@ -820,7 +841,7 @@ void gen(Node *node) {
         gen_addr(node);
       } else {
         gen_addr_to_rax(node);
-        deref_rax(node);
+        load(node);
       }
       return;
     case ND_ADDR:
@@ -833,7 +854,7 @@ void gen(Node *node) {
       gen(node->lhs);
       if (!is_struct(type(node))) {
         fprintf(output, "\tpop  rax\n");
-        deref_rax(node);
+        load(node);
       }
       return;
     case ND_CAST:
@@ -841,7 +862,7 @@ void gen(Node *node) {
       cast(type(node->lhs), type(node));
       return;
     case ND_ASSIGN:
-      gen_assign(node);
+      gen_assign(node->lhs, node->rhs);
       return;
     case ND_CALL:
       gen_call(node);

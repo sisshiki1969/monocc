@@ -304,6 +304,9 @@ bool is_compatible_type(Type *l_type, Type *r_type) {
 
 bool is_assignable_type(Type *l_type, Type *r_type) {
   if (is_array(l_type)) {
+    if (is_array(r_type)) {
+      return true;
+    }
     l_type = l_type->ptr_to;
   }
   if (is_void(l_type) || is_void(r_type)) return false;
@@ -341,6 +344,8 @@ Type *type(Node *node) {
   Type *l_ty;
   Type *r_ty;
   switch (node->kind) {
+    case ND_INIT:
+      return node->type;
     // statement
     case ND_IF:
     case ND_WHILE:

@@ -172,18 +172,19 @@ enum TokenKind {
 };
 
 typedef struct Token Token;
+typedef struct MemberInfo MemberInfo;
+typedef struct Type Type;
 
 struct Token {
   TokenKind kind;
   Token *next;
-  int int_val;
+  long num_val;
+  Type *num_ty;
   char *str;
   int len;
 };
 
 // Type
-typedef struct MemberInfo MemberInfo;
-typedef struct Type Type;
 
 struct MemberInfo {
   MemberInfo *next;
@@ -299,7 +300,9 @@ struct Node {
   Node *rhs;
   Node *xhs;
   /// Value in integer valid for ND_NUM only.
-  int int_val;
+  long num_val;
+  /// StringId for ND_STR only.
+  int str_id;
   /// Pomtter to LVar (valid for ND_LVAR only).
   LVar *lvar;
   /// Max offset of local vars (valid for ND_FDECL only).

@@ -80,7 +80,7 @@ void emit_basic_global(Type *type, Node *init) {
     if (!init)
       i = 0;
     else if (init->kind == ND_NUM)
-      i = init->int_val;
+      i = init->num_val;
     else
       error_at_node(init,
                     "Calculation in an initializer is not supported yet.");
@@ -90,7 +90,7 @@ void emit_basic_global(Type *type, Node *init) {
     if (!init)
       i = 0;
     else if (init->kind == ND_NUM)
-      i = init->int_val;  // % 256;
+      i = (unsigned int)init->num_val;  // % 256;
     else
       error_at_node(init,
                     "Calculation in an initializer is not supported yet.");
@@ -98,7 +98,7 @@ void emit_basic_global(Type *type, Node *init) {
   } else if (is_ptr_to_char(type)) {
     // char *str = "sample";
     if (init && init->kind == ND_STR)
-      fprintf(output, "\t.quad .LS%06d\n", init->int_val);
+      fprintf(output, "\t.quad .LS%06d\n", init->str_id);
     else
       fprintf(output, "\t.quad 0\n");
   } else {
@@ -172,7 +172,7 @@ void compile(char *file) {
   int i = 0;
   while (i < vec_len(strings)) {
     Node *node = strings->data[i];
-    fprintf(output, ".LS%06d:\n", node->int_val);
+    fprintf(output, ".LS%06d:\n", node->str_id);
     fprintf(output, "\t.string \"");
     for (Token *t = node->token; t; t = t->next) {
       fprintf(output, "%.*s", t->len, t->str);
