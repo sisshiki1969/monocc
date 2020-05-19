@@ -507,3 +507,13 @@ extern Function *functions;
 
 extern char *output_file_name;
 extern FILE *output;
+
+extern Type ty_int;
+extern Type ty_uint;
+extern Type ty_short;
+extern Type ty_ushort;
+extern Type ty_long;
+extern Type ty_ulong;
+extern Type ty_char;
+extern Type ty_bool;
+extern Type ty_void;
