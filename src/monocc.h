@@ -400,7 +400,7 @@ void parse_program();
 
 // for debug and test.
 
-void assert_expect(int line, int expected, int actual);
+void assert_expect(int line, long expected, long actual);
 void print_token(FILE *stream, Token *token);
 void print_nodes();
 void print_node(Node *node);

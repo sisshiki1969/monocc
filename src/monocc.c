@@ -42,84 +42,115 @@ char *read_file(char *path) {
 }
 
 void emit_basic_global(Type *type, Node *init) {
-  if (is_array_of_char(type)) {
-    if (!init) {
-      // char str[];  => incomplete type
-      if (type->array_size == 0)
-        error_at_token(init->token, "Incomplete type is not allowed.");
-      // char str[10];
-      else
-        fprintf(output, "\t.zero %d\n", sizeof_type(type));
-    } else if (init->kind == ND_STR) {
-      // char str[] = "sample";
-      int str_size = 1;
-      fprintf(output, "\t.string \"");
-      for (Token *t = init->token; t; t = t->next) {
-        fprintf(output, "%.*s", t->len, t->str);
-        str_size += t->len;
+  long i = 0;
+  switch (type->ty) {
+    case CHAR:
+      if (init) {
+        if (init->kind == ND_NUM)
+          i = init->num_val;
+        else
+          error_at_node(init,
+                        "Calculation in an initializer is not supported yet.");
       }
-      fprintf(output, "\"\n");
-      int ary_size = type->array_size;
-      if (ary_size > str_size)
-        fprintf(output, "\t.zero %d\n", ary_size - str_size);
-    } else
-      error_at_node(init, "Unsupported initializer.");
-  } else if (is_array(type)) {
-    if (!init) {
-      fprintf(output, "\t.zero %d\n", sizeof_type(type));
-      return;
-    }
-    if (init->kind != ND_INIT) error_at_node(init, "Unsupported initializer.");
-    Vector *vec = init->nodes;
-    type = type->ptr_to;
-    for (int i = 0; i < vec_len(vec); i++) {
-      emit_basic_global(type, vec->data[i]);
-    }
-  } else if (is_int(type)) {
-    int i;
-    if (!init)
-      i = 0;
-    else if (init->kind == ND_NUM)
-      i = init->num_val;
-    else
-      error_at_node(init,
-                    "Calculation in an initializer is not supported yet.");
-    fprintf(output, "\t.long %d\n", i);
-  } else if (is_char(type)) {
-    int i;
-    if (!init)
-      i = 0;
-    else if (init->kind == ND_NUM)
-      i = (unsigned int)init->num_val;  // % 256;
-    else
-      error_at_node(init,
-                    "Calculation in an initializer is not supported yet.");
-    fprintf(output, "\t.byte %d\n", i);
-  } else if (is_ptr_to_char(type)) {
-    // char *str = "sample";
-    if (init && init->kind == ND_STR)
-      fprintf(output, "\t.quad .LS%06d\n", init->str_id);
-    else
-      fprintf(output, "\t.quad 0\n");
-  } else {
-    int s = sizeof_type(type);
-    switch (s) {
-      case 1:
-        fprintf(output, "\t.byte 0\n");
-        break;
-      case 2:
-        fprintf(output, "\t.short 0\n");
-        break;
-      case 4:
-        fprintf(output, "\t.long 0\n");
-        break;
-      case 8:
-        fprintf(output, "\t.align 8\n");
-        fprintf(output, "\t.quad 0\n");
-        break;
-      default:
-        fprintf(output, "\t.zero %d\n", s);
-    }
+      fprintf(output, "\t.byte %ld\n", i);
+      break;
+    case SHORT:
+    case USHORT:
+      if (init) {
+        if (init->kind == ND_NUM)
+          i = init->num_val;
+        else
+          error_at_node(init,
+                        "Calculation in an initializer is not supported yet.");
+      }
+      fprintf(output, "\t.word %ld\n", i);
+      break;
+    case INT:
+    case UINT:
+      if (init) {
+        if (init->kind == ND_NUM)
+          i = init->num_val;
+        else
+          error_at_node(init,
+                        "Calculation in an initializer is not supported yet.");
+      }
+      fprintf(output, "\t.long %ld\n", i);
+      break;
+    case LONG:
+    case ULONG:
+      if (init) {
+        if (init->kind == ND_NUM)
+          i = init->num_val;
+        else
+          error_at_node(init,
+                        "Calculation in an initializer is not supported yet.");
+      }
+      fprintf(output, "\t.quad %ld\n", i);
+      break;
+    case ARRAY:
+      if (type->ptr_to->ty == CHAR) {
+        if (!init) {
+          // char str[];  => incomplete type
+          if (type->array_size == 0)
+            error_at_token(init->token, "Incomplete type is not allowed.");
+          // char str[10];
+          else
+            fprintf(output, "\t.zero %d\n", sizeof_type(type));
+        } else if (init->kind == ND_STR) {
+          // char str[] = "sample";
+          int str_size = 1;
+          fprintf(output, "\t.string \"");
+          for (Token *t = init->token; t; t = t->next) {
+            fprintf(output, "%.*s", t->len, t->str);
+            str_size += t->len;
+          }
+          fprintf(output, "\"\n");
+          int ary_size = type->array_size;
+          if (ary_size > str_size)
+            fprintf(output, "\t.zero %d\n", ary_size - str_size);
+        } else
+          error_at_node(init, "Unsupported initializer.");
+      } else {
+        if (!init) {
+          fprintf(output, "\t.zero %d\n", sizeof_type(type));
+          return;
+        }
+        if (init->kind != ND_INIT)
+          error_at_node(init, "Unsupported initializer.");
+        Vector *vec = init->nodes;
+        type = type->ptr_to;
+        for (int i = 0; i < vec_len(vec); i++) {
+          emit_basic_global(type, vec->data[i]);
+        }
+      }
+      break;
+    default:
+      if (is_ptr_to_char(type)) {
+        // char *str = "sample";
+        if (init && init->kind == ND_STR)
+          fprintf(output, "\t.quad .LS%06d\n", init->str_id);
+        else
+          fprintf(output, "\t.quad 0\n");
+      } else {
+        int s = sizeof_type(type);
+        switch (s) {
+          case 1:
+            fprintf(output, "\t.byte 0\n");
+            break;
+          case 2:
+            fprintf(output, "\t.short 0\n");
+            break;
+          case 4:
+            fprintf(output, "\t.long 0\n");
+            break;
+          case 8:
+            fprintf(output, "\t.align 8\n");
+            fprintf(output, "\t.quad 0\n");
+            break;
+          default:
+            fprintf(output, "\t.zero %d\n", s);
+        }
+      }
   }
 }
 
@@ -168,7 +199,7 @@ void compile(char *file) {
   fprintf(output, "\t.data\n");
   Global *global = globals;
 
-  // fprintf(stderr, "monocc: emit globals...\n");
+  fprintf(stderr, "monocc: emit globals...\n");
   for (; global; global = global->next) {
     if (global->is_extern) {
       continue;
@@ -177,7 +208,7 @@ void compile(char *file) {
     fprintf(output, "%.*s:\n", global->token->len, global->token->str);
     emit_basic_global(global->type, global->body);
   };
-  // fprintf(stderr, "monocc: emitted globals\n");
+  fprintf(stderr, "monocc: emitted globals\n");
 
   int i = 0;
   while (i < vec_len(strings)) {

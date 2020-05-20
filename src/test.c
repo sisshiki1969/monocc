@@ -1,7 +1,7 @@
 #include "monocc.h"
 
-void assert_expect(int line, int expected, int actual) {
+void assert_expect(int line, long expected, long actual) {
   if (expected == actual) return;
-  fprintf(stderr, "%d: %d expected, but got %d\n", line, expected, actual);
+  fprintf(stderr, "%d: %ld expected, but got %ld\n", line, expected, actual);
   exit(1);
 }

@@ -106,6 +106,10 @@ char reg[][5][4] = {{"rdi", "rsi", "rdx", "rcx", "r8"},
                     {"edi", "esi", "edx", "ecx", "r8d"},
                     {"di", "si", "dx", "cx", "r8w"},
                     {"dil", "sil", "dl", "cl", "r8b"}};
+char char_global = 127;
+short short_global = 256;
+int int_global = 512;
+long long_global = 1024;
 
 typedef struct {
   int a;
@@ -114,6 +118,11 @@ typedef struct {
 } struct1;
 
 int array_global() {
+  assert_expect(__LINE__, 127, char_global);
+  assert_expect(__LINE__, 256, short_global);
+  assert_expect(__LINE__, 512, int_global);
+  assert_expect(__LINE__, 1024, long_global);
+
   for (int i = 0; i < 5; i++) assert_expect(__LINE__, i + 1, ary_int[i]);
   assert_expect(__LINE__, 'i', reg[2][1][1]);
   assert_expect(__LINE__, 'w', reg[2][4][2]);
