@@ -247,7 +247,7 @@ void gen_addr(Node *node) {
 
 /// Pop val from stack,
 /// and store val to [rax].
-/// If operands are structs, do memcpy.
+/// If ty is struct, do memcpy.
 /// Type *ty: Type of [rax].
 void store(Type *ty) {
   if (is_struct(ty)) {

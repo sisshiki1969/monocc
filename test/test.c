@@ -424,6 +424,8 @@ struct Vector {
   char z[4];
 } v1 = {{14, 17}, 5, {9, 10, 11, 12}};
 
+struct SubVec ary_sub[4] = {{3, 4}, {7, 8}, {11, 12}, {30, 31}};
+
 void struct_initializer() {
   assert_expect(__LINE__, 14, v1.x.x);
   assert_expect(__LINE__, 17, v1.x.y);
@@ -436,6 +438,25 @@ void struct_initializer() {
   assert_expect(__LINE__, 10, v.x.x);
   assert_expect(__LINE__, 11, v.y);
   assert_expect(__LINE__, 51, v.z[0]);
+
+  assert_expect(__LINE__, 3, ary_sub[0].x);
+  assert_expect(__LINE__, 4, ary_sub[0].y);
+  assert_expect(__LINE__, 7, ary_sub[1].x);
+  assert_expect(__LINE__, 8, ary_sub[1].y);
+  assert_expect(__LINE__, 11, ary_sub[2].x);
+  assert_expect(__LINE__, 12, ary_sub[2].y);
+  assert_expect(__LINE__, 30, ary_sub[3].x);
+  assert_expect(__LINE__, 31, ary_sub[3].y);
+
+  struct SubVec ary[4] = {{-3, -4}, {-7, -8}, {-11, -12}, {-30, -31}};
+  assert_expect(__LINE__, -3, ary[0].x);
+  assert_expect(__LINE__, -4, ary[0].y);
+  assert_expect(__LINE__, -7, ary[1].x);
+  assert_expect(__LINE__, -8, ary[1].y);
+  assert_expect(__LINE__, -11, ary[2].x);
+  assert_expect(__LINE__, -12, ary[2].y);
+  assert_expect(__LINE__, -30, ary[3].x);
+  assert_expect(__LINE__, -31, ary[3].y);
 }
 
 int main() {

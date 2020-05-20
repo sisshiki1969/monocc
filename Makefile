@@ -19,6 +19,10 @@ self: clean monocc test
 	bash self.sh self src
 	bash self.sh self2 self
 	bash self.sh self3 self2
+	./self3/monocc ./test/test.c
+	gcc -static -o tmp ./test/test.s -L /usr/lib -L /usr/local/lib -L /usr/include/
+	./tmp
+
 	diff ./self/monocc ./self2/monocc -s
 	diff ./self2/monocc ./self3/monocc -s
 
