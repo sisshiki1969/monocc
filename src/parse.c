@@ -597,6 +597,7 @@ Node *parse_stmt();
 Node *parse_block_item();
 Node *parse_initializer(Type *ty);
 Node *parse_array_initializer(Type *l_type);
+Node *parse_struct_initializer(Type *l_type);
 MemberInfo *parse_decl(bool);
 
 Node *parse_prim_expr() {
@@ -1415,11 +1416,34 @@ Node *parse_func_definition(MemberInfo *ty_ident) {
 
 Node *parse_initializer(Type *ty) {
   if (peek(TK_OP_BRACE)) {
-    Node *init = parse_array_initializer(ty);
-    if (ty->array_size == 0) ty->array_size = type(init)->array_size;
-    return init;
+    if (is_array(ty)) {
+      Node *init = parse_array_initializer(ty);
+      if (ty->array_size == 0) ty->array_size = type(init)->array_size;
+      return init;
+    } else if (is_struct(ty)) {
+      return parse_struct_initializer(ty);
+    } else
+      error_at_token(token, "Illegal initializer.");
   } else
     return parse_assign_expr();
+}
+
+Node *parse_struct_initializer(Type *l_type) {
+  Token *op_token = token;
+  expect(TK_OP_BRACE);
+  Vector *vec = vec_new();
+  MemberInfo *member = l_type->member;
+  while (!peek(TK_CL_BRACE)) {
+    Node *init = parse_initializer(member->type);
+    vec_push(vec, init);
+    if (!consume_if(TK_COMMA)) break;
+    member = member->next;
+  }
+  expect(TK_CL_BRACE);
+  Node *node = new_node(ND_INIT, op_token);
+  node->nodes = vec;
+  node->type = new_type_struct();
+  return node;
 }
 
 Node *parse_array_initializer(Type *l_type) {
@@ -1499,7 +1523,7 @@ void parse_program() {
           if (gvar->type->array_size == 0)
             gvar->type->array_size = gvar->body->offset;
         } else
-          error_at_node(gvar->body, "Unsupported initializer.");
+          error_at_node(gvar->body, "Parse error: Unsupported initializer.");
       }
       expect(TK_SEMI);
       continue;

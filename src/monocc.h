@@ -468,6 +468,7 @@ void vec_push(Vector *vec, Node *data);
 
 void gen(Node *node);
 void gen_stmt(Node *node);
+void emit_basic_global(Type *type, Node *init);
 
 // Macros
 

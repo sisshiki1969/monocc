@@ -1,10 +1,20 @@
-// FDECL main func ( ) int  max_offset:32
+// FDECL main func ( ) int  max_offset:44
 //    
-//    (BLOCK(CALL printf ((CAST * char  (ADDR  "%d %d %d\n" )):(MEMBER (GVAR v1) x 0):(MEMBER (GVAR v1) y 4):(MEMBER (GVAR v1) flag 8):) ):))
+//    (BLOCK(CALL printf ((CAST * char  (ADDR  "%d %d %d\n" )):(MEMBER (GVAR v1) x 0):(MEMBER (GVAR v1) y 4):(MEMBER (GVAR v1) flag 8):) ):(= (LVAR 44) { 10 , 11 , 1 }):(CALL printf ((CAST * char  (ADDR  "%d %d %d\n" )):(MEMBER (LVAR 44) x 0):(MEMBER (LVAR 44) y 4):(MEMBER (LVAR 44) flag 8):) ):))
+//    v  offset:44  struct <Vec> 
 
 // <EOF>
 // Globals
 // v1 struct <Vec> { 4 , 5 , 0 }
+// ty_void struct <Type> NULL 
+// ty_bool struct <Type> NULL 
+// ty_char struct <Type> NULL 
+// ty_ulong struct <Type> NULL 
+// ty_long struct <Type> NULL 
+// ty_ushort struct <Type> NULL 
+// ty_short struct <Type> NULL 
+// ty_uint struct <Type> NULL 
+// ty_int struct <Type> NULL 
 // output * struct <> { char <mode:0>, * char <ptr:8>, int <rcount:16>, int <wcount:20>, * char <base:24>, int <bufsiz:32>, int <fd:36>, [1] char <smallbuf:40>}NULL 
 // output_file_name * char NULL 
 // functions * struct <Function> NULL 
@@ -29,6 +39,7 @@
 // find_macro func ( * struct <Token>  token ) * struct <Macro> 
 // new_macro func ( * struct <Token>  token , * struct <Token>  args , * struct <Token>  subst ) * struct <Macro> 
 // pp func ( ) void 
+// emit_basic_global func ( * struct <Type>  type , * struct <Node>  init ) void 
 // gen_stmt func ( * struct <Node>  node ) void 
 // gen func ( * struct <Node>  node ) void 
 // vec_push func ( * struct <Vector>  vec , * struct <Node>  data ) void 
@@ -84,7 +95,7 @@
 // print_node func ( * struct <Node>  node ) void 
 // print_nodes func ( ) void 
 // print_token func ( * struct <> { char <mode:0>, * char <ptr:8>, int <rcount:16>, int <wcount:20>, * char <base:24>, int <bufsiz:32>, int <fd:36>, [1] char <smallbuf:40>} stream , * struct <Token>  token ) void 
-// assert_expect func ( int  line , int  expected , int  actual ) void 
+// assert_expect func ( int  line , long  expected , long  actual ) void 
 // parse_program func ( ) void 
 // is_expr func ( enum  kind ) bool 
 // is_binary_op func ( enum  kind ) bool 
@@ -138,6 +149,7 @@
 // calloc func ( int  n , int  size ) * void 
 // __builtin_va_start func VARIADIC ( ) void 
 // Strings
+// "%d %d %d\n"
 // "%d %d %d\n"
 
 // Tagnames
@@ -306,22 +318,26 @@
 	.data
 	.global v1
 v1:
-	.zero 12
+	.long 4
+	.long 5
+	.zero 1
 .LS000000:
+	.string "%d %d %d\n"
+.LS000001:
 	.string "%d %d %d\n"
 
 	.file 2 "./src/monocc.h"
 	.file 1 "init.c"
 	.text
 	.global main
-// Line 12 FDECL main func ( ) int  max_offset:32
+// Line 12 FDECL main func ( ) int  max_offset:44
 //    
-//    (BLOCK(CALL printf ((CAST * char  (ADDR  "%d %d %d\n" )):(MEMBER (GVAR v1) x 0):(MEMBER (GVAR v1) y 4):(MEMBER (GVAR v1) flag 8):) ):))
+//    (BLOCK(CALL printf ((CAST * char  (ADDR  "%d %d %d\n" )):(MEMBER (GVAR v1) x 0):(MEMBER (GVAR v1) y 4):(MEMBER (GVAR v1) flag 8):) ):(= (LVAR 44) { 10 , 11 , 1 }):(CALL printf ((CAST * char  (ADDR  "%d %d %d\n" )):(MEMBER (LVAR 44) x 0):(MEMBER (LVAR 44) y 4):(MEMBER (LVAR 44) flag 8):) ):))
 	.loc 1 12
 main:
 	push rbp
 	mov  rbp, rsp
-	sub  rsp, 32
+	sub  rsp, 48
 	mov  [rbp -  8], r12
 	mov  [rbp - 16], r13
 	mov  [rbp - 24], r14
@@ -368,6 +384,80 @@ main:
 	call printf
 	add  rsp, 8
 .L000001:
+	push rax
+	pop  rax
+// Line 14 (= (LVAR 44) { 10 , 11 , 1 })
+	.loc 1 14
+	lea  rax, [rbp - 44]
+	push rax
+// Line 14  10 
+	.loc 1 14
+	push 10
+	pop  rdi
+	pop  rax
+	mov  [rax], edi
+	push rdi
+	lea  rax, [rbp - 40]
+	push rax
+// Line 14  11 
+	.loc 1 14
+	push 11
+	pop  rdi
+	pop  rax
+	mov  [rax], edi
+	push rdi
+	lea  rax, [rbp - 36]
+	push rax
+// Line 17  1 
+	.loc 2 17
+	push 1
+	pop  rdi
+	pop  rax
+	mov  [rax], dil
+	push rdi
+	pop  rax
+// Line 15 (CALL printf ((CAST * char  (ADDR  "%d %d %d\n" )):(MEMBER (LVAR 44) x 0):(MEMBER (LVAR 44) y 4):(MEMBER (LVAR 44) flag 8):) )
+	.loc 1 15
+// Line 15 (MEMBER (LVAR 44) flag 8)
+	.loc 1 15
+	lea  rax, [rbp - 44]
+	add  rax, 8
+	movzx eax, BYTE PTR [rax]
+	push rax
+// Line 15 (MEMBER (LVAR 44) y 4)
+	.loc 1 15
+	lea  rax, [rbp - 44]
+	add  rax, 4
+	mov  eax, [rax]
+	push rax
+// Line 15 (MEMBER (LVAR 44) x 0)
+	.loc 1 15
+	lea  rax, [rbp - 44]
+	add  rax, 0
+	mov  eax, [rax]
+	push rax
+// Line 15 (CAST * char  (ADDR  "%d %d %d\n" ))
+	.loc 1 15
+// Line 15 (ADDR  "%d %d %d\n" )
+	.loc 1 15
+	lea  rax, .LS000001[rip]
+	push rax
+	pop  rdi
+	pop  rsi
+	pop  rdx
+	pop  rcx
+	mov  rax, rsp
+	and  rax, 15
+	jnz  .L000002
+	mov  rax, 0
+	call printf
+	jmp  .L000003
+.L000002:
+	sub  rsp, 8
+	mov  rax, 0
+	call printf
+	add  rsp, 8
+.L000003:
 	push rax
 	pop  rax
 .L.return.main:

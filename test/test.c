@@ -413,6 +413,31 @@ int q8() {
 
 int fun(int *p) { return *p; }
 
+struct SubVec {
+  long x;
+  int y;
+};
+
+struct Vector {
+  struct SubVec x;
+  long y;
+  char z[4];
+} v1 = {{14, 17}, 5, {9, 10, 11, 12}};
+
+void struct_initializer() {
+  assert_expect(__LINE__, 14, v1.x.x);
+  assert_expect(__LINE__, 17, v1.x.y);
+  assert_expect(__LINE__, 5, v1.y);
+  assert_expect(__LINE__, 9, v1.z[0]);
+  assert_expect(__LINE__, 10, v1.z[1]);
+  assert_expect(__LINE__, 11, v1.z[2]);
+  assert_expect(__LINE__, 12, v1.z[3]);
+  struct Vector v = {{10, 77}, 11, {51, 52, 53, 54}};
+  assert_expect(__LINE__, 10, v.x.x);
+  assert_expect(__LINE__, 11, v.y);
+  assert_expect(__LINE__, 51, v.z[0]);
+}
+
 int main() {
 #define true 1
 #define false 0
@@ -573,6 +598,7 @@ int main() {
   for_();
   list_();
   struct_();
+  struct_initializer();
   /*                  /*
   comment
   these are comments.

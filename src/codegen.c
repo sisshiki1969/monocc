@@ -245,31 +245,29 @@ void gen_addr(Node *node) {
   fprintf(output, "\tpush rax\n");
 }
 
-/// Pop 2 operands (val, addr) from stack,
-/// and store val to [addr].
+/// Pop val from stack,
+/// and store val to [rax].
 /// If operands are structs, do memcpy.
-/// Type *ty: Type of [addr].
+/// Type *ty: Type of [rax].
 void store(Type *ty) {
   if (is_struct(ty)) {
-    fprintf(output, "\tpop  rax\n");
     fprintf(output, "\tpop  rsi\n");
 
     int size = sizeof_type(ty);
     int i = 0;
     while (i <= size - 8) {
-      fprintf(output, "\tmov  rdi, QWORD PTR [rax + %d]\n", i);
-      fprintf(output, "\tmov  QWORD PTR [rsi + %d], rdi\n", i);
+      fprintf(output, "\tmov  rdi, QWORD PTR [rsi + %d]\n", i);
+      fprintf(output, "\tmov  QWORD PTR [rax + %d], rdi\n", i);
       i += 8;
     }
     while (i < size) {
-      fprintf(output, "\tmov  dil, BYTE PTR [rax + %d]\n", i);
-      fprintf(output, "\tmov  BYTE PTR [rsi + %d], dil\n", i);
+      fprintf(output, "\tmov  dil, BYTE PTR [rsi + %d]\n", i);
+      fprintf(output, "\tmov  BYTE PTR [rax + %d], dil\n", i);
       i++;
     }
-    fprintf(output, "\tpush rsi\n");
+    fprintf(output, "\tpush rax\n");
   } else {
     fprintf(output, "\tpop  rdi\n");
-    fprintf(output, "\tpop  rax\n");
     fprintf(output, "\tmov  [rax], %s\n", reg_rdi[reg_size(ty)]);
     fprintf(output, "\tpush rdi\n");
   }
@@ -561,26 +559,47 @@ void gen_lnot(Node *node) {
 
 void gen_init(Type *l_ty, Node *node) { fprintf(output, "\tpush 0\n"); }
 
+// Local var initializer.
+void gen_initialize(Type *l_ty, int offset, Node *rhs) {
+  if (is_array(l_ty) && is_array(type(rhs))) {
+    Vector *vec = rhs->nodes;
+    Type *ty = l_ty->ptr_to;
+    int size = l_ty->array_size;
+    for (int i = 0; i < vec_len(vec); i++) {
+      if (size <= i) break;
+      if (vec->data[i]->kind == ND_INIT) {
+        gen_initialize(ty, offset, vec->data[i]);
+      } else {
+        gen(vec->data[i]);
+        fprintf(output, "\tlea  rax, [rbp - %d]\n", offset);
+        store(ty);
+      }
+      offset -= sizeof_type(ty);
+    }
+  } else if (is_struct(l_ty) && is_struct(type(rhs))) {
+    Vector *vec = rhs->nodes;
+    MemberInfo *member = l_ty->member;
+    for (int i = 0; i < vec_len(vec); i++) {
+      if (vec->data[i]->kind == ND_INIT) {
+        gen_initialize(member->type, offset - member->offset, vec->data[i]);
+      } else {
+        gen(vec->data[i]);
+        fprintf(output, "\tlea  rax, [rbp - %d]\n", offset - member->offset);
+        store(member->type);
+      }
+      member = member->next;
+    }
+  } else {
+    error_at_node(rhs, "Unsupported initializer.");
+  }
+}
+
 void gen_assign(Node *lhs, Node *rhs) {
   Type *l_ty = type(lhs);
 
   if (rhs->kind == ND_INIT) {
-    if (is_array(l_ty) && is_array(type(rhs)) && lhs->kind == ND_LVAR) {
-      Vector *vec = rhs->nodes;
-      Type *ty = l_ty->ptr_to;
-      int size = l_ty->array_size;
-      int offset = lhs->lvar->offset;
-      for (int i = 0; i < vec_len(vec); i++) {
-        if (size <= i) break;
-        fprintf(output, "\tlea  rax, [rbp - %d]\n", offset);
-        fprintf(output, "\tpush rax\n");
-        gen(vec->data[i]);
-        store(ty);
-        offset -= sizeof_type(ty);
-      }
-    } else {
-      error_at_node(rhs, "Unsupported initializer.");
-    }
+    if (lhs->kind != ND_LVAR) error_at_node(rhs, "Unsupported initializer.");
+    gen_initialize(l_ty, lhs->lvar->offset, rhs);
     return;
   }
 
@@ -617,8 +636,8 @@ void gen_assign(Node *lhs, Node *rhs) {
     error_at_node(lhs, "Type mismatch in assignment operation.");
   }
 
-  gen_addr(lhs);
   gen(rhs);
+  gen_addr_to_rax(lhs);
   store(l_ty);
 }
 
@@ -886,4 +905,100 @@ void gen(Node *node) {
       return;
   }
   error_at_token(node->token, "gen(): Unimplemented NodeKind.");
+}
+
+void emit_basic_global(Type *type, Node *init) {
+  if (!init) {
+    // char str[];  => incomplete type
+    if (is_array(type) && type->array_size == 0)
+      error_at_token(init->token, "Incomplete type is not allowed.");
+    fprintf(output, "\t.zero %d\n", sizeof_type(type));
+    return;
+  }
+  long i = 0;
+  Vector *vec;
+  MemberInfo *member;
+  int offset = 0;
+  switch (type->ty) {
+    case CHAR:
+      if (init->kind != ND_NUM)
+        error_at_node(init,
+                      "Calculation in an initializer is not supported yet.");
+      fprintf(output, "\t.byte %ld\n", init->num_val);
+      return;
+    case SHORT:
+    case USHORT:
+      if (init->kind != ND_NUM)
+        error_at_node(init,
+                      "Calculation in an initializer is not supported yet.");
+      fprintf(output, "\t.word %ld\n", init->num_val);
+      return;
+    case INT:
+    case UINT:
+      if (init->kind != ND_NUM)
+        error_at_node(init,
+                      "Calculation in an initializer is not supported yet.");
+      fprintf(output, "\t.long %ld\n", init->num_val);
+      return;
+    case LONG:
+    case ULONG:
+      if (init->kind != ND_NUM)
+        error_at_node(init,
+                      "Calculation in an initializer is not supported yet.");
+      fprintf(output, "\t.quad %ld\n", init->num_val);
+      return;
+    case ARRAY:
+      if (type->ptr_to->ty == CHAR) {
+        if (init->kind == ND_STR) {
+          // char str[] = "sample";
+          int str_size = 1;
+          fprintf(output, "\t.string \"");
+          for (Token *t = init->token; t; t = t->next) {
+            fprintf(output, "%.*s", t->len, t->str);
+            str_size += t->len;
+          }
+          fprintf(output, "\"\n");
+          int ary_size = type->array_size;
+          if (ary_size > str_size)
+            fprintf(output, "\t.zero %d\n", ary_size - str_size);
+          return;
+        }
+      }
+      if (init->kind != ND_INIT)
+        error_at_node(init, "Unsupported initializer.");
+      vec = init->nodes;
+      type = type->ptr_to;
+      for (int i = 0; i < vec_len(vec); i++) {
+        emit_basic_global(type, vec->data[i]);
+      }
+      return;
+    case STRUCT:
+      if (init->kind != ND_INIT)
+        error_at_node(init, "Unsupported initializer.");
+      vec = init->nodes;
+      member = type->member;
+      for (int i = 0; i < vec_len(vec); i++) {
+        if (member->offset > offset) {
+          fprintf(output, "\t.zero %d\n", member->offset - offset);
+          offset = member->offset;
+        }
+        emit_basic_global(member->type, vec->data[i]);
+        offset += sizeof_type(member->type);
+        member = member->next;
+      }
+      if (sizeof_type(type) > offset) {
+        fprintf(output, "\t.zero %d\n", sizeof_type(type) - offset);
+      }
+      return;
+    default:
+      if (is_ptr_to_char(type)) {
+        // char *str = "sample";
+        if (init->kind == ND_STR)
+          fprintf(output, "\t.quad .LS%06d\n", init->str_id);
+        else
+          error_at_node(init, "Unsupported initializer.");
+      } else {
+        fprintf(output, "\t.zero %d\n", sizeof_type(type));
+      }
+  }
 }
