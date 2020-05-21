@@ -393,6 +393,7 @@ Token *read_token(TokContext *ctx);
 // Methods for Node
 
 Node *new_node_binary(NodeKind kind, Node *lhs, Node *rhs, Token *token);
+Node *new_node_binary_arith(NodeKind kind, Node *lhs, Node *rhs, Token *token);
 Node *new_node_num(long val, Token *token);
 bool is_binary_op(NodeKind kind);
 bool is_expr(NodeKind kind);
@@ -453,6 +454,7 @@ bool is_signed(Type *type);
 bool is_identical_type(Type *l_type, Type *r_type);
 bool is_compatible_type(Type *l_type, Type *r_type);
 bool is_assignable_type(Type *l_type, Type *r_type);
+void ensure_arith(Node *node);
 
 Type *get_common_type(Type *ty1, Type *ty2);
 int alignof_type(Type *type);

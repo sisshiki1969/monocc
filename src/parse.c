@@ -148,6 +148,12 @@ Node *new_node_binary(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
   return node;
 }
 
+Node *new_node_binary_arith(NodeKind kind, Node *lhs, Node *rhs, Token *token) {
+  ensure_arith(lhs);
+  ensure_arith(rhs);
+  return new_node_binary(kind, lhs, rhs, token);
+}
+
 /// Generate Node from lhs and rhs.
 /// for DEREF, ADDR, ASSIGN, MEMBER
 Node *new_node_expr(NodeKind kind, Node *lhs, Node *rhs, Token *op_token) {
@@ -807,21 +813,21 @@ Node *parse_cast_expr() {
 }
 
 Node *parse_mul_expr() {
-  Node *node = parse_cast_expr();
+  Node *lhs = parse_cast_expr();
   Node *rhs;
 
   while (true) {
     Token *op_token = token;
     if (consume_if(TK_MUL)) {
       rhs = parse_cast_expr();
-      node = new_node_binary(ND_MUL, node, rhs, op_token);
+      lhs = new_node_binary_arith(ND_MUL, lhs, rhs, op_token);
       continue;
     } else if (consume_if(TK_DIV)) {
       rhs = parse_cast_expr();
-      node = new_node_binary(ND_DIV, node, rhs, op_token);
+      lhs = new_node_binary_arith(ND_DIV, lhs, rhs, op_token);
       continue;
     }
-    return node;
+    return lhs;
   }
 }
 
@@ -857,40 +863,41 @@ Node *parse_add_expr() {
 }
 
 Node *parse_shift_expr() {
-  Node *node = parse_add_expr();
-
+  Node *lhs = parse_add_expr();
+  Node *rhs;
   while (true) {
     Token *op_token = token;
     if (consume_if(TK_SHR)) {
-      node = new_node_binary(ND_SHR, node, parse_add_expr(), op_token);
+      rhs = parse_add_expr();
+      lhs = new_node_binary_arith(ND_SHR, lhs, rhs, op_token);
       continue;
     } else if (consume_if(TK_SHL)) {
-      node = new_node_binary(ND_SHL, node, parse_add_expr(), op_token);
+      rhs = parse_add_expr();
+      lhs = new_node_binary_arith(ND_SHL, lhs, rhs, op_token);
       continue;
     }
-    return node;
+    return lhs;
   }
 }
 
 Node *parse_rel_expr() {
-  Node *node = parse_shift_expr();
-
+  Node *lhs = parse_shift_expr();
   for (;;) {
     Token *op_token = token;
     if (consume_if(TK_GE)) {
-      node = new_node_binary(ND_GE, node, parse_shift_expr(), op_token);
+      lhs = new_node_binary(ND_GE, lhs, parse_shift_expr(), op_token);
       continue;
     } else if (consume_if(TK_GT)) {
-      node = new_node_binary(ND_GT, node, parse_shift_expr(), op_token);
+      lhs = new_node_binary(ND_GT, lhs, parse_shift_expr(), op_token);
       continue;
     } else if (consume_if(TK_LE)) {
-      node = new_node_binary(ND_GE, parse_shift_expr(), node, op_token);
+      lhs = new_node_binary(ND_GE, parse_shift_expr(), lhs, op_token);
       continue;
     } else if (consume_if(TK_LT)) {
-      node = new_node_binary(ND_GT, parse_shift_expr(), node, op_token);
+      lhs = new_node_binary(ND_GT, parse_shift_expr(), lhs, op_token);
       continue;
     }
-    return node;
+    return lhs;
   }
 }
 
@@ -914,7 +921,7 @@ Node *parse_and_expr() {
   for (;;) {
     Token *op_token = token;
     if (consume_if(TK_AND)) {
-      node = new_node_binary(ND_AND, node, parse_eq_expr(), op_token);
+      node = new_node_binary_arith(ND_AND, node, parse_eq_expr(), op_token);
       continue;
     }
     return node;
@@ -926,7 +933,7 @@ Node *parse_xor_expr() {
   for (;;) {
     Token *op_token = token;
     if (consume_if(TK_XOR)) {
-      node = new_node_binary(ND_XOR, node, parse_and_expr(), op_token);
+      node = new_node_binary_arith(ND_XOR, node, parse_and_expr(), op_token);
       continue;
     }
     return node;
@@ -938,7 +945,7 @@ Node *parse_or_expr() {
   for (;;) {
     Token *op_token = token;
     if (consume_if(TK_OR)) {
-      node = new_node_binary(ND_OR, node, parse_xor_expr(), op_token);
+      node = new_node_binary_arith(ND_OR, node, parse_xor_expr(), op_token);
       continue;
     }
     return node;
@@ -1124,12 +1131,7 @@ Node *parse_local_declaration() {
   Token *op_token = token;
   if (consume_if(TK_ASSIGN)) {
     node = parse_initializer(type);
-    /*
-    if (peek(TK_OP_BRACE)) {
-      node = parse_array_initializer(type);
-    } else {
-      node = parse_assign_expr();
-    }*/
+
     if (is_array_of_char(type) && node->kind == ND_STR) {
       type->array_size = node->offset;
     } else if (node->kind != ND_INIT) {

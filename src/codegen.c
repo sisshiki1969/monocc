@@ -463,26 +463,19 @@ void gen_land(Node *node) {
   char *exit_label = new_label();
   gen(node->lhs);
 
-  if (is_arith(l_ty)) {
-    reg_mode = 1;
-  } else if (is_ptr(l_ty)) {
-    reg_mode = 0;
-  } else
-    error_at_node(node, "Illegal operation. (Type mismatch)");
+  if (!is_arith(l_ty) && !is_ptr(l_ty))
+    error_at_node(node->lhs, "Illegal operation. (Type mismatch)");
+  if (!is_arith(r_ty) && !is_ptr(r_ty))
+    error_at_node(node->rhs, "Illegal operation. (Type mismatch)");
 
+  reg_mode = reg_size(l_ty);
   fprintf(output, "\tpop  rax\n");
   fprintf(output, "\tcmp  %s, 0\n", reg_rax[reg_mode]);
   fprintf(output, "\tje   %s\n", false_label);
 
   gen(node->rhs);
 
-  if (is_arith(r_ty)) {
-    reg_mode = 1;
-  } else if (is_ptr(r_ty)) {
-    reg_mode = 0;
-  } else
-    error_at_node(node, "Illegal operation. (Type mismatch)");
-
+  reg_mode = reg_size(r_ty);
   fprintf(output, "\tpop  rax\n");
   fprintf(output, "\tcmp  %s, 0\n", reg_rax[reg_mode]);
   fprintf(output, "\tje   %s\n", false_label);
@@ -503,26 +496,19 @@ void gen_lor(Node *node) {
   char *exit_label = new_label();
   gen(node->lhs);
 
-  if (is_arith(l_ty)) {
-    reg_mode = 1;
-  } else if (is_ptr(l_ty)) {
-    reg_mode = 0;
-  } else
-    error_at_node(node, "Illegal operation. (Type mismatch)");
+  if (!is_arith(l_ty) && !is_ptr(l_ty))
+    error_at_node(node->lhs, "Illegal operation. (Type mismatch)");
+  if (!is_arith(r_ty) && !is_ptr(r_ty))
+    error_at_node(node->rhs, "Illegal operation. (Type mismatch)");
 
+  reg_mode = reg_size(l_ty);
   fprintf(output, "\tpop  rax\n");
   fprintf(output, "\tcmp  %s, 0\n", reg_rax[reg_mode]);
   fprintf(output, "\tjne  %s\n", true_label);
 
   gen(node->rhs);
 
-  if (is_arith(r_ty)) {
-    reg_mode = 1;
-  } else if (is_ptr(r_ty)) {
-    reg_mode = 0;
-  } else
-    error_at_node(node, "Illegal operation. (Type mismatch)");
-
+  reg_mode = reg_size(r_ty);
   fprintf(output, "\tpop  rax\n");
   fprintf(output, "\tcmp  %s, 0\n", reg_rax[reg_mode]);
   fprintf(output, "\tjne  %s\n", true_label);
@@ -542,13 +528,10 @@ void gen_lnot(Node *node) {
   char *exit_label = new_label();
   gen(node->lhs);
 
-  if (is_arith(l_ty)) {
-    reg_mode = 1;
-  } else if (is_ptr(l_ty)) {
-    reg_mode = 0;
-  } else
-    error_at_node(node, "Illegal operation. (Type mismatch)");
+  if (!is_arith(l_ty) && !is_ptr(l_ty))
+    error_at_node(node->lhs, "Illegal operation. (Type mismatch)");
 
+  reg_mode = reg_size(l_ty);
   fprintf(output, "\tpop  rax\n");
   fprintf(output, "\tcmp  %s, 0\n", reg_rax[reg_mode]);
   fprintf(output, "\tjne  %s\n", false_label);
@@ -685,49 +668,28 @@ void gen(Node *node) {
         fprintf(output, "\tsub  rax, rdi\n");
         break;
       case ND_MUL:
-        if (is_arith(l_ty) && is_arith(r_ty)) {
-          fprintf(output, "\timul rax, rdi\n");
-        } else
-          error_at_node(node, "Illegal operation. (Not an arythmetic type)");
+        fprintf(output, "\timul rax, rdi\n");
         break;
       case ND_DIV:
-        if (is_arith(l_ty) && is_arith(r_ty)) {
-          fprintf(output, "\tcqo\n");
-          fprintf(output, "\tidiv rax, rdi\n");
-        } else
-          error_at_node(node, "Illegal operation. (Not an arythmetic type)");
+        fprintf(output, "\tcqo\n");
+        fprintf(output, "\tidiv rax, rdi\n");
         break;
       case ND_AND:
-        if (is_arith(l_ty) && is_arith(r_ty)) {
-          fprintf(output, "\tand  rax, rdi\n");
-        } else
-          error_at_node(node, "Illegal operation. (Not an arythmetic type)");
+        fprintf(output, "\tand  rax, rdi\n");
         break;
       case ND_OR:
-        if (is_arith(l_ty) && is_arith(r_ty)) {
-          fprintf(output, "\tor   rax, rdi\n");
-        } else
-          error_at_node(node, "Illegal operation. (Not an arythmetic type)");
+        fprintf(output, "\tor   rax, rdi\n");
         break;
       case ND_XOR:
-        if (is_arith(l_ty) && is_arith(r_ty)) {
-          fprintf(output, "\txor  rax, rdi\n");
-        } else
-          error_at_node(node, "Illegal operation. (Not an arythmetic type)");
+        fprintf(output, "\txor  rax, rdi\n");
         break;
       case ND_SHR:
-        if (is_arith(l_ty) && is_arith(r_ty)) {
-          fprintf(output, "\tmov  cl , dil\n");
-          fprintf(output, "\tshr  rax, cl\n");
-        } else
-          error_at_node(node, "Illegal operation. (Not an arythmetic type)");
+        fprintf(output, "\tmov  cl , dil\n");
+        fprintf(output, "\tshr  rax, cl\n");
         break;
       case ND_SHL:
-        if (is_arith(l_ty) && is_arith(r_ty)) {
-          fprintf(output, "\tmov  cl , dil\n");
-          fprintf(output, "\tshl  rax, cl\n");
-        } else
-          error_at_node(node, "Illegal operation. (Not an arythmetic type)");
+        fprintf(output, "\tmov  cl , dil\n");
+        fprintf(output, "\tshl  rax, cl\n");
         break;
 
       case ND_EQ:

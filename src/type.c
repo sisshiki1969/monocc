@@ -263,8 +263,8 @@ bool is_identical_type(Type *l_type, Type *r_type) {
 
 bool is_compatible_type(Type *l_type, Type *r_type) {
   if (is_arith(l_type) && is_arith(r_type)) return true;
-  if (is_arith(l_type) && !is_arith(r_type)) return false;
-  if (!is_arith(l_type) && is_arith(r_type)) return false;
+  // if (is_arith(l_type) && !is_arith(r_type)) return false;
+  // if (!is_arith(l_type) && is_arith(r_type)) return false;
   if (is_ptr(l_type) && is_ptr(r_type)) {
     if (is_void(l_type->ptr_to) || is_void(r_type->ptr_to)) return true;
     return is_identical_type(l_type->ptr_to, r_type->ptr_to);
@@ -300,6 +300,11 @@ bool is_comparable_type(Type *l_type, Type *r_type) {
     return true;
 
   return false;
+}
+
+void ensure_arith(Node *node) {
+  if (!is_arith(type(node)))
+    error_at_node(node, "Illegal operation. (Not an arythmetic type)");
 }
 
 void error_types(Type *l_ty, Type *r_ty) {
