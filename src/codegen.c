@@ -144,7 +144,7 @@ int reg_size(Type *type) {
           data_size);
 }
 
-/// rax <- [rax]
+/// load [rax] to rax using node->type.
 void load(Node *node) {
   Type *ty = type(node);
   switch (reg_size(ty)) {
@@ -211,13 +211,11 @@ void cast(Type *ty_from, Type *ty_to) {
 }
 
 /// Push address of local var.
-/// using reg: none.
 void emit_lvar_addr(LVar *lvar) {
   fprintf(output, "\tlea  rax, [rbp - %d]\n", lvar->offset);
 }
 
-/// Generate address.
-/// using reg: none.
+/// Generate address of `node` and put into rax.
 void gen_addr_to_rax(Node *node) {
   if (node->kind == ND_LVAR) {
     emit_lvar_addr(node->lvar);
@@ -240,14 +238,14 @@ void gen_addr_to_rax(Node *node) {
   }
 }
 
+/// Generate address of `node`, and push.
 void gen_addr(Node *node) {
   gen_addr_to_rax(node);
   fprintf(output, "\tpush rax\n");
 }
 
-/// Pop val from stack,
-/// and store val to [rax].
-/// If ty is struct, do memcpy.
+/// Pop `val`,　and store `val` to [rax].
+/// If `ty` is struct, do memcpy.
 /// Type *ty: Type of [rax].
 void store(Type *ty) {
   if (is_struct(ty)) {
@@ -907,7 +905,24 @@ void gen(Node *node) {
   error_at_token(node->token, "gen(): Unimplemented NodeKind.");
 }
 
-void emit_basic_global(Type *type, Node *init) {
+long eval_const(Node *node) {
+  switch (node->kind) {
+    case ND_NUM:
+      return node->num_val;
+    case ND_ADD:
+      return eval_const(node->lhs) + eval_const(node->rhs);
+    case ND_SUB:
+      return eval_const(node->lhs) - eval_const(node->rhs);
+    case ND_MUL:
+      return eval_const(node->lhs) * eval_const(node->rhs);
+    default:
+      if (node->kind != ND_NUM)
+        error_at_node(node,
+                      "Calculation in an initializer is not supported yet.");
+  }
+}
+
+void emit_global(Type *type, Node *init) {
   if (!init) {
     // char str[];  => incomplete type
     if (is_array(type) && type->array_size == 0)
@@ -921,31 +936,19 @@ void emit_basic_global(Type *type, Node *init) {
   int offset = 0;
   switch (type->ty) {
     case CHAR:
-      if (init->kind != ND_NUM)
-        error_at_node(init,
-                      "Calculation in an initializer is not supported yet.");
-      fprintf(output, "\t.byte %ld\n", init->num_val);
+      fprintf(output, "\t.byte %ld\n", eval_const(init));
       return;
     case SHORT:
     case USHORT:
-      if (init->kind != ND_NUM)
-        error_at_node(init,
-                      "Calculation in an initializer is not supported yet.");
-      fprintf(output, "\t.word %ld\n", init->num_val);
+      fprintf(output, "\t.word %ld\n", eval_const(init));
       return;
     case INT:
     case UINT:
-      if (init->kind != ND_NUM)
-        error_at_node(init,
-                      "Calculation in an initializer is not supported yet.");
-      fprintf(output, "\t.long %ld\n", init->num_val);
+      fprintf(output, "\t.long %ld\n", eval_const(init));
       return;
     case LONG:
     case ULONG:
-      if (init->kind != ND_NUM)
-        error_at_node(init,
-                      "Calculation in an initializer is not supported yet.");
-      fprintf(output, "\t.quad %ld\n", init->num_val);
+      fprintf(output, "\t.quad %ld\n", eval_const(init));
       return;
     case ARRAY:
       if (type->ptr_to->ty == CHAR) {
@@ -969,7 +972,7 @@ void emit_basic_global(Type *type, Node *init) {
       vec = init->nodes;
       type = type->ptr_to;
       for (int i = 0; i < vec_len(vec); i++) {
-        emit_basic_global(type, vec->data[i]);
+        emit_global(type, vec->data[i]);
       }
       return;
     case STRUCT:
@@ -982,7 +985,7 @@ void emit_basic_global(Type *type, Node *init) {
           fprintf(output, "\t.zero %d\n", member->offset - offset);
           offset = member->offset;
         }
-        emit_basic_global(member->type, vec->data[i]);
+        emit_global(member->type, vec->data[i]);
         offset += sizeof_type(member->type);
         member = member->next;
       }

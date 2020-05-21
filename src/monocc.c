@@ -92,7 +92,7 @@ void compile(char *file) {
     }
     fprintf(output, "\t.global %.*s\n", global->token->len, global->token->str);
     fprintf(output, "%.*s:\n", global->token->len, global->token->str);
-    emit_basic_global(global->type, global->body);
+    emit_global(global->type, global->body);
   };
 
   int i = 0;

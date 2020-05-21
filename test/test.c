@@ -16,9 +16,9 @@ int printf(char *fmt, ...);
 void *calloc(int n, int size);
 int fprintf(FILE *stream, char *fmt, ...);
 
-void assert_expect(int line, int expected, int actual) {
+void assert_expect(int line, long expected, long actual) {
   if (expected == actual) return;
-  fprintf(stderr, "%d: %d expected, but got %d\n", line, expected, actual);
+  fprintf(stderr, "%d: %ld expected, but got %ld\n", line, expected, actual);
   exit(1);
 }
 
@@ -422,9 +422,9 @@ struct Vector {
   struct SubVec x;
   long y;
   char z[4];
-} v1 = {{14, 17}, 5, {9, 10, 11, 12}};
+} v1 = {{14, 2 + 3 * 5}, 5, {9, 2 * (2 + 3), 11, 12}};
 
-struct SubVec ary_sub[4] = {{3, 4}, {7, 8}, {11, 12}, {30, 31}};
+struct SubVec ary_sub[4] = {{3, 4}, {7, 18 - 10}, {11, 12}, {30, 31}};
 
 void struct_initializer() {
   assert_expect(__LINE__, 14, v1.x.x);
@@ -535,8 +535,8 @@ int main() {
   assert_expect(__LINE__, 8, sizeof(signed long));
   char _char = 254;
   assert_expect(__LINE__, -2, _char);
-  unsigned int _uint = -100;
-  assert_expect(__LINE__, -100, _uint);
+  unsigned int _uint = 100;
+  assert_expect(__LINE__, 100, _uint);
   signed int _int = -100;
   assert_expect(__LINE__, -100, _int);
   long signed _long;
@@ -576,7 +576,7 @@ int main() {
   assert_expect(__LINE__, 0, (long)-2 > -1);
   assert_expect(__LINE__, 0, (long)-2 >= -1);
 
-  assert_expect(__LINE__, 0, 2147483647UL + 2147483647UL + 2);
+  assert_expect(__LINE__, 0, (int)(2147483647UL + 2147483647UL + 2));
   long x;
   x = -1;
   assert_expect(__LINE__, (long)-1, x);

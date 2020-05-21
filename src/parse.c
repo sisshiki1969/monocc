@@ -728,8 +728,13 @@ Node *parse_unary_expr() {
   if (consume_if(TK_ADD)) {
     return parse_cast_expr();
   } else if (consume_if(TK_SUB)) {
-    return new_node_binary(ND_SUB, new_node_num(0, token), parse_cast_expr(),
-                           op_token);
+    Node *node = parse_cast_expr();
+    if (node->kind == ND_NUM) {
+      node->num_val = -(node->num_val);
+      return node;
+    } else {
+      return new_node_binary(ND_SUB, new_node_num(0, token), node, op_token);
+    }
   } else if (consume_if(TK_AND)) {
     return new_node_expr(ND_ADDR, parse_cast_expr(), NULL, op_token);
   } else if (consume_if(TK_MUL)) {
