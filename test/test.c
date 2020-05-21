@@ -416,13 +416,14 @@ int fun(int *p) { return *p; }
 struct SubVec {
   long x;
   int y;
-};
+} sb = {5, 10};
 
 struct Vector {
   struct SubVec x;
   long y;
   char z[4];
-} v1 = {{14, 2 + 3 * 5}, 5, {9, 2 * (2 + 3), 11, 12}};
+  struct SubVec *p;
+} v1 = {{14, 2 + 3 * 5}, 5, {9, 2 * (2 + 3), 11, 12}, &sb};
 
 struct SubVec ary_sub[4] = {{3, 4}, {7, 18 - 10}, {11, 12}, {30, 31}};
 
@@ -434,7 +435,8 @@ void struct_initializer() {
   assert_expect(__LINE__, 10, v1.z[1]);
   assert_expect(__LINE__, 11, v1.z[2]);
   assert_expect(__LINE__, 12, v1.z[3]);
-  struct Vector v = {{10, 77}, 11, {51, 52, 53, 54}};
+  assert_expect(__LINE__, 10, v1.p->y);
+  struct Vector v = {{10, 77}, 11, {51, 52, 53, 54}, 0};
   assert_expect(__LINE__, 10, v.x.x);
   assert_expect(__LINE__, 11, v.y);
   assert_expect(__LINE__, 51, v.z[0]);

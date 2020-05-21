@@ -210,19 +210,25 @@ void cast(Type *ty_from, Type *ty_to) {
   }
 }
 
-/// Push address of local var.
+/// Put address of local var into rax.
 void emit_lvar_addr(LVar *lvar) {
   fprintf(output, "\tlea  rax, [rbp - %d]\n", lvar->offset);
 }
 
-/// Generate address of `node` and put into rax.
+/// Put address of global var into rax.
+/// Node *node: ND_GVAR
+void emit_gvar_addr(Node *node) {
+  fprintf(output, "\tlea  rax, %.*s[rip]\n", node->token->len,
+          node->token->str);
+}
+
+/// Generate address of `node` and put it into rax.
 void gen_addr_to_rax(Node *node) {
   if (node->kind == ND_LVAR) {
     emit_lvar_addr(node->lvar);
     return;
   } else if (node->kind == ND_GVAR) {
-    fprintf(output, "\tlea  rax, %.*s[rip]\n", node->token->len,
-            node->token->str);
+    emit_gvar_addr(node);
     return;
   } else if (node->kind == ND_DEREF) {
     gen(node->lhs);
@@ -950,6 +956,7 @@ void emit_global(Type *type, Node *init) {
     case ULONG:
       fprintf(output, "\t.quad %ld\n", eval_const(init));
       return;
+
     case ARRAY:
       if (type->ptr_to->ty == CHAR) {
         if (init->kind == ND_STR) {
@@ -975,6 +982,7 @@ void emit_global(Type *type, Node *init) {
         emit_global(type, vec->data[i]);
       }
       return;
+
     case STRUCT:
       if (init->kind != ND_INIT)
         error_at_node(init, "Unsupported initializer.");
@@ -993,15 +1001,26 @@ void emit_global(Type *type, Node *init) {
         fprintf(output, "\t.zero %d\n", sizeof_type(type) - offset);
       }
       return;
-    default:
-      if (is_ptr_to_char(type)) {
+
+    case PTR:
+      if (type->ptr_to->ty == CHAR && init->kind == ND_STR) {
         // char *str = "sample";
-        if (init->kind == ND_STR)
-          fprintf(output, "\t.quad .LS%06d\n", init->str_id);
-        else
-          error_at_node(init, "Unsupported initializer.");
-      } else {
-        fprintf(output, "\t.zero %d\n", sizeof_type(type));
+        fprintf(output, "\t.quad .LS%06d\n", init->str_id);
+        return;
       }
+      if (init->kind == ND_ADDR && init->lhs->kind == ND_GVAR) {
+        fprintf(output, "\t.quad %.*s\n", init->lhs->token->len,
+                init->lhs->token->str);
+        return;
+      }
+      if (init->kind == ND_CAST && init->lhs->kind == ND_NUM) {
+        fprintf(output, "\t.quad %ld\n", init->lhs->num_val);
+        return;
+      }
+      error_at_node(init, "Unsupported initializer.");
+      return;
+
+    default:
+      error_at_node(init, "Unsupported initializer.");
   }
 }
