@@ -679,30 +679,10 @@ void gen(Node *node) {
 
     switch (node->kind) {
       case ND_ADD:
-        if (is_arith(l_ty) && is_arith(r_ty)) {
-          fprintf(output, "\tadd  rax, rdi\n");
-        } else if (is_ptr(l_ty) && is_arith(r_ty)) {
-          fprintf(output, "\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
-          fprintf(output, "\tadd  rax, rdi\n");
-        } else if (is_arith(l_ty) && is_ptr(r_ty)) {
-          fprintf(output, "\timul rax, %d\n", sizeof_type(r_ty->ptr_to));
-          fprintf(output, "\tadd  rax, rdi\n");
-        } else
-          error_at_node(node, "Illegal operation. (Type mismatch)");
+        fprintf(output, "\tadd  rax, rdi\n");
         break;
       case ND_SUB:
-        if (is_arith(l_ty) && is_arith(r_ty)) {
-          fprintf(output, "\tsub  rax, rdi\n");
-        } else if (is_ptr(l_ty) && is_ptr(r_ty)) {
-          fprintf(output, "\tsub  rax, rdi\n");
-          fprintf(output, "\tcqo\n");
-          fprintf(output, "\tmov  rdi, %d\n", sizeof_type(l_ty->ptr_to));
-          fprintf(output, "\tidiv rdi\n");
-        } else if (is_ptr(l_ty) && is_arith(r_ty)) {
-          fprintf(output, "\timul rdi, %d\n", sizeof_type(l_ty->ptr_to));
-          fprintf(output, "\tsub  rax, rdi\n");
-        } else
-          error_at_node(node, "Illegal operation. (Type mismatch)");
+        fprintf(output, "\tsub  rax, rdi\n");
         break;
       case ND_MUL:
         if (is_arith(l_ty) && is_arith(r_ty)) {

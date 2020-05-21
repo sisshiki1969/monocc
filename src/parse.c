@@ -653,6 +653,20 @@ Node *parse_prim_expr() {
   error_at_token(token, "parse_prim_expr(): Unexpected token.");
 }
 
+Node *pointer_add(Node *ptr, Node *offset, Token *token) {
+  offset = new_node_binary(ND_MUL, offset,
+                           new_node_num(sizeof_type(type(ptr)->ptr_to), token),
+                           token);
+  return new_node_binary(ND_ADD, ptr, offset, token);
+}
+
+Node *pointer_sub(Node *ptr, Node *offset, Token *token) {
+  offset = new_node_binary(ND_MUL, offset,
+                           new_node_num(sizeof_type(type(ptr)->ptr_to), token),
+                           token);
+  return new_node_binary(ND_SUB, ptr, offset, token);
+}
+
 Node *parse_postfix_expr() {
   Node *node = parse_prim_expr();
   while (true) {
@@ -692,8 +706,15 @@ Node *parse_postfix_expr() {
       expect(TK_CL_PAREN);
       node = new_node_call(node, vec, node->token);
     } else if (consume_if(TK_OP_BRACKET)) {
-      Node *index = parse_expr();
-      node = new_node_binary(ND_ADD, node, index, token);
+      // ary[index] -> *(ary + index * sizeof(ary))
+      if (!is_array(type(node)) && !is_ptr(type(node)))
+        error_at_node(node, "Subscripted value is neither array nor pointer.");
+      Node *offset = parse_expr();
+      node = pointer_add(node, offset, token);
+      /*int size = sizeof_type(type(node)->ptr_to);
+      offset =
+          new_node_binary(ND_MUL, offset, new_node_num(size, token), token);
+      node = new_node_binary(ND_ADD, node, offset, token);*/
       node = new_node_expr(ND_DEREF, node, NULL, token);
       expect(TK_CL_BRACKET);
     } else if (consume_if(TK_INC)) {
@@ -707,9 +728,14 @@ Node *parse_postfix_expr() {
       node = new_node_expr(ND_ASSIGN, node, rhs, op_token);
       node = new_node_binary(ND_ADD, node, new_node_num(1, op_token), op_token);
     } else if (consume_if(TK_DOT)) {
+      if (!is_struct(type(node)))
+        error_at_node(
+            node,
+            "Request for member 'a' in something not a structure or union.");
       node = new_node_member(node, consume_ident());
     } else if (consume_if(TK_ARROW)) {
-      if (!is_ptr(type(node))) error_at_node(node, "Must be a pointer.");
+      if (!is_ptr(type(node)) || !is_struct(type(node)->ptr_to))
+        error_at_node(node, "Invalid type argument of '->'.");
       node = new_node_binary(ND_DEREF, node, NULL, op_token);
       node = new_node_member(node, consume_ident());
     } else
@@ -800,18 +826,33 @@ Node *parse_mul_expr() {
 }
 
 Node *parse_add_expr() {
-  Node *node = parse_mul_expr();
-
+  Node *lhs = parse_mul_expr();
+  Node *rhs;
   while (true) {
     Token *op_token = token;
+
     if (consume_if(TK_ADD)) {
-      node = new_node_binary(ND_ADD, node, parse_mul_expr(), op_token);
+      rhs = parse_mul_expr();
+      if (is_ptr(type(lhs)) && is_arith(type(rhs))) {
+        lhs = pointer_add(lhs, rhs, op_token);
+      } else if (is_arith(type(lhs)) && is_ptr(type(rhs))) {
+        lhs = pointer_add(rhs, lhs, op_token);
+      } else {
+        lhs = new_node_binary(ND_ADD, lhs, rhs, op_token);
+      }
       continue;
     } else if (consume_if(TK_SUB)) {
-      node = new_node_binary(ND_SUB, node, parse_mul_expr(), op_token);
+      rhs = parse_mul_expr();
+      if (is_ptr(type(lhs)) && is_arith(type(rhs))) {
+        lhs = pointer_sub(lhs, rhs, op_token);
+      } else if (is_ptr(type(lhs)) && is_arith(type(rhs))) {
+        lhs = pointer_sub(rhs, lhs, op_token);
+      } else {
+        lhs = new_node_binary(ND_SUB, lhs, rhs, op_token);
+      }
       continue;
     }
-    return node;
+    return lhs;
   }
 }
 
