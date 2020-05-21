@@ -14,7 +14,7 @@ Function *cur_fn;
 /// num_val: int value
 /// token: Token *token
 /// type: int
-Node *new_node_num(int val, Token *token) {
+Node *new_node_num(long val, Token *token) {
   Node *node = calloc(1, sizeof(Node));
   node->kind = ND_NUM;
   node->num_val = val;
@@ -361,7 +361,7 @@ bool consume_if(TokenKind kind) {
 
 /// If current token is a number, consume and return num_val.
 /// Otherwise, raise error.
-int consume_number() {
+long consume_number() {
   if (token->kind != TK_NUM) {
     error_at_token(token, "Unexpected token: Number is expected.");
   }
@@ -606,7 +606,10 @@ Node *parse_prim_expr() {
     error_at_token(token, "Unexpected EOF.");
   }
   if (peek(TK_NUM)) {
-    return new_node_num(consume_number(), cur_token);
+    Token *t = consume();
+    Node *node = new_node_num(t->num_val, cur_token);
+    node->type = t->num_ty;
+    return node;
   }
   if (peek(TK_STR)) {
     Token *tok = consume();

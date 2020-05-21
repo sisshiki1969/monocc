@@ -754,12 +754,9 @@ void gen(Node *node) {
       case ND_NEQ:
       case ND_GE:
       case ND_GT:
-        if (is_arith(l_ty) && is_arith(r_ty)) {
-          reg_mode = 1;
-        } else if (is_ptr(l_ty) && is_ptr(r_ty)) {
-          reg_mode = 0;
-        } else
+        if (!is_compatible_type(l_ty, r_ty))
           error_at_node(node, "Illegal operation. (Type mismatch)");
+        reg_mode = reg_size(get_common_type(l_ty, r_ty));
         switch (node->kind) {
           case ND_EQ:
             cmp_op = "e";
@@ -777,7 +774,7 @@ void gen(Node *node) {
         fprintf(output, "\tcmp  %s, %s\n", reg_rax[reg_mode],
                 reg_rdi[reg_mode]);
         fprintf(output, "\tset%s al\n", cmp_op);
-        fprintf(output, "\tmovzb %s, al\n", reg_rax[reg_mode]);
+        fprintf(output, "\tmovzb %s, al\n", reg_rax[1]);
         break;
       default:
         error_at_token(node->token, "gen(): Unimplemented binary op.");
@@ -855,7 +852,12 @@ void gen(Node *node) {
 
     // expression
     case ND_NUM:
-      fprintf(output, "\tpush %ld\n", node->num_val);
+      if (-2147483648 <= node->num_val && node->num_val <= 2147483647)
+        fprintf(output, "\tpush %ld\n", node->num_val);
+      else {
+        fprintf(output, "\tmov  rax, %ld\n", node->num_val);
+        fprintf(output, "\tpush rax\n");
+      }
       return;
     case ND_LVAR:
     case ND_GVAR:
@@ -911,16 +913,20 @@ void gen(Node *node) {
   error_at_token(node->token, "gen(): Unimplemented NodeKind.");
 }
 
-long eval_const(Node *node) {
+Node *eval_const(Node *node) {
+  long res;
   switch (node->kind) {
     case ND_NUM:
-      return node->num_val;
+      return node;
     case ND_ADD:
-      return eval_const(node->lhs) + eval_const(node->rhs);
+      res = eval_const(node->lhs)->num_val + eval_const(node->rhs)->num_val;
+      return new_node_num(res, NULL);
     case ND_SUB:
-      return eval_const(node->lhs) - eval_const(node->rhs);
+      res = eval_const(node->lhs)->num_val - eval_const(node->rhs)->num_val;
+      return new_node_num(res, NULL);
     case ND_MUL:
-      return eval_const(node->lhs) * eval_const(node->rhs);
+      res = eval_const(node->lhs)->num_val * eval_const(node->rhs)->num_val;
+      return new_node_num(res, NULL);
     default:
       if (node->kind != ND_NUM)
         error_at_node(node,
@@ -942,19 +948,19 @@ void emit_global(Type *type, Node *init) {
   int offset = 0;
   switch (type->ty) {
     case CHAR:
-      fprintf(output, "\t.byte %ld\n", eval_const(init));
+      fprintf(output, "\t.byte %ld\n", eval_const(init)->num_val);
       return;
     case SHORT:
     case USHORT:
-      fprintf(output, "\t.word %ld\n", eval_const(init));
+      fprintf(output, "\t.word %ld\n", eval_const(init)->num_val);
       return;
     case INT:
     case UINT:
-      fprintf(output, "\t.long %ld\n", eval_const(init));
+      fprintf(output, "\t.long %ld\n", eval_const(init)->num_val);
       return;
     case LONG:
     case ULONG:
-      fprintf(output, "\t.quad %ld\n", eval_const(init));
+      fprintf(output, "\t.quad %ld\n", eval_const(init)->num_val);
       return;
 
     case ARRAY:

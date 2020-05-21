@@ -253,7 +253,7 @@ Token *read_token(TokContext *ctx) {
   } else if (isdigit(*p)) {
     bool signed_int = true;
     bool long_int = false;
-    unsigned long num = *p - '0';
+    long num = *p - '0';
     int len = 1;
     while (isdigit(p[len])) {
       num *= 10;
@@ -271,21 +271,19 @@ Token *read_token(TokContext *ctx) {
     }
     cur = new_token(TK_NUM, cur, p, len);
     p += len;
-    Type *ty;
     if (signed_int) {
       if (long_int) {
-        ty = new_type_long();
+        cur->num_ty = new_type_long();
       } else {
-        ty = new_type_int();
+        cur->num_ty = new_type_int();
       }
     } else {
       if (long_int) {
-        ty = new_type_ulong();
+        cur->num_ty = new_type_ulong();
       } else {
-        ty = new_type_uint();
+        cur->num_ty = new_type_uint();
       }
     }
-    cur->num_ty = ty;
     cur->num_val = num;
   } else if (isalpha(*p) || *p == '_') {
     int len = 1;

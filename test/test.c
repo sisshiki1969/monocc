@@ -577,8 +577,7 @@ int main() {
   assert_expect(__LINE__, 1, (long)-2 <= -1);
   assert_expect(__LINE__, 0, (long)-2 > -1);
   assert_expect(__LINE__, 0, (long)-2 >= -1);
-
-  assert_expect(__LINE__, 0, (int)(2147483647UL + 2147483647UL + 2));
+  assert_expect(__LINE__, 0, (int)(2147483648L + 2147483648L));
   long x;
   x = -1;
   assert_expect(__LINE__, (long)-1, x);
